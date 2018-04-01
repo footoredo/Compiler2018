@@ -1,4 +1,4 @@
-package cat.footoredo.mx.ast;
+package cat.footoredo.mx.cst;
 // Generated from Mx.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -17,36 +17,6 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCompilationUnit(MxParser.CompilationUnitContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#globalDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterGlobalDeclaration(MxParser.GlobalDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#globalDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitGlobalDeclaration(MxParser.GlobalDeclarationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#typeDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterTypeDeclaration(MxParser.TypeDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#typeDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitTypeDeclaration(MxParser.TypeDeclarationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#mainDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void enterMainDeclaration(MxParser.MainDeclarationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#mainDeclaration}.
-	 * @param ctx the parse tree
-	 */
-	void exitMainDeclaration(MxParser.MainDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#expression}.
 	 * @param ctx the parse tree

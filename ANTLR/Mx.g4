@@ -1,21 +1,7 @@
 grammar Mx;
 
 compilationUnit
-  : globalDeclaration* mainDeclaration globalDeclaration* EOF
-  ;
-
-globalDeclaration
-  : typeDeclaration
-  | methodDeclaration
-  | variableDeclaration
-  ;
-
-typeDeclaration
-  : classDeclaration
-  ;
-
-mainDeclaration
-  : 'int' 'main' '(' ')' block
+  : (classDeclaration | methodDeclaration | variableDeclaration)* EOF
   ;
 
 expression
@@ -193,7 +179,7 @@ block
 blockStatement
   : localVariableDeclarationStatement
   | statement
-  | typeDeclaration
+  | classDeclaration
   ;
 
 statement
