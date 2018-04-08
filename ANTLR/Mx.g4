@@ -107,11 +107,11 @@ variableDeclaration
   ;
 
 variableDeclarators
-  : variableDeclarator (',' variableDeclarator)*
+  : variableDeclarator
   ;
 
 variableDeclarator
-  : variableDeclaratorId ('=' variableInitializer)?
+  : variableDeclaratorId '=' variableInitializer
   ;
 
 variableDeclaratorId

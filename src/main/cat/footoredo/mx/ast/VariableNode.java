@@ -11,7 +11,7 @@ public class VariableNode extends LHSNode {
         System.out.println ("Got variable " + this.name);
     }
 
-    public String name () {
+    public String getName () {
         return name;
     }
 }

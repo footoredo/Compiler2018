@@ -8,7 +8,7 @@ public class IntegerLiteralNode extends LiteralNode {
         this.value = value;
     }
 
-    public int value () {
+    public int getValue () {
         return value;
     }
 }
