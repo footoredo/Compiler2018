@@ -11,5 +11,5 @@ import java.io.*;
 import java.util.Stack;
 
 public class LocalResolver{
-    private final Stack <Scope> scopeStack;
+    // private final Stack <Scope> scopeStack;
 }

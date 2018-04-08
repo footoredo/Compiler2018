@@ -2,28 +2,41 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.cst.MxVisitor;
+import cat.footoredo.mx.entity.Function;
+import cat.footoredo.mx.entity.Variable;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class BuildASTVisitor implements MxVisitor <Node> {
+public class ASTBuilderVisitor implements MxVisitor <Node> {
     @Override
-    public Node visitCompilationUnit(MxParser.CompilationUnitContext ctx) {
+    public AST visitCompilationUnit(MxParser.CompilationUnitContext ctx) {
         Declarations declarations = new Declarations();
 
         for (MxParser.ClassDeclarationContext classDeclarationContext : ctx.classDeclaration()) {
-            ClassNode classDeclaration = visitClassDeclaration (classDeclarationContext);
-            declarations.addClass(classDeclaration);
+            ClassNode classNode = visitClassDeclaration (classDeclarationContext);
+            declarations.addClass(classNode);
         }
 
         for (MxParser.MethodDeclarationContext methodDeclarationContext : ctx.methodDeclaration()) {
-
+            MethodNode methodNode = visitMethodDeclaration(methodDeclarationContext);
+            declarations.addFun (new Function(methodNode));
         }
+
+        for (MxParser.VariableDeclarationContext variableDeclarationContext : ctx.variableDeclaration()) {
+            VariableDeclarationNode variableDeclarationNode = visitVariableDeclaration(variableDeclarationContext);
+            declarations.addVar(new Variable(variableDeclarationNode));
+        }
+
+        return new AST(declarations);
     }
 
     @Override
-    public Node visitExpression(MxParser.ExpressionContext ctx) {
+    public ExprNode visitExpression(MxParser.ExpressionContext ctx) {
+        switch (ctx.getRuleIndex()) {
+            case 0: return visitPrimary(ctx.primary());
+        }
         return null;
     }
 
@@ -58,7 +71,10 @@ public class BuildASTVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public Node visitPrimary(MxParser.PrimaryContext ctx) {
+    public ExprNode visitPrimary(MxParser.PrimaryContext ctx) {
+        switch (ctx.getRuleIndex()) {
+            case 0: return new VariableNode(ctx.Identifier().getSymbol().getText());
+        }
         return null;
     }
 
@@ -73,7 +89,7 @@ public class BuildASTVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public Node visitVariableDeclaration(MxParser.VariableDeclarationContext ctx) {
+    public VariableDeclarationNode visitVariableDeclaration(MxParser.VariableDeclarationContext ctx) {
         return null;
     }
 
@@ -128,7 +144,7 @@ public class BuildASTVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public Node visitMethodDeclaration(MxParser.MethodDeclarationContext ctx) {
+    public MethodNode visitMethodDeclaration(MxParser.MethodDeclarationContext ctx) {
         return null;
     }
 

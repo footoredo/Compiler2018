@@ -3,6 +3,7 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Variable;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,14 +38,14 @@ public class Declarations {
     }
 
     public List<Variable> getVars () {
-        return new ArraryList<Variable> (vars);
+        return new ArrayList<Variable> (vars);
     }
 
     public List<Function> getFuns () {
-        return new ArraryList<Function> (funs);
+        return new ArrayList<Function> (funs);
     }
 
     public List<ClassNode> getClasses () {
-        return new ArraryList<ClassNode> (classes);
+        return new ArrayList<ClassNode>(classes);
     }
 }
