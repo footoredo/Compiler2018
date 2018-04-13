@@ -3,15 +3,28 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.Function;
+import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.type.TypeRef;
+import cat.footoredo.mx.type.VoidTypeRef;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ASTBuilderVisitor implements MxVisitor <Node> {
+    private static Location getLocation (TerminalNode node) {
+        return new Location(node.getSymbol());
+    }
+
+    private static Location getLocation (ParserRuleContext ctx) {
+        return new Location(ctx.start);
+    }
+
     @Override
     public AST visitCompilationUnit(MxParser.CompilationUnitContext ctx) {
+        // System.out.println ("123" + ctx.EOF().getSymbol().getTokenSource().getSourceName());
         Declarations declarations = new Declarations();
 
         for (MxParser.ClassDeclarationContext classDeclarationContext : ctx.classDeclaration()) {
@@ -29,14 +42,13 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             declarations.addVar(new Variable(variableDeclarationNode));
         }
 
-        return new AST(declarations);
+        return new AST(getLocation(ctx), declarations);
     }
 
     @Override
     public ExprNode visitExpression(MxParser.ExpressionContext ctx) {
-        switch (ctx.getRuleIndex()) {
-            case 0: return visitPrimary(ctx.primary());
-        }
+        if (ctx.primary() != null)
+            return visitPrimary(ctx.primary());
         return null;
     }
 
@@ -72,14 +84,14 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public ExprNode visitPrimary(MxParser.PrimaryContext ctx) {
-        switch (ctx.getRuleIndex()) {
-            case 0: return new VariableNode(ctx.Identifier().getSymbol().getText());
-        }
-        return null;
+        if (ctx.Identifier() != null)
+            return new VariableNode(getLocation(ctx.Identifier()), ctx.Identifier().getSymbol().getText());
+        else
+            return visitLiteral(ctx.literal());
     }
 
     @Override
-    public Node visitLiteral(MxParser.LiteralContext ctx) {
+    public LiteralNode visitLiteral(MxParser.LiteralContext ctx) {
         return null;
     }
 
@@ -114,17 +126,26 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public Node visitPrimitiveType(MxParser.PrimitiveTypeContext ctx) {
+    public TypeNode visitPrimitiveType(MxParser.PrimitiveTypeContext ctx) {
         return null;
     }
 
     @Override
-    public Node visitTypeSpec(MxParser.TypeSpecContext ctx) {
+    public TypeNode visitTypeSpec(MxParser.TypeSpecContext ctx) {
+        TypeRef baseType = null;
+        if (ctx.primitiveType() != null)
+            baseType = visitPrimitiveType(ctx.primitiveType()).getTypeRef();
+        else
+            baseType = visitClassType(ctx.classType()).getTypeRef();
+
+        int
+
+        System.out.println (getLocation(ctx).getToken().getText() + " " + Integer.toString(ctx.getChildCount()));
         return null;
     }
 
     @Override
-    public Node visitClassType(MxParser.ClassTypeContext ctx) {
+    public TypeNode visitClassType(MxParser.ClassTypeContext ctx) {
         return null;
     }
 
@@ -145,6 +166,11 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public MethodNode visitMethodDeclaration(MxParser.MethodDeclarationContext ctx) {
+        TypeNode typeNode = null;
+        if (ctx.typeSpec() != null)
+            typeNode = visitTypeSpec(ctx.typeSpec());
+        else
+            typeNode = new TypeNode(new VoidTypeRef(getLocation(ctx)));
         return null;
     }
 

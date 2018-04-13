@@ -1,5 +1,7 @@
 package cat.footoredo.mx.ast;
 
+import cat.footoredo.mx.entity.Location;
+
 public class IntegerLiteralNode extends LiteralNode {
     protected int value;
 

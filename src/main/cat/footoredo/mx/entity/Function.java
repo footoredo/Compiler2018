@@ -8,4 +8,8 @@ public class Function extends Entity {
         super ();
         this.methodNode = methodNode;
     }
+
+    public MethodNode getMethodNode() {
+        return methodNode;
+    }
 }

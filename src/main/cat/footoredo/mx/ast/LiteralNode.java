@@ -1,4 +1,6 @@
 package cat.footoredo.mx.ast;
 
-public class LiteralNode extends Node {
+import cat.footoredo.mx.entity.Location;
+
+public class LiteralNode extends ExprNode {
 }

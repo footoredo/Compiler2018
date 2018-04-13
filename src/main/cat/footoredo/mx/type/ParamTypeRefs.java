@@ -1,4 +1,15 @@
 package cat.footoredo.mx.type;
 
-public class ParamTypeRefs extends TypeRef {
+import cat.footoredo.mx.entity.ParamSlots;
+
+import java.util.List;
+
+public class ParamTypeRefs extends ParamSlots <TypeRef> {
+    public ParamTypeRefs (List<TypeRef> paramDescriptors) {
+        super (paramDescriptors);
+    }
+
+    public List<TypeRef> getTypeRefs () {
+        return paramDescriptors;
+    }
 }

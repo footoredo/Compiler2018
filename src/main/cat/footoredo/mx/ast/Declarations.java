@@ -33,8 +33,8 @@ public class Declarations {
         classes.add (_class);
     }
 
-    public void addClasses (List<ClassNode> _classes) {
-        classes.addAll (_classes);
+    public void addClasses (List<ClassNode> classes) {
+        this.classes.addAll (classes);
     }
 
     public List<Variable> getVars () {

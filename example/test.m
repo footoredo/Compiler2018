@@ -1,16 +1,16 @@
-int a = b;
+/*int a = b;
 
 class A {
     A () {
         fuck ();
     }
-    /* sss
-    */
+     sss
+
     string __ () {
     }
-}
+}*/
 
-int main () {
+int[][] main () {
 }
 
 string x = "fuck u\n";

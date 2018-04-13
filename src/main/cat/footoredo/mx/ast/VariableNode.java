@@ -1,14 +1,15 @@
 package cat.footoredo.mx.ast;
 
-import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.entity.Location;
 
 public class VariableNode extends LHSNode {
-    String name;
+    protected Location location;
+    protected String name;
 
-    public VariableNode (String name) {
+    public VariableNode (Location location, String name) {
         super ();
+        this.location = location;
         this.name = name;
-        System.out.println ("Got variable " + this.name);
     }
 
     public String getName () {
