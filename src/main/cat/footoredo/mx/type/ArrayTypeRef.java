@@ -7,14 +7,14 @@ public class ArrayTypeRef extends TypeRef {
     protected TypeRef baseType;
     protected int len;
 
-    public ArrayTypeRef (Location location, TypeRef baseType, int len) {
-        super (location);
+    public ArrayTypeRef (TypeRef baseType, int len) {
+        super (baseType.getLocation());
         this.baseType = baseType;
         this.len = len;
     }
 
-    public ArrayTypeRef (Location location, TypeRef baseType) {
-        super (location);
+    public ArrayTypeRef (TypeRef baseType) {
+        super (baseType.getLocation());
         this.baseType = baseType;
         this.len = undefined;
     }

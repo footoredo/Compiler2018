@@ -1,4 +1,4 @@
-package cat.footoredo.mx.entity;
+package cat.footoredo.mx.ast;
 
 import java.util.List;
 

@@ -60,7 +60,7 @@ primary
 literal
   : IntLiteral
   | StringLiteral
-  | boolLiteral
+  | BoolLiteral
   | 'null'
   ;
 
@@ -78,7 +78,7 @@ Digits
   : [0-9]+
   ;
 
-boolLiteral
+BoolLiteral
   : 'true' | 'false'
   ;
 
@@ -103,11 +103,7 @@ EscapeSequence
   ;
 
 variableDeclaration
-  : typeSpec variableDeclarators ';'
-  ;
-
-variableDeclarators
-  : variableDeclarator
+  : typeSpec variableDeclarator ';'
   ;
 
 variableDeclarator
@@ -129,12 +125,17 @@ primitiveType
   ;
 
 typeSpec
-  : primitiveType ('[' ']')*
-  | classType ('[' ']')*
+  : baseTypeSpec
+  | typeSpec '[' ']'
+  ;
+
+baseTypeSpec
+  : primitiveType
+  | classType
   ;
 
 classType
-  : Identifier ('.' Identifier)*
+  : Identifier
   ;
 
 classDeclaration
@@ -149,7 +150,6 @@ memberDeclaration
   : methodDeclaration
   | constructorDeclaration
   | variableDeclaration
-  | classDeclaration
   ;
 
 methodDeclaration
@@ -179,7 +179,6 @@ block
 blockStatement
   : localVariableDeclarationStatement
   | statement
-  | classDeclaration
   ;
 
 statement
@@ -213,7 +212,7 @@ localVariableDeclarationStatement
   ;
 
 localVariableDeclaration
-  : typeSpec variableDeclarators
+  : typeSpec variableDeclarator
   ;
 
 Identifier

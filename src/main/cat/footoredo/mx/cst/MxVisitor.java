@@ -71,23 +71,11 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(MxParser.LiteralContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#boolLiteral}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBoolLiteral(MxParser.BoolLiteralContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MxParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableDeclaration(MxParser.VariableDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#variableDeclarators}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitVariableDeclarators(MxParser.VariableDeclaratorsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#variableDeclarator}.
 	 * @param ctx the parse tree
@@ -118,6 +106,12 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitTypeSpec(MxParser.TypeSpecContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#baseTypeSpec}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBaseTypeSpec(MxParser.BaseTypeSpecContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#classType}.
 	 * @param ctx the parse tree

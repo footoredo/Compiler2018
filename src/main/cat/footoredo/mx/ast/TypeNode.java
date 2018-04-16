@@ -18,4 +18,8 @@ public class TypeNode extends Node {
     public Location getLocation () {
         return typeRef.getLocation ();
     }
+
+    public String toString () {
+        return typeRef.toString();
+    }
 }

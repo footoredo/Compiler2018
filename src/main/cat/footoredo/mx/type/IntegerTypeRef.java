@@ -7,6 +7,9 @@ public class IntegerTypeRef extends TypeRef {
     public IntegerTypeRef (Location location) {
         super (location);
     }
+    public IntegerTypeRef () {
+        super (null);
+    }
     public String toString() {
         return "int";
     }

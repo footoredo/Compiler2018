@@ -14,3 +14,7 @@ int[][] main () {
 }
 
 string x = "fuck u\n";
+
+bool c = false;
+
+int i = 123144;

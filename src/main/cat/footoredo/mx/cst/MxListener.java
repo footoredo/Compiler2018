@@ -108,16 +108,6 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitLiteral(MxParser.LiteralContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxParser#boolLiteral}.
-	 * @param ctx the parse tree
-	 */
-	void enterBoolLiteral(MxParser.BoolLiteralContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#boolLiteral}.
-	 * @param ctx the parse tree
-	 */
-	void exitBoolLiteral(MxParser.BoolLiteralContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link MxParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 */
@@ -127,16 +117,6 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariableDeclaration(MxParser.VariableDeclarationContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#variableDeclarators}.
-	 * @param ctx the parse tree
-	 */
-	void enterVariableDeclarators(MxParser.VariableDeclaratorsContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#variableDeclarators}.
-	 * @param ctx the parse tree
-	 */
-	void exitVariableDeclarators(MxParser.VariableDeclaratorsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#variableDeclarator}.
 	 * @param ctx the parse tree
@@ -187,6 +167,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTypeSpec(MxParser.TypeSpecContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#baseTypeSpec}.
+	 * @param ctx the parse tree
+	 */
+	void enterBaseTypeSpec(MxParser.BaseTypeSpecContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#baseTypeSpec}.
+	 * @param ctx the parse tree
+	 */
+	void exitBaseTypeSpec(MxParser.BaseTypeSpecContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#classType}.
 	 * @param ctx the parse tree

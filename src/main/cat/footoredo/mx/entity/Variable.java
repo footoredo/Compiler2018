@@ -10,4 +10,8 @@ public class Variable extends Entity {
         super ();
         this.variableDeclarationNode = variableDeclarationNode;
     }
+
+    public VariableDeclarationNode getVariableDeclarationNode() {
+        return variableDeclarationNode;
+    }
 }

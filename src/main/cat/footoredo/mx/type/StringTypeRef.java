@@ -2,9 +2,12 @@ package cat.footoredo.mx.type;
 
 import cat.footoredo.mx.entity.Location;
 
-public class StringType extends TypeRef {
-    public StringType (Location location) {
+public class StringTypeRef extends TypeRef {
+    public StringTypeRef(Location location) {
         super (location);
+    }
+    public StringTypeRef() {
+        super (null);
     }
     public String toString () {
         return "string";

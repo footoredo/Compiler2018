@@ -2,5 +2,8 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
 
-public class ExprNode extends Node {
+abstract public class ExprNode extends Node {
+    public String toString () {
+        return "";
+    }
 }

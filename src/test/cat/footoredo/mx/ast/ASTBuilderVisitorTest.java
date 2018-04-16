@@ -1,9 +1,9 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.cst.*;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import cat.footoredo.mx.exception.MxANTLRErrorStrategy;
+import cat.footoredo.mx.exception.ParsingError;
+import org.antlr.v4.runtime.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,11 +17,16 @@ public class ASTBuilderVisitorTest {
         MxLexer lexer = new MxLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         parser = new MxParser(tokens);
+        parser.setErrorHandler(new MxANTLRErrorStrategy());
     }
 
     @Test
     public void visitCompilationUnit() {
-        ASTBuilderVisitor astBuilderVisitor = new ASTBuilderVisitor ();
-        AST ast = astBuilderVisitor.visitCompilationUnit (parser.compilationUnit());
+        try {
+            ASTBuilderVisitor astBuilderVisitor = new ASTBuilderVisitor();
+            AST ast = astBuilderVisitor.visitCompilationUnit(parser.compilationUnit());
+        } catch (ParsingError e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

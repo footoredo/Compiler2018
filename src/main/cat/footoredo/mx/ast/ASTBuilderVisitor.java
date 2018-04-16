@@ -5,8 +5,7 @@ import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
-import cat.footoredo.mx.type.TypeRef;
-import cat.footoredo.mx.type.VoidTypeRef;
+import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -85,68 +84,91 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     @Override
     public ExprNode visitPrimary(MxParser.PrimaryContext ctx) {
         if (ctx.Identifier() != null)
-            return new VariableNode(getLocation(ctx.Identifier()), ctx.Identifier().getSymbol().getText());
+            return new VariableNode(getLocation(ctx.Identifier()), ctx.Identifier().getText());
         else
             return visitLiteral(ctx.literal());
     }
 
     @Override
     public LiteralNode visitLiteral(MxParser.LiteralContext ctx) {
-        return null;
-    }
-
-    @Override
-    public Node visitBoolLiteral(MxParser.BoolLiteralContext ctx) {
-        return null;
+        Location location = getLocation(ctx);
+        if (ctx.IntLiteral() != null) {
+            int value = Integer.parseInt(ctx.IntLiteral().getText());
+            return new IntegerLiteralNode(location, value);
+        }
+        else if (ctx.StringLiteral() != null) {
+            String value = ctx.StringLiteral().getText();
+            return new StringLiteralNode(location, value);
+        }
+        else if (ctx.BoolLiteral() != null) {
+            boolean value = (ctx.BoolLiteral().getText() == "true");
+            return new BooleanLiteralNode(location, value);
+        }
+        else {
+            return null;
+        }
     }
 
     @Override
     public VariableDeclarationNode visitVariableDeclaration(MxParser.VariableDeclarationContext ctx) {
-        return null;
+        TypeNode typeNode = visitTypeSpec(ctx.typeSpec());
+        VariableDeclaratorNode variableDeclaratorNode = visitVariableDeclarator(ctx.variableDeclarator());
+        return new VariableDeclarationNode(typeNode, variableDeclaratorNode.getName(), variableDeclaratorNode.getInitExpr());
     }
 
     @Override
-    public Node visitVariableDeclarators(MxParser.VariableDeclaratorsContext ctx) {
-        return null;
+    public VariableDeclaratorNode visitVariableDeclarator(MxParser.VariableDeclaratorContext ctx) {
+        VariableDeclaratorIdNode variableDeclaratorIdNode = visitVariableDeclaratorId(ctx.variableDeclaratorId());
+        ExprNode exprNode = visitVariableInitializer(ctx.variableInitializer());
+        return new VariableDeclaratorNode(variableDeclaratorIdNode.getName(), exprNode);
     }
 
     @Override
-    public Node visitVariableDeclarator(MxParser.VariableDeclaratorContext ctx) {
-        return null;
+    public VariableDeclaratorIdNode visitVariableDeclaratorId(MxParser.VariableDeclaratorIdContext ctx) {
+        return new VariableDeclaratorIdNode(ctx.Identifier().getText());
     }
 
     @Override
-    public Node visitVariableDeclaratorId(MxParser.VariableDeclaratorIdContext ctx) {
-        return null;
-    }
-
-    @Override
-    public Node visitVariableInitializer(MxParser.VariableInitializerContext ctx) {
-        return null;
+    public ExprNode visitVariableInitializer(MxParser.VariableInitializerContext ctx) {
+        return visitExpression(ctx.expression());
     }
 
     @Override
     public TypeNode visitPrimitiveType(MxParser.PrimitiveTypeContext ctx) {
-        return null;
+        Location location = getLocation(ctx);
+        TypeRef typeRef = null;
+        switch (ctx.getStart().getText()) {
+            case "bool": typeRef = new BooleanTypeRef(location); break;
+            case "int": typeRef = new IntegerTypeRef(location); break;
+            case "string": typeRef = new StringTypeRef(location); break;
+        }
+        return new TypeNode(typeRef);
     }
 
     @Override
     public TypeNode visitTypeSpec(MxParser.TypeSpecContext ctx) {
-        TypeRef baseType = null;
-        if (ctx.primitiveType() != null)
-            baseType = visitPrimitiveType(ctx.primitiveType()).getTypeRef();
-        else
-            baseType = visitClassType(ctx.classType()).getTypeRef();
+        if (ctx.baseTypeSpec() != null) {
+            return visitBaseTypeSpec(ctx.baseTypeSpec());
+        }
+        else {
+            TypeNode baseType = visitTypeSpec(ctx.typeSpec());
+            return new TypeNode(new ArrayTypeRef(baseType.getTypeRef()));
+        }
+    }
 
-        int
-
-        System.out.println (getLocation(ctx).getToken().getText() + " " + Integer.toString(ctx.getChildCount()));
-        return null;
+    @Override
+    public TypeNode visitBaseTypeSpec(MxParser.BaseTypeSpecContext ctx) {
+        if (ctx.primitiveType() != null) {
+            return visitPrimitiveType(ctx.primitiveType());
+        }
+        else {
+            return visitClassType(ctx.classType());
+        }
     }
 
     @Override
     public TypeNode visitClassType(MxParser.ClassTypeContext ctx) {
-        return null;
+        return new TypeNode(new UserTypeRef(getLocation(ctx.Identifier()), ctx.Identifier().getText()));
     }
 
     @Override
