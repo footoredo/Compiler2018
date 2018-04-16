@@ -173,12 +173,6 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(MxParser.StatementContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#forControl}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitForControl(MxParser.ForControlContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link MxParser#forInit}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

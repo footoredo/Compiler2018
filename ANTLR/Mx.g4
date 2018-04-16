@@ -176,7 +176,7 @@ blockStatement
 statement
   : block
   | 'if' '(' expression ')' statement ('else' statement)?
-  | 'for' '(' forControl ')' statement
+  | 'for' '(' forInit? ';' expression? ';' forUpdate? ')' statement
   | 'while' '(' expression ')' statement
   | 'return' expression? ';'
   | 'break' ';'
@@ -185,18 +185,12 @@ statement
   | expression ';'
   ;
 
-
-forControl
-  : forInit? ';' expression? ';' forUpdate?
-  ;
-
 forInit
-  : localVariableDeclaration
-  | expressionList
+  : expression
   ;
 
 forUpdate
-  : expressionList
+  : expression
   ;
 
 localVariableDeclarationStatement

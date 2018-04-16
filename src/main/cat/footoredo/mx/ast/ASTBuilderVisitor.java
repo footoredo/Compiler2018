@@ -300,42 +300,90 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public BlockNode visitBlock(MxParser.BlockContext ctx) {
-        return null;
+        BlockNode blockNode = new BlockNode(getLocation(ctx));
+        for (MxParser.BlockStatementContext blockStatementContext : ctx.blockStatement()) {
+            blockNode.addBlockStatement(visitBlockStatement(blockStatementContext));
+        }
+        return blockNode;
     }
 
     @Override
-    public Node visitBlockStatement(MxParser.BlockStatementContext ctx) {
-        return null;
+    public BlockStatementNode visitBlockStatement(MxParser.BlockStatementContext ctx) {
+        if (ctx.localVariableDeclarationStatement() != null) {
+            return visitLocalVariableDeclarationStatement(ctx.localVariableDeclarationStatement());
+        }
+        else {
+            return visitStatement(ctx.statement());
+        }
     }
 
     @Override
-    public Node visitStatement(MxParser.StatementContext ctx) {
-        return null;
+    public StatementNode visitStatement(MxParser.StatementContext ctx) {
+        Location location = getLocation(ctx);
+        if (ctx.block() != null) {                                          // block
+            return visitBlock(ctx.block());
+        }
+        else if (ctx.getChild(0) instanceof TerminalNode) {
+            String token = ctx.getChild(0).getText();
+            switch (token) {
+                case "if":
+                    ExprNode ifJudge = visitExpression(ctx.expression());
+                    StatementNode thenStatement = visitStatement(ctx.statement(0));
+                    if (ctx.statement().size() > 1) {
+                        StatementNode elseStatement = visitStatement(ctx.statement(1));
+                        return new IfNode(location, ifJudge, thenStatement, elseStatement);
+                    }
+                    else {
+                        return new IfNode(location, ifJudge, thenStatement);
+                    }
+                case "for":
+                    ExprNode forInit = ctx.forInit() == null ? null : visitForInit(ctx.forInit());
+                    ExprNode forJudge = ctx.expression() == null ? null : visitExpression(ctx.expression());
+                    ExprNode forUpdate = ctx.forUpdate() == null ? null : visitForUpdate(ctx.forUpdate());
+                    StatementNode forBody = visitStatement(ctx.statement(0));
+                    return new ForNode(location, forInit, forJudge, forUpdate, forBody);
+                case "while":
+                    ExprNode whileJudge = visitExpression(ctx.expression());
+                    StatementNode body = visitStatement(ctx.statement(0));
+                    return new WhileNode(location, whileJudge, body);
+                case "return":
+                    if (ctx.expression() == null)
+                        return new ReturnNode(location);
+                    else
+                        return new ReturnNode(location, visitExpression(ctx.expression()));
+                case "break":
+                    return new BreakNode(location);
+                case "continue":
+                    return new ContinueNode(location);
+                default:
+                    return new NullStatementNode(location);
+            }
+        }
+        else {                                                              // expression;
+            return new ExpressionStatementNode(visitExpression(ctx.expression()));
+        }
     }
 
     @Override
-    public Node visitForControl(MxParser.ForControlContext ctx) {
-        return null;
+    public ExprNode visitForInit(MxParser.ForInitContext ctx) {
+        return visitExpression(ctx.expression());
     }
 
     @Override
-    public Node visitForInit(MxParser.ForInitContext ctx) {
-        return null;
+    public ExprNode visitForUpdate(MxParser.ForUpdateContext ctx) {
+        return visitExpression(ctx.expression());
     }
 
     @Override
-    public Node visitForUpdate(MxParser.ForUpdateContext ctx) {
-        return null;
+    public LocalVariableDeclarationNode visitLocalVariableDeclarationStatement(MxParser.LocalVariableDeclarationStatementContext ctx) {
+        return visitLocalVariableDeclaration(ctx.localVariableDeclaration());
     }
 
     @Override
-    public Node visitLocalVariableDeclarationStatement(MxParser.LocalVariableDeclarationStatementContext ctx) {
-        return null;
-    }
-
-    @Override
-    public Node visitLocalVariableDeclaration(MxParser.LocalVariableDeclarationContext ctx) {
-        return null;
+    public LocalVariableDeclarationNode visitLocalVariableDeclaration(MxParser.LocalVariableDeclarationContext ctx) {
+        TypeNode typeNode = visitTypeSpec(ctx.typeSpec());
+        VariableDeclaratorNode variableDeclaratorNode = visitVariableDeclarator(ctx.variableDeclarator());
+        return new LocalVariableDeclarationNode(typeNode, variableDeclaratorNode.getName(), variableDeclaratorNode.getInitExpr());
     }
 
     @Override

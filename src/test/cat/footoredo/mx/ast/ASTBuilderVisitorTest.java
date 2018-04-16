@@ -53,4 +53,20 @@ public class ASTBuilderVisitorTest {
             System.out.println(e);
         }
     }
+
+    @Test
+    public void testBlockStatement() {
+        try {
+            CharStream input = CharStreams.fromFileName("example/test_block_statement.m");
+            MxLexer lexer = new MxLexer(input);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            MxParser parser = new MxParser(tokens);
+            // parser.setErrorHandler(new MxANTLRErrorStrategy());
+            parser.setErrorHandler(new DefaultErrorStrategy());
+            ASTBuilderVisitor astBuilderVisitor = new ASTBuilderVisitor();
+            AST ast = astBuilderVisitor.visitCompilationUnit(parser.compilationUnit());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
 }
