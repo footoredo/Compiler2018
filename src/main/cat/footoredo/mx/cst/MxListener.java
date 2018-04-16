@@ -58,15 +58,15 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitArrayCreator(MxParser.ArrayCreatorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxParser#arguements}.
+	 * Enter a parse tree produced by {@link MxParser#arguments}.
 	 * @param ctx the parse tree
 	 */
-	void enterArguements(MxParser.ArguementsContext ctx);
+	void enterArguments(MxParser.ArgumentsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxParser#arguements}.
+	 * Exit a parse tree produced by {@link MxParser#arguments}.
 	 * @param ctx the parse tree
 	 */
-	void exitArguements(MxParser.ArguementsContext ctx);
+	void exitArguments(MxParser.ArgumentsContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#primary}.
 	 * @param ctx the parse tree
@@ -218,15 +218,15 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitParameters(MxParser.ParametersContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxParser#parametersList}.
+	 * Enter a parse tree produced by {@link MxParser#parameterList}.
 	 * @param ctx the parse tree
 	 */
-	void enterParametersList(MxParser.ParametersListContext ctx);
+	void enterParameterList(MxParser.ParameterListContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxParser#parametersList}.
+	 * Exit a parse tree produced by {@link MxParser#parameterList}.
 	 * @param ctx the parse tree
 	 */
-	void exitParametersList(MxParser.ParametersListContext ctx);
+	void exitParameterList(MxParser.ParameterListContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#parameter}.
 	 * @param ctx the parse tree

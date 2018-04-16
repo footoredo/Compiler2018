@@ -76,13 +76,13 @@ public class MxBaseListener implements MxListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterArguements(MxParser.ArguementsContext ctx) { }
+	@Override public void enterArguments(MxParser.ArgumentsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitArguements(MxParser.ArguementsContext ctx) { }
+	@Override public void exitArguments(MxParser.ArgumentsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -268,13 +268,13 @@ public class MxBaseListener implements MxListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterParametersList(MxParser.ParametersListContext ctx) { }
+	@Override public void enterParameterList(MxParser.ParameterListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParametersList(MxParser.ParametersListContext ctx) { }
+	@Override public void exitParameterList(MxParser.ParameterListContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

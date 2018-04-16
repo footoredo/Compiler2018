@@ -32,7 +32,7 @@ expressionList
 
 creator
   : primitiveType
-  | classType arguements?
+  | classType arguments?
   | arrayCreator
   ;
 
@@ -40,7 +40,7 @@ arrayCreator
   : baseTypeSpec ('[' expression ']')* ('[' ']')*
   ;
 
-arguements
+arguments
   : '(' expressionList? ')'
   ;
 
@@ -149,10 +149,10 @@ methodDeclaration
   ;
 
 parameters
-  : '(' parametersList? ')'
+  : '(' parameterList? ')'
   ;
 
-parametersList
+parameterList
   : parameter (',' parameter)*
   ;
 

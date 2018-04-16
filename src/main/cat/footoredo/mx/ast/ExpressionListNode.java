@@ -2,23 +2,27 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExpressionListNode extends Node {
-    private Location location;
     private List<ExprNode> exprs;
 
-    public ExpressionListNode(Location location, List<ExprNode> exprs) {
+    public ExpressionListNode(List<ExprNode> exprs) {
         super ();
-        this.location = location;
         this.exprs = exprs;
+    }
+
+    public ExpressionListNode() {
+        super ();
+        this.exprs = new ArrayList<ExprNode>();
+    }
+
+    public void addExpression (ExprNode expr) {
+        exprs.add(expr);
     }
 
     public List<ExprNode> getExprs() {
         return exprs;
-    }
-
-    public Location getLocation() {
-        return location;
     }
 }

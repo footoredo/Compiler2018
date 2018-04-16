@@ -41,11 +41,11 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitArrayCreator(MxParser.ArrayCreatorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#arguements}.
+	 * Visit a parse tree produced by {@link MxParser#arguments}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArguements(MxParser.ArguementsContext ctx);
+	T visitArguments(MxParser.ArgumentsContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#primary}.
 	 * @param ctx the parse tree
@@ -137,11 +137,11 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitParameters(MxParser.ParametersContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#parametersList}.
+	 * Visit a parse tree produced by {@link MxParser#parameterList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitParametersList(MxParser.ParametersListContext ctx);
+	T visitParameterList(MxParser.ParameterListContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#parameter}.
 	 * @param ctx the parse tree

@@ -6,6 +6,7 @@ import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.type.*;
+import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.ParameterList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -95,11 +96,11 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public ExpressionListNode visitExpressionList(MxParser.ExpressionListContext ctx) {
-        List<ExprNode> exprs = new ArrayList<ExprNode>();
+        ExpressionListNode expressionListNode = new ExpressionListNode();
         for (MxParser.ExpressionContext expressionContext: ctx.expression()){
-            exprs.add(visitExpression(expressionContext));
+            expressionListNode.addExpression(visitExpression(expressionContext));
         }
-        return new ExpressionListNode(getLocation(ctx), exprs);
+        return expressionListNode;
     }
 
     @Override
@@ -113,11 +114,11 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         else {
             UserTypeRef userTypeRef = (UserTypeRef) visitClassType(ctx.classType()).getTypeRef();
             List<ExprNode> args = null;
-            if (ctx.arguements() == null) {
+            if (ctx.arguments() == null) {
                 args = new ArrayList<ExprNode>();
             }
             else {
-                args = visitArguements(ctx.arguements()).getExprs();
+                args = visitArguments(ctx.arguments()).getExprs();
             }
             return new CreatorNode(getLocation(ctx), userTypeRef, args);
         }
@@ -139,13 +140,12 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public ExpressionListNode visitArguements(MxParser.ArguementsContext ctx) {
+    public ExpressionListNode visitArguments(MxParser.ArgumentsContext ctx) {
         if (ctx.expressionList() != null) {
             return visitExpressionList(ctx.expressionList());
         }
         else {
-            List<ExprNode> exprs = new ArrayList<ExprNode>();
-            return new ExpressionListNode(getLocation(ctx), exprs);
+            return new ExpressionListNode();
         }
     }
 
@@ -261,22 +261,36 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             typeNode = visitTypeSpec(ctx.typeSpec());
         else
             typeNode = new TypeNode(new VoidTypeRef(getLocation(ctx)));
-        return null;
+        String name = ctx.Identifier().getText();
+        ParameterListNode parameterListNode = visitParameters(ctx.parameters());
+        BlockNode block = visitBlock(ctx.block());
+        return new MethodNode(typeNode, name, parameterListNode.getParameterNodes(), block);
     }
 
     @Override
-    public Node visitParameters(MxParser.ParametersContext ctx) {
-        return null;
+    public ParameterListNode visitParameters(MxParser.ParametersContext ctx) {
+        if (ctx.parameterList() != null) {
+            return visitParameterList(ctx.parameterList());
+        }
+        else {
+            return new ParameterListNode();
+        }
     }
 
     @Override
-    public Node visitParametersList(MxParser.ParametersListContext ctx) {
-        return null;
+    public ParameterListNode visitParameterList(MxParser.ParameterListContext ctx) {
+        ParameterListNode parameterListNode = new ParameterListNode();
+        for (MxParser.ParameterContext parameterContext : ctx.parameter()) {
+            parameterListNode.addParameterNode(visitParameter(parameterContext));
+        }
+        return parameterListNode;
     }
 
     @Override
-    public Node visitParameter(MxParser.ParameterContext ctx) {
-        return null;
+    public ParameterNode visitParameter(MxParser.ParameterContext ctx) {
+        TypeNode type = visitTypeSpec(ctx.typeSpec());
+        VariableDeclaratorIdNode variableDeclaratorIdNode = visitVariableDeclaratorId(ctx.variableDeclaratorId());
+        return new ParameterNode(type, variableDeclaratorIdNode.getName());
     }
 
     @Override
@@ -285,7 +299,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public Node visitBlock(MxParser.BlockContext ctx) {
+    public BlockNode visitBlock(MxParser.BlockContext ctx) {
         return null;
     }
 

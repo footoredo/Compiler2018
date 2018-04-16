@@ -1,6 +1,6 @@
 package cat.footoredo.mx.type;
 
-import cat.footoredo.mx.ast.ParamSlots;
+import cat.footoredo.mx.entity.ParamSlots;
 
 import java.util.List;
 
