@@ -6,4 +6,5 @@ abstract public class ExprNode extends Node {
     public String toString () {
         return "";
     }
+    abstract Location getLocation();
 }

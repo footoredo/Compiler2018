@@ -12,6 +12,9 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ASTBuilderVisitor implements MxVisitor <Node> {
     private static Location getLocation (TerminalNode node) {
         return new Location(node.getSymbol());
@@ -46,39 +49,104 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public ExprNode visitExpression(MxParser.ExpressionContext ctx) {
-        if (ctx.primary() != null)
+        Location location = getLocation(ctx);
+        if (ctx.primary() != null) {                                            // primary
             return visitPrimary(ctx.primary());
+        }
+        else if (ctx.Identifier() != null) {                                    // expression.Identifier
+            ExprNode expr = visitExpression(ctx.expression(0));
+            return new MemberNode(expr, ctx.Identifier().getText());
+        }
+        else if (ctx.creator() != null) {                                       // new creator
+            return new NewNode(location, visitCreator(ctx.creator()));
+        }
+        else if (ctx.getChildCount() == 2) {
+            ExprNode exprNode = visitExpression(ctx.expression(0));
+            if (ctx.getChild(0) instanceof TerminalNode) {                    // prefix unary expression
+                return new UnaryOpNode(location, ctx.getChild(0).getText(), exprNode, true);
+            }
+            else {                                                              // suffix unary expression
+                return new UnaryOpNode(location, ctx.getChild(1).getText(), exprNode, false);
+            }
+        }
+        else if (ctx.getChildCount() == 3) {
+            if (ctx.getChild(0) instanceof TerminalNode) {                    // ( expression )
+                return visitExpression(ctx.expression(0));
+            }
+            else {                                                              // binary expression
+                ExprNode lhs = visitExpression(ctx.expression(0)),
+                        rhs = visitExpression(ctx.expression(1));
+                if (ctx.getChild(1).getText().equals("=")) {                  // assign
+                    return new AssignNode(lhs, rhs);
+                }
+                else {                                                          // binary op expression
+                    String operator = ctx.getChild(1).getText();
+                    if (operator.equals("&&") || operator.equals("||"))
+                        return new LogicalOpNode(lhs, operator, rhs);
+                    else
+                        return new BinaryOpNode(lhs, operator, rhs);
+                }
+            }
+        }
+        else {
+        }
         return null;
     }
 
     @Override
-    public Node visitExpressionList(MxParser.ExpressionListContext ctx) {
-        return null;
+    public ExpressionListNode visitExpressionList(MxParser.ExpressionListContext ctx) {
+        List<ExprNode> exprs = new ArrayList<ExprNode>();
+        for (MxParser.ExpressionContext expressionContext: ctx.expression()){
+            exprs.add(visitExpression(expressionContext));
+        }
+        return new ExpressionListNode(getLocation(ctx), exprs);
     }
 
     @Override
-    public Node visitCreator(MxParser.CreatorContext ctx) {
-        return null;
+    public CreatorNode visitCreator(MxParser.CreatorContext ctx) {
+        if (ctx.primitiveType() != null) {
+            return new CreatorNode(getLocation(ctx), visitPrimitiveType(ctx.primitiveType()).getTypeRef());
+        }
+        else if (ctx.arrayCreator() != null) {
+            return visitArrayCreator(ctx.arrayCreator());
+        }
+        else {
+            UserTypeRef userTypeRef = (UserTypeRef) visitClassType(ctx.classType()).getTypeRef();
+            List<ExprNode> args = null;
+            if (ctx.arguements() == null) {
+                args = new ArrayList<ExprNode>();
+            }
+            else {
+                args = visitArguements(ctx.arguements()).getExprs();
+            }
+            return new CreatorNode(getLocation(ctx), userTypeRef, args);
+        }
     }
 
     @Override
-    public Node visitCreatedName(MxParser.CreatedNameContext ctx) {
-        return null;
+    public CreatorNode visitArrayCreator(MxParser.ArrayCreatorContext ctx) {
+        TypeRef baseTypeRef = visitBaseTypeSpec(ctx.baseTypeSpec()).getTypeRef();
+        int specifiedDimensionCount = ctx.expression().size();
+        int totalDimensionCount = (ctx.getChildCount() - 1 - specifiedDimensionCount) / 2;
+        ArrayTypeRef arrayTypeRef = new ArrayTypeRef(baseTypeRef);
+        for (int i = 1; i < totalDimensionCount; ++ i)
+            arrayTypeRef = new ArrayTypeRef(arrayTypeRef);
+        List<ExprNode> length = new ArrayList<ExprNode>();
+        for (MxParser.ExpressionContext expressionContext : ctx.expression()) {
+            length.add(visitExpression(expressionContext));
+        }
+        return new CreatorNode(getLocation(ctx), arrayTypeRef, length);
     }
 
     @Override
-    public Node visitArrayCreatorRest(MxParser.ArrayCreatorRestContext ctx) {
-        return null;
-    }
-
-    @Override
-    public Node visitClassCreatorRest(MxParser.ClassCreatorRestContext ctx) {
-        return null;
-    }
-
-    @Override
-    public Node visitArguements(MxParser.ArguementsContext ctx) {
-        return null;
+    public ExpressionListNode visitArguements(MxParser.ArguementsContext ctx) {
+        if (ctx.expressionList() != null) {
+            return visitExpressionList(ctx.expressionList());
+        }
+        else {
+            List<ExprNode> exprs = new ArrayList<ExprNode>();
+            return new ExpressionListNode(getLocation(ctx), exprs);
+        }
     }
 
     @Override

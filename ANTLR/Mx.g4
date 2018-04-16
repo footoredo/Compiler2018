@@ -10,13 +10,12 @@ expression
   | expression '[' expression ']'
   | expression '(' expressionList? ')'
   | 'new' creator
-  | '(' typeSpec ')' expression
+  | '(' expression ')'
   | expression ('++' | '--')
   | ('+'|'-'|'++'|'--') expression
   | ('~'|'!') expression
   | expression ('*'|'/'|'%') expression
   | expression ('+'|'-') expression
-  | expression ('<' '<' | '>' '>' '>' | '>' '>') expression
   | expression ('<=' | '>=' | '>' | '<') expression
   | expression ('==' | '!=') expression
   | expression '&' expression
@@ -32,20 +31,13 @@ expressionList
   ;
 
 creator
-  : createdName (arrayCreatorRest | classCreatorRest)
-  ;
-
-createdName
   : primitiveType
-  | Identifier ('.' Identifier)*
+  | classType arguements?
+  | arrayCreator
   ;
 
-arrayCreatorRest
-  : ('[' expression ']')+ ('[' ']')*
-  ;
-
-classCreatorRest
-  : arguements
+arrayCreator
+  : baseTypeSpec ('[' expression ']')* ('[' ']')*
   ;
 
 arguements

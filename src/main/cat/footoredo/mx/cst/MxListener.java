@@ -48,35 +48,15 @@ public interface MxListener extends ParseTreeListener {
 	 */
 	void exitCreator(MxParser.CreatorContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link MxParser#createdName}.
+	 * Enter a parse tree produced by {@link MxParser#arrayCreator}.
 	 * @param ctx the parse tree
 	 */
-	void enterCreatedName(MxParser.CreatedNameContext ctx);
+	void enterArrayCreator(MxParser.ArrayCreatorContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link MxParser#createdName}.
+	 * Exit a parse tree produced by {@link MxParser#arrayCreator}.
 	 * @param ctx the parse tree
 	 */
-	void exitCreatedName(MxParser.CreatedNameContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#arrayCreatorRest}.
-	 * @param ctx the parse tree
-	 */
-	void enterArrayCreatorRest(MxParser.ArrayCreatorRestContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#arrayCreatorRest}.
-	 * @param ctx the parse tree
-	 */
-	void exitArrayCreatorRest(MxParser.ArrayCreatorRestContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link MxParser#classCreatorRest}.
-	 * @param ctx the parse tree
-	 */
-	void enterClassCreatorRest(MxParser.ClassCreatorRestContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link MxParser#classCreatorRest}.
-	 * @param ctx the parse tree
-	 */
-	void exitClassCreatorRest(MxParser.ClassCreatorRestContext ctx);
+	void exitArrayCreator(MxParser.ArrayCreatorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#arguements}.
 	 * @param ctx the parse tree

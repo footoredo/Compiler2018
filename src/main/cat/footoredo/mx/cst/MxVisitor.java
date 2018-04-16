@@ -35,23 +35,11 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCreator(MxParser.CreatorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link MxParser#createdName}.
+	 * Visit a parse tree produced by {@link MxParser#arrayCreator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCreatedName(MxParser.CreatedNameContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#arrayCreatorRest}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitArrayCreatorRest(MxParser.ArrayCreatorRestContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link MxParser#classCreatorRest}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitClassCreatorRest(MxParser.ClassCreatorRestContext ctx);
+	T visitArrayCreator(MxParser.ArrayCreatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#arguements}.
 	 * @param ctx the parse tree

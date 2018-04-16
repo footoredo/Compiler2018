@@ -64,37 +64,13 @@ public class MxBaseListener implements MxListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterCreatedName(MxParser.CreatedNameContext ctx) { }
+	@Override public void enterArrayCreator(MxParser.ArrayCreatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitCreatedName(MxParser.CreatedNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArrayCreatorRest(MxParser.ArrayCreatorRestContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArrayCreatorRest(MxParser.ArrayCreatorRestContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterClassCreatorRest(MxParser.ClassCreatorRestContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitClassCreatorRest(MxParser.ClassCreatorRestContext ctx) { }
+	@Override public void exitArrayCreator(MxParser.ArrayCreatorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
