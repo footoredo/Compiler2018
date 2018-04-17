@@ -11,9 +11,6 @@ abstract public class Entity {
         this.name = name;
     }
 
-    public Entity () {
-    }
-
     public String getName() {
         return name;
     }

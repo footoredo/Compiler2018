@@ -15,7 +15,7 @@ public class VariableDeclarationNode extends Node {
         this.name = name;
         this.initExpr = initExpr;
 
-        System.out.println ("Variable declaration: " + typeNode.toString() + " " + name + " = " + initExpr.toString() + " @ " + location.toString());
+        // System.out.println ("Variable declaration: " + typeNode.toString() + " " + name + " = " + initExpr.toString() + " @ " + location.toString());
     }
 
     public VariableDeclarationNode(TypeNode typeNode, String name) {

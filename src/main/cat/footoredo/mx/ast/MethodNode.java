@@ -11,6 +11,7 @@ public class MethodNode extends Node {
     protected String name;
     protected Params params;
     protected BlockNode block;
+    protected Location location;
 
     public MethodNode (TypeNode type, String name, List<ParameterNode> parameterNodes, BlockNode block) {
         super ();
@@ -22,9 +23,26 @@ public class MethodNode extends Node {
             Parameter parameter = new Parameter(parameterNode);
             this.params.addParamDescriptor(parameter);
         }
+        this.location = type.getLocation();
 
-        System.out.println( "new function " + name + " with " + Integer.toString(parameterNodes.size()) +
-                " params and return type " + type.toString() + " @ " + type.getLocation().toString() );
+        // System.out.println( "new function " + name + " with " + Integer.toString(parameterNodes.size()) +
+        //        " params and return type " + type.toString() + " @ " + type.getLocation().toString() );
+    }
+
+    public MethodNode (Location location, String name, List<ParameterNode> parameterNodes, BlockNode block) {
+        super ();
+        this.location = location;
+        this.type = null;
+        this.name = name;
+        this.block = block;
+        this.params = new Params();
+        for (ParameterNode parameterNode: parameterNodes) {
+            Parameter parameter = new Parameter(parameterNode);
+            this.params.addParamDescriptor(parameter);
+        }
+
+        // System.out.println( "new function " + name + " with " + Integer.toString(parameterNodes.size()) +
+        //        " params and return type " + type.toString() + " @ " + type.getLocation().toString() );
     }
 
     public TypeNode getType() {
@@ -44,6 +62,6 @@ public class MethodNode extends Node {
     }
 
     public Location getLocation () {
-        return type.getLocation();
+        return location;
     }
 }

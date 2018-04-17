@@ -94,7 +94,7 @@ variableDeclaration
   ;
 
 variableDeclarator
-  : variableDeclaratorId '=' variableInitializer
+  : variableDeclaratorId ('=' variableInitializer)?
   ;
 
 variableDeclaratorId

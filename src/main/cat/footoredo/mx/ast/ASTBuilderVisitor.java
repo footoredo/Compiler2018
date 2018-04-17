@@ -5,6 +5,7 @@ import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.exception.SemanticError;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -196,7 +197,10 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     @Override
     public VariableDeclaratorNode visitVariableDeclarator(MxParser.VariableDeclaratorContext ctx) {
         VariableDeclaratorIdNode variableDeclaratorIdNode = visitVariableDeclaratorId(ctx.variableDeclaratorId());
-        ExpressionNode expressionNode = visitVariableInitializer(ctx.variableInitializer());
+        // if (ctx.variableInitializer() == null) throw new SemanticError(getLocation(ctx), "sss");
+        // System.out.println("asdasd");
+        ExpressionNode expressionNode =
+                ctx.variableInitializer() == null ? null : visitVariableInitializer(ctx.variableInitializer());
         return new VariableDeclaratorNode(variableDeclaratorIdNode.getName(), expressionNode);
     }
 
@@ -250,17 +254,34 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public ClassNode visitClassDeclaration(MxParser.ClassDeclarationContext ctx) {
-        return null;
+        Location location = getLocation(ctx);
+        String name = ctx.Identifier().getText();
+        ClassBodyNode body = visitClassBody(ctx.classBody());
+        return new ClassNode(location, name, body);
     }
 
     @Override
-    public Node visitClassBody(MxParser.ClassBodyContext ctx) {
-        return null;
+    public ClassBodyNode visitClassBody(MxParser.ClassBodyContext ctx) {
+        ClassBodyNode classBodyNode = new ClassBodyNode();
+        for (MxParser.MemberDeclarationContext memberDeclarationContext : ctx.memberDeclaration()) {
+            classBodyNode.addMemberDeclarationNode(visitMemberDeclaration(memberDeclarationContext));
+        }
+        return classBodyNode;
     }
 
     @Override
-    public Node visitMemberDeclaration(MxParser.MemberDeclarationContext ctx) {
-        return null;
+    public MemberDeclarationNode visitMemberDeclaration(MxParser.MemberDeclarationContext ctx) {
+        if (ctx.constructorDeclaration() != null) {
+            // System.out.println("Asdas");
+            return new ConstructorDeclarationNode(visitConstructorDeclaration(ctx.constructorDeclaration()));
+        }
+        else if (ctx.methodDeclaration() != null) {
+            return new MemberMethodDeclarationNode(visitMethodDeclaration(ctx.methodDeclaration()));
+        }
+        else if (ctx.variableDeclaration() != null) {
+            return new MemberVariableDeclarationNode(visitVariableDeclaration(ctx.variableDeclaration()));
+        }
+        else return null;
     }
 
     @Override
@@ -303,8 +324,11 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public Node visitConstructorDeclaration(MxParser.ConstructorDeclarationContext ctx) {
-        return null;
+    public ConstructorNode visitConstructorDeclaration(MxParser.ConstructorDeclarationContext ctx) {
+        String name = ctx.Identifier().getText();
+        ParameterListNode parameterListNode = visitParameters(ctx.parameters());
+        BlockNode block = visitBlock(ctx.block());
+        return new ConstructorNode(getLocation(ctx), name, parameterListNode.getParameterNodes(), block);
     }
 
     @Override

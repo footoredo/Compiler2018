@@ -1,15 +1,24 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.ast.BlockNode;
 import cat.footoredo.mx.ast.MethodNode;
+import cat.footoredo.mx.ast.TypeNode;
 
 public class Function extends Entity {
-    MethodNode methodNode;
+    protected Params params;
+    protected BlockNode block;
     public Function (MethodNode methodNode) {
-        super ();
-        this.methodNode = methodNode;
+        super (methodNode.getType(), methodNode.getName());
+        this.params = methodNode.getParams();
+        this.block = methodNode.getBlock();
+
     }
 
-    public MethodNode getMethodNode() {
-        return methodNode;
+    public Params getParams() {
+        return params;
+    }
+
+    public BlockNode getBlock() {
+        return block;
     }
 }

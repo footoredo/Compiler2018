@@ -9,10 +9,14 @@ public abstract class ParamSlots<T> {
     public ParamSlots (List <T> paramDescriptors) {
         this.paramDescriptors = paramDescriptors;
     }
-    public ParamSlots () { this.paramDescriptors = new ArrayList<T>(); }
+    public ParamSlots () { this.paramDescriptors = new ArrayList<>(); }
 
     public void addParamDescriptor (T paramDescriptor) {
         this.paramDescriptors.add (paramDescriptor);
+    }
+
+    public List<T> getParamDescriptors() {
+        return paramDescriptors;
     }
 
     public int size () {

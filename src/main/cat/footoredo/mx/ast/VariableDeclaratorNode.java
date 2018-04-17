@@ -8,6 +8,7 @@ public class VariableDeclaratorNode extends Node {
         super ();
         this.name = name;
         this.initExpr = initExpr;
+        // System.out.println("ass");
     }
 
     public String getName() {
