@@ -2,13 +2,13 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
 
-public class UnaryOpNode extends ExprNode {
+public class UnaryOpNode extends ExpressionNode {
     private Location location;
     private String operator;
-    private ExprNode expr;
+    private ExpressionNode expr;
     private boolean opFront;
 
-    public UnaryOpNode (Location location, String operator, ExprNode expr, boolean opFront) {
+    public UnaryOpNode (Location location, String operator, ExpressionNode expr, boolean opFront) {
         super ();
         this.location = location;
         this.operator = operator;
@@ -20,7 +20,7 @@ public class UnaryOpNode extends ExprNode {
         return operator;
     }
 
-    public ExprNode getExpr() {
+    public ExpressionNode getExpr() {
         return expr;
     }
 

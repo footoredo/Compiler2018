@@ -2,10 +2,10 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
 
-public class AssignNode extends ExprNode {
-    protected ExprNode lhs, rhs;
+public class AssignNode extends ExpressionNode {
+    protected ExpressionNode lhs, rhs;
 
-    public AssignNode (ExprNode lhs, ExprNode rhs) {
+    public AssignNode (ExpressionNode lhs, ExpressionNode rhs) {
         super ();
         this.lhs = lhs;
         this.rhs = rhs;
@@ -16,11 +16,11 @@ public class AssignNode extends ExprNode {
         return lhs.getLocation();
     }
 
-    public ExprNode getLhs() {
+    public ExpressionNode getLhs() {
         return lhs;
     }
 
-    public ExprNode getRhs() {
+    public ExpressionNode getRhs() {
         return rhs;
     }
 }

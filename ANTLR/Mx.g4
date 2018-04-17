@@ -57,12 +57,7 @@ literal
   ;
 
 IntLiteral
-  : Sign? Digits
-  ;
-
-fragment
-Sign
-  : '+' | '-'
+  : Digits
   ;
 
 fragment

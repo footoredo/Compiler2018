@@ -2,9 +2,9 @@ package cat.footoredo.mx.ast;
 
 public class VariableDeclaratorNode extends Node {
     private String name;
-    private ExprNode initExpr;
+    private ExpressionNode initExpr;
 
-    public VariableDeclaratorNode(String name, ExprNode initExpr) {
+    public VariableDeclaratorNode(String name, ExpressionNode initExpr) {
         super ();
         this.name = name;
         this.initExpr = initExpr;
@@ -14,7 +14,7 @@ public class VariableDeclaratorNode extends Node {
         return name;
     }
 
-    public ExprNode getInitExpr() {
+    public ExpressionNode getInitExpr() {
         return initExpr;
     }
 }

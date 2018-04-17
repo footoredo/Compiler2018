@@ -4,11 +4,11 @@ import cat.footoredo.mx.entity.Location;
 
 public class IfNode extends StatementNode {
     protected Location location;
-    private ExprNode judge;
+    private ExpressionNode judge;
     private StatementNode thenStatement;
     private StatementNode elseStatement;
 
-    IfNode(Location location, ExprNode judge, StatementNode thenStatement) {
+    IfNode(Location location, ExpressionNode judge, StatementNode thenStatement) {
         super ();
         this.location = location;
         this.judge = judge;
@@ -16,7 +16,7 @@ public class IfNode extends StatementNode {
         this.elseStatement = null;
     }
 
-    IfNode(Location location, ExprNode judge, StatementNode thenStatement, StatementNode elseStatement) {
+    IfNode(Location location, ExpressionNode judge, StatementNode thenStatement, StatementNode elseStatement) {
         super ();
         this.location = location;
         this.judge = judge;
@@ -30,7 +30,7 @@ public class IfNode extends StatementNode {
         return location;
     }
 
-    public ExprNode getJudge() {
+    public ExpressionNode getJudge() {
         return judge;
     }
 

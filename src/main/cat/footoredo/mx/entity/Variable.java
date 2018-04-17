@@ -1,12 +1,11 @@
 package cat.footoredo.mx.entity;
 
-import cat.footoredo.mx.ast.ExprNode;
+import cat.footoredo.mx.ast.ExpressionNode;
 import cat.footoredo.mx.ast.TypeNode;
 import cat.footoredo.mx.ast.VariableDeclarationNode;
-import cat.footoredo.mx.type.VoidTypeRef;
 
 public class Variable extends Entity {
-    protected ExprNode initializer;
+    protected ExpressionNode initializer;
     protected TypeNode type;
     protected String name;
 
@@ -23,7 +22,7 @@ public class Variable extends Entity {
         this.initializer = null;
     }
 
-    public ExprNode getInitializer() {
+    public ExpressionNode getInitializer() {
         return initializer;
     }
 

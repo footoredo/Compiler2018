@@ -1,15 +1,14 @@
 package cat.footoredo.mx.ast;
 
-import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.Location;
 
 public class VariableDeclarationNode extends Node {
     private Location location;
     private TypeNode typeNode;
     private String name;
-    private ExprNode initExpr;
+    private ExpressionNode initExpr;
 
-    public VariableDeclarationNode(TypeNode typeNode, String name, ExprNode initExpr) {
+    public VariableDeclarationNode(TypeNode typeNode, String name, ExpressionNode initExpr) {
         super ();
         this.typeNode = typeNode;
         this.location = typeNode.getLocation();
@@ -39,7 +38,7 @@ public class VariableDeclarationNode extends Node {
         return name;
     }
 
-    public ExprNode getInitExpr() {
+    public ExpressionNode getInitExpr() {
         return initExpr;
     }
 }

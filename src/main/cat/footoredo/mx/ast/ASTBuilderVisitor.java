@@ -6,7 +6,6 @@ import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.type.*;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.internet.ParameterList;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -49,25 +48,30 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public ExprNode visitExpression(MxParser.ExpressionContext ctx) {
+    public ExpressionNode visitExpression(MxParser.ExpressionContext ctx) {
         Location location = getLocation(ctx);
         if (ctx.primary() != null) {                                            // primary
             return visitPrimary(ctx.primary());
         }
         else if (ctx.Identifier() != null) {                                    // expression.Identifier
-            ExprNode expr = visitExpression(ctx.expression(0));
+            ExpressionNode expr = visitExpression(ctx.expression(0));
             return new MemberNode(expr, ctx.Identifier().getText());
         }
         else if (ctx.creator() != null) {                                       // new creator
             return new NewNode(location, visitCreator(ctx.creator()));
         }
+        else if (ctx.expressionList() != null) {                                // expression (...)
+            ExpressionNode caller = visitExpression(ctx.expression(0));
+            ExpressionListNode expressionListNode = visitExpressionList(ctx.expressionList());
+            return new FuncallNode(caller, expressionListNode.getExprs());
+        }
         else if (ctx.getChildCount() == 2) {
-            ExprNode exprNode = visitExpression(ctx.expression(0));
+            ExpressionNode expressionNode = visitExpression(ctx.expression(0));
             if (ctx.getChild(0) instanceof TerminalNode) {                    // prefix unary expression
-                return new UnaryOpNode(location, ctx.getChild(0).getText(), exprNode, true);
+                return new UnaryOpNode(location, ctx.getChild(0).getText(), expressionNode, true);
             }
             else {                                                              // suffix unary expression
-                return new UnaryOpNode(location, ctx.getChild(1).getText(), exprNode, false);
+                return new UnaryOpNode(location, ctx.getChild(1).getText(), expressionNode, false);
             }
         }
         else if (ctx.getChildCount() == 3) {
@@ -75,7 +79,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                 return visitExpression(ctx.expression(0));
             }
             else {                                                              // binary expression
-                ExprNode lhs = visitExpression(ctx.expression(0)),
+                ExpressionNode lhs = visitExpression(ctx.expression(0)),
                         rhs = visitExpression(ctx.expression(1));
                 if (ctx.getChild(1).getText().equals("=")) {                  // assign
                     return new AssignNode(lhs, rhs);
@@ -89,9 +93,14 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                 }
             }
         }
-        else {
+        else if (ctx.getChildCount() == 4) {                                    // expression [index]
+            ExpressionNode expr = visitExpression(ctx.expression(0));
+            ExpressionNode index = visitExpression(ctx.expression(1));
+            return new ArefNode(expr, index);
         }
-        return null;
+        else {
+            return null;
+        }
     }
 
     @Override
@@ -113,9 +122,9 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         }
         else {
             UserTypeRef userTypeRef = (UserTypeRef) visitClassType(ctx.classType()).getTypeRef();
-            List<ExprNode> args = null;
+            List<ExpressionNode> args = null;
             if (ctx.arguments() == null) {
-                args = new ArrayList<ExprNode>();
+                args = new ArrayList<ExpressionNode>();
             }
             else {
                 args = visitArguments(ctx.arguments()).getExprs();
@@ -132,7 +141,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         ArrayTypeRef arrayTypeRef = new ArrayTypeRef(baseTypeRef);
         for (int i = 1; i < totalDimensionCount; ++ i)
             arrayTypeRef = new ArrayTypeRef(arrayTypeRef);
-        List<ExprNode> length = new ArrayList<ExprNode>();
+        List<ExpressionNode> length = new ArrayList<ExpressionNode>();
         for (MxParser.ExpressionContext expressionContext : ctx.expression()) {
             length.add(visitExpression(expressionContext));
         }
@@ -150,7 +159,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public ExprNode visitPrimary(MxParser.PrimaryContext ctx) {
+    public ExpressionNode visitPrimary(MxParser.PrimaryContext ctx) {
         if (ctx.Identifier() != null)
             return new VariableNode(getLocation(ctx.Identifier()), ctx.Identifier().getText());
         else
@@ -187,8 +196,8 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     @Override
     public VariableDeclaratorNode visitVariableDeclarator(MxParser.VariableDeclaratorContext ctx) {
         VariableDeclaratorIdNode variableDeclaratorIdNode = visitVariableDeclaratorId(ctx.variableDeclaratorId());
-        ExprNode exprNode = visitVariableInitializer(ctx.variableInitializer());
-        return new VariableDeclaratorNode(variableDeclaratorIdNode.getName(), exprNode);
+        ExpressionNode expressionNode = visitVariableInitializer(ctx.variableInitializer());
+        return new VariableDeclaratorNode(variableDeclaratorIdNode.getName(), expressionNode);
     }
 
     @Override
@@ -197,7 +206,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public ExprNode visitVariableInitializer(MxParser.VariableInitializerContext ctx) {
+    public ExpressionNode visitVariableInitializer(MxParser.VariableInitializerContext ctx) {
         return visitExpression(ctx.expression());
     }
 
@@ -327,7 +336,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             String token = ctx.getChild(0).getText();
             switch (token) {
                 case "if":
-                    ExprNode ifJudge = visitExpression(ctx.expression());
+                    ExpressionNode ifJudge = visitExpression(ctx.expression());
                     StatementNode thenStatement = visitStatement(ctx.statement(0));
                     if (ctx.statement().size() > 1) {
                         StatementNode elseStatement = visitStatement(ctx.statement(1));
@@ -337,13 +346,13 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                         return new IfNode(location, ifJudge, thenStatement);
                     }
                 case "for":
-                    ExprNode forInit = ctx.forInit() == null ? null : visitForInit(ctx.forInit());
-                    ExprNode forJudge = ctx.expression() == null ? null : visitExpression(ctx.expression());
-                    ExprNode forUpdate = ctx.forUpdate() == null ? null : visitForUpdate(ctx.forUpdate());
+                    ExpressionNode forInit = ctx.forInit() == null ? null : visitForInit(ctx.forInit());
+                    ExpressionNode forJudge = ctx.expression() == null ? null : visitExpression(ctx.expression());
+                    ExpressionNode forUpdate = ctx.forUpdate() == null ? null : visitForUpdate(ctx.forUpdate());
                     StatementNode forBody = visitStatement(ctx.statement(0));
                     return new ForNode(location, forInit, forJudge, forUpdate, forBody);
                 case "while":
-                    ExprNode whileJudge = visitExpression(ctx.expression());
+                    ExpressionNode whileJudge = visitExpression(ctx.expression());
                     StatementNode body = visitStatement(ctx.statement(0));
                     return new WhileNode(location, whileJudge, body);
                 case "return":
@@ -365,12 +374,12 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     }
 
     @Override
-    public ExprNode visitForInit(MxParser.ForInitContext ctx) {
+    public ExpressionNode visitForInit(MxParser.ForInitContext ctx) {
         return visitExpression(ctx.expression());
     }
 
     @Override
-    public ExprNode visitForUpdate(MxParser.ForUpdateContext ctx) {
+    public ExpressionNode visitForUpdate(MxParser.ForUpdateContext ctx) {
         return visitExpression(ctx.expression());
     }
 

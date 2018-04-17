@@ -5,9 +5,9 @@ import cat.footoredo.mx.entity.Location;
 public class LocalVariableDeclarationNode extends BlockStatementNode {
     private TypeNode typeNode;
     private String name;
-    private ExprNode initExpr;
+    private ExpressionNode initExpr;
 
-    LocalVariableDeclarationNode(TypeNode typeNode, String name, ExprNode initExpr) {
+    LocalVariableDeclarationNode(TypeNode typeNode, String name, ExpressionNode initExpr) {
         super ();
         this.typeNode = typeNode;
         this.name = name;
@@ -28,7 +28,7 @@ public class LocalVariableDeclarationNode extends BlockStatementNode {
         return name;
     }
 
-    public ExprNode getInitExpr() {
+    public ExpressionNode getInitExpr() {
         return initExpr;
     }
 }

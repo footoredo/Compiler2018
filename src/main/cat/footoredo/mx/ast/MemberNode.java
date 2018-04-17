@@ -3,10 +3,10 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.entity.Location;
 
 public class MemberNode extends LHSNode {
-    protected ExprNode expr;
+    protected ExpressionNode expr;
     protected String name;
 
-    public MemberNode (ExprNode expr, String name) {
+    public MemberNode (ExpressionNode expr, String name) {
         super ();
         this.expr = expr;
         this.name = name;
@@ -16,7 +16,7 @@ public class MemberNode extends LHSNode {
         return name;
     }
 
-    public ExprNode getExpr() {
+    public ExpressionNode getExpr() {
         return expr;
     }
 

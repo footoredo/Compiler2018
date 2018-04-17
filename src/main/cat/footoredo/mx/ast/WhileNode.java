@@ -4,10 +4,10 @@ import cat.footoredo.mx.entity.Location;
 
 public class WhileNode extends StatementNode {
     private Location location;
-    private ExprNode judge;
+    private ExpressionNode judge;
     private StatementNode body;
 
-    public WhileNode(Location location, ExprNode judge, StatementNode body) {
+    public WhileNode(Location location, ExpressionNode judge, StatementNode body) {
         super ();
         this.location = location;
         this.judge = judge;
@@ -18,7 +18,7 @@ public class WhileNode extends StatementNode {
         return location;
     }
 
-    public ExprNode getJudge() {
+    public ExpressionNode getJudge() {
         return judge;
     }
 

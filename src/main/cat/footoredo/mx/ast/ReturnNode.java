@@ -4,9 +4,9 @@ import cat.footoredo.mx.entity.Location;
 
 public class ReturnNode extends StatementNode {
     private Location location;
-    private ExprNode expr;
+    private ExpressionNode expr;
 
-    ReturnNode(Location location, ExprNode expr) {
+    ReturnNode(Location location, ExpressionNode expr) {
         super ();
         this.location = location;
         this.expr = expr;
@@ -22,7 +22,7 @@ public class ReturnNode extends StatementNode {
         return location;
     }
 
-    public ExprNode getExpr() {
+    public ExpressionNode getExpr() {
         return expr;
     }
 }

@@ -7,11 +7,11 @@ import cat.footoredo.mx.type.UserTypeRef;
 
 import java.util.List;
 
-public class CreatorNode extends ExprNode {
+public class CreatorNode extends ExpressionNode {
     protected Location location;
     protected TypeNode type;
-    protected List<ExprNode> length;
-    protected List<ExprNode> args;
+    protected List<ExpressionNode> length;
+    protected List<ExpressionNode> args;
 
     public CreatorNode (Location location, TypeRef typeRef) {
         super ();
@@ -21,7 +21,7 @@ public class CreatorNode extends ExprNode {
         this.args = null;
     }
 
-    public CreatorNode (Location location, ArrayTypeRef arrayTypeRef, List<ExprNode> length) {
+    public CreatorNode (Location location, ArrayTypeRef arrayTypeRef, List<ExpressionNode> length) {
         super ();
         this.location = location;
         this.type = new TypeNode(arrayTypeRef);
@@ -30,7 +30,7 @@ public class CreatorNode extends ExprNode {
         System.out.println ("new " + type.toString() + " (" + Integer.toString(length.size ()) + " dim known) @ " + location.toString());
     }
 
-    public CreatorNode(Location location, UserTypeRef userTypeRef, List<ExprNode> args) {
+    public CreatorNode(Location location, UserTypeRef userTypeRef, List<ExpressionNode> args) {
         super ();
         this.location = location;
         this.type = new TypeNode(userTypeRef);
@@ -43,11 +43,11 @@ public class CreatorNode extends ExprNode {
         return location;
     }
 
-    public List<ExprNode> getArgs() {
+    public List<ExpressionNode> getArgs() {
         return args;
     }
 
-    public List<ExprNode> getLength() {
+    public List<ExpressionNode> getLength() {
         return length;
     }
 

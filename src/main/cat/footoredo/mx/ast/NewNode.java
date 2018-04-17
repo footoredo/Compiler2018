@@ -4,7 +4,7 @@ import cat.footoredo.mx.entity.Location;
 
 import java.util.List;
 
-public class NewNode extends ExprNode {
+public class NewNode extends ExpressionNode {
     protected Location location;
     protected CreatorNode creator;
 
@@ -27,11 +27,11 @@ public class NewNode extends ExprNode {
         return creator.getType();
     }
 
-    public List<ExprNode> getLength () {
+    public List<ExpressionNode> getLength () {
         return creator.getLength();
     }
 
-    public List<ExprNode> getArgs () {
+    public List<ExpressionNode> getArgs () {
         return creator.getArgs();
     }
 }

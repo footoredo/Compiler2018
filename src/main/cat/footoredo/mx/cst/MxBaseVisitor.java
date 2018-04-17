@@ -1,4 +1,5 @@
 package cat.footoredo.mx.cst;
+
 // Generated from Mx.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 

@@ -3,7 +3,7 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.TypeRef;
 
-public class LiteralNode extends ExprNode {
+public class LiteralNode extends ExpressionNode {
     protected Location location;
     protected TypeNode typeNode;
 

@@ -4,10 +4,10 @@ import cat.footoredo.mx.entity.Location;
 
 public class ForNode extends StatementNode {
     protected Location location;
-    private ExprNode init, judge, update;
+    private ExpressionNode init, judge, update;
     private StatementNode body;
 
-    ForNode (Location location, ExprNode init, ExprNode judge, ExprNode update, StatementNode body) {
+    ForNode (Location location, ExpressionNode init, ExpressionNode judge, ExpressionNode update, StatementNode body) {
         super ();
         this.location = location;
         this.init = init;
@@ -22,15 +22,15 @@ public class ForNode extends StatementNode {
         return location;
     }
 
-    public ExprNode getInit() {
+    public ExpressionNode getInit() {
         return init;
     }
 
-    public ExprNode getJudge() {
+    public ExpressionNode getJudge() {
         return judge;
     }
 
-    public ExprNode getUpdate() {
+    public ExpressionNode getUpdate() {
         return update;
     }
 
