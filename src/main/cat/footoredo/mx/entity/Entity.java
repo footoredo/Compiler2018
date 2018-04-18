@@ -5,10 +5,12 @@ import cat.footoredo.mx.ast.TypeNode;
 abstract public class Entity {
     protected TypeNode typeNode;
     protected String name;
+    private long referredCount;
 
     public Entity (TypeNode typeNode, String name) {
         this.typeNode = typeNode;
         this.name = name;
+        this.referredCount = 0;
     }
 
     public String getName() {
@@ -21,5 +23,9 @@ abstract public class Entity {
 
     public Location getLocation () {
         return typeNode.getLocation();
+    }
+
+    public void referred () {
+        referredCount ++;
     }
 }

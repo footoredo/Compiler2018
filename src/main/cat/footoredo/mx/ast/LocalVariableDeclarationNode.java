@@ -1,44 +1,48 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.entity.Variable;
 
 public class LocalVariableDeclarationNode extends StatementNode {
-    private TypeNode typeNode;
-    private String name;
+    private Variable variable;
     private ExpressionNode initExpr;
 
     LocalVariableDeclarationNode(TypeNode typeNode, String name, ExpressionNode initExpr) {
         super ();
-        this.typeNode = typeNode;
-        this.name = name;
+        this.variable = new Variable(typeNode, name);
         this.initExpr = initExpr;
     }
 
     LocalVariableDeclarationNode(TypeNode typeNode, String name) {
         super ();
-        this.typeNode = typeNode;
-        this.name = name;
+        this.variable = new Variable(typeNode, name);
         this.initExpr = null;
    }
 
     public TypeNode getTypeNode() {
-        return typeNode;
+        return variable.getTypeNode();
     }
 
     public Location getLocation() {
-        return typeNode.getLocation();
+        return variable.getTypeNode().getLocation();
     }
 
     public String getName() {
-        return name;
+        return variable.getName();
     }
 
     public ExpressionNode getInitExpr() {
         return initExpr;
     }
 
+    public boolean hasInitExpr () { return initExpr != null; }
+
+    public Variable getVariable() {
+        return variable;
+    }
+
     @Override
     public <S,E> S accept(ASTVisitor <S,E> visitor) {
-        visitor.visit(this);
+        return visitor.visit(this);
     }
 }

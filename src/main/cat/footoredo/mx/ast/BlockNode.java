@@ -1,5 +1,6 @@
 package cat.footoredo.mx.ast;
 
+import cat.footoredo.mx.entity.LocalScope;
 import cat.footoredo.mx.entity.Location;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 public class BlockNode extends StatementNode {
     protected Location location;
     private List<StatementNode> statements;
+    private LocalScope scope;
 
     BlockNode (Location location) {
         super ();
@@ -25,6 +27,14 @@ public class BlockNode extends StatementNode {
 
     public Location getLocation() {
         return location;
+    }
+
+    public LocalScope getScope() {
+        return scope;
+    }
+
+    public void setScope(LocalScope scope) {
+        this.scope = scope;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Entity;
+import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
 
@@ -32,4 +33,6 @@ public class AST extends Node {
     public List<Variable> getVariables() {
         return declarations.getVars();
     }
+
+    public List<Function> getFunctions() { return declarations.getFuns(); }
 }

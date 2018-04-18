@@ -1,5 +1,7 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.exception.SemanticError;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -17,4 +19,6 @@ abstract public class Scope {
     protected void addChild (LocalScope s) {
         children.add (s);
     }
+
+    abstract public Entity get (String name) throws SemanticError;
 }

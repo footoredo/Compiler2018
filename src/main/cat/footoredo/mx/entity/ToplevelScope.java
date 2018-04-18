@@ -34,4 +34,14 @@ public class ToplevelScope extends Scope {
         }
         entityMap.put(entity.name, entity);
     }
+
+    @Override
+    public Entity get(String name) throws SemanticError {
+        if (entityMap.containsKey(name)) {
+            return entityMap.get(name);
+        }
+        else {
+            throw new SemanticError("unresolved reference: " + name);
+        }
+    }
 }

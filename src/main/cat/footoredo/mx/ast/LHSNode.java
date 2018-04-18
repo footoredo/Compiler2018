@@ -2,8 +2,6 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
 
-public class LHSNode extends ExpressionNode {
-    public Location getLocation() {
-        return null;
-    }
+abstract public class LHSNode extends ExpressionNode {
+    abstract public Location getLocation();
 }

@@ -85,6 +85,12 @@ public class Visitor implements ASTVisitor<Void, Void> {
     }
 
     @Override
+    public Void visit(LocalVariableDeclarationNode node) {
+        if (node.hasInitExpr()) visitExpression(node.getInitExpr());
+        return null;
+    }
+
+    @Override
     public Void visit(AssignNode node) {
         visitExpression(node.getLhs());
         visitExpression(node.getRhs());

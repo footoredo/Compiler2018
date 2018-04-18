@@ -23,6 +23,7 @@ public class LocalResolver extends Visitor {
         }
 
         resolveGvarInitializers(ast.getVariables());
+        resolveFunctions(ast.getFunctions());
     }
 
     private void resolve (StatementNode node) {
@@ -39,5 +40,55 @@ public class LocalResolver extends Visitor {
                 resolve(v.getInitializer());
             }
         }
+    }
+
+    private void resolveFunctions(List<Function> funs) {
+        for (Function f: funs) {
+            pushScope(f.getParameters());
+            resolve(f.getBlock());
+            f.setScope(popScope());
+        }
+    }
+
+    private void resolve (BlockNode node) {
+        pushScope();
+        super.visit(node);
+        node.setScope(popScope());
+    }
+
+    @Override
+    public Void visit(LocalVariableDeclarationNode node) {
+        super.visit(node);
+        ((LocalScope) currentScope()).defineVariable(node.getVariable());
+        return null;
+    }
+
+    private void pushScope (List <? extends Variable> vars) {
+        LocalScope scope = new LocalScope(currentScope());
+        for (Variable var: vars) {
+            scope.defineVariable(var);
+        }
+        scopeStack.addLast(scope);
+    }
+
+    private void pushScope () {
+        LocalScope scope = new LocalScope(currentScope());
+        scopeStack.addLast(scope);
+    }
+
+    private LocalScope popScope () {
+        return (LocalScope) scopeStack.removeLast();
+    }
+
+    private Scope currentScope() {
+        return scopeStack.getLast();
+    }
+
+    @Override
+    public Void visit(VariableNode node) {
+        Entity entity = currentScope().get(node.getName());
+        entity.referred();
+        node.setEntity(entity);
+        return null;
     }
 }

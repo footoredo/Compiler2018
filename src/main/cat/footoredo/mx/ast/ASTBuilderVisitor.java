@@ -5,7 +5,6 @@ import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.entity.Variable;
-import cat.footoredo.mx.exception.SemanticError;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -69,7 +68,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         else if (ctx.getChildCount() == 2) {
             ExpressionNode expressionNode = visitExpression(ctx.expression(0));
             if (ctx.getChild(0) instanceof TerminalNode) {                    // prefix unary expression
-                String operand = ctx.getChild(0).getText()
+                String operand = ctx.getChild(0).getText();
                 if (operand.equals("++") || operand.equals("--"))
                     return new PrefixNode(location, operand, expressionNode);
                 else
@@ -127,9 +126,9 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         }
         else {
             UserTypeRef userTypeRef = (UserTypeRef) visitClassType(ctx.classType()).getTypeRef();
-            List<ExpressionNode> args = null;
+            List<ExpressionNode> args;
             if (ctx.arguments() == null) {
-                args = new ArrayList<ExpressionNode>();
+                args = new ArrayList<>();
             }
             else {
                 args = visitArguments(ctx.arguments()).getExprs();
@@ -146,7 +145,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         ArrayTypeRef arrayTypeRef = new ArrayTypeRef(baseTypeRef);
         for (int i = 1; i < totalDimensionCount; ++ i)
             arrayTypeRef = new ArrayTypeRef(arrayTypeRef);
-        List<ExpressionNode> length = new ArrayList<ExpressionNode>();
+        List<ExpressionNode> length = new ArrayList<>();
         for (MxParser.ExpressionContext expressionContext : ctx.expression()) {
             length.add(visitExpression(expressionContext));
         }
@@ -183,7 +182,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             return new StringLiteralNode(location, value);
         }
         else if (ctx.BoolLiteral() != null) {
-            boolean value = (ctx.BoolLiteral().getText() == "true");
+            boolean value = (ctx.BoolLiteral().getText().equals("true"));
             return new BooleanLiteralNode(location, value);
         }
         else {
@@ -290,7 +289,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public MethodNode visitMethodDeclaration(MxParser.MethodDeclarationContext ctx) {
-        TypeNode typeNode = null;
+        TypeNode typeNode;
         if (ctx.typeSpec() != null)
             typeNode = visitTypeSpec(ctx.typeSpec());
         else

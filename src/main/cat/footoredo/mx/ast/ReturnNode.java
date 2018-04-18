@@ -30,6 +30,6 @@ public class ReturnNode extends StatementNode {
 
     @Override
     public <S,E> S accept(ASTVisitor <S,E> visitor) {
-        visitor.visit(this);
+        return visitor.visit(this);
     }
 }

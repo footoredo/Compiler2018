@@ -11,6 +11,7 @@ public interface ASTVisitor <S, E> {
     S visit(ContinueNode node);
     S visit(ReturnNode node);
     S visit(NullStatementNode node);
+    S visit(LocalVariableDeclarationNode node);
 
     // Expressions
     E visit(AssignNode node);

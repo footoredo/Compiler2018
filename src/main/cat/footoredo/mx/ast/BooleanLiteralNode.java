@@ -21,6 +21,6 @@ public class BooleanLiteralNode extends LiteralNode {
 
     @Override
     public <S,E> E accept(ASTVisitor <S,E> visitor) {
-        visitor.visit(this);
+        return visitor.visit(this);
     }
 }
