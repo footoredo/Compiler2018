@@ -4,9 +4,9 @@ import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.BooleanTypeRef;
 
 public class BooleanLiteralNode extends LiteralNode {
-    protected boolean value;
+    private boolean value;
 
-    public BooleanLiteralNode (Location location, boolean value) {
+    BooleanLiteralNode (Location location, boolean value) {
         super (location, new BooleanTypeRef());
         this.value = value;
     }
@@ -17,5 +17,10 @@ public class BooleanLiteralNode extends LiteralNode {
 
     public String toString () {
         return "[bool " + (value ? "true" : "false") + "]";
+    }
+
+    @Override
+    public <S,E> E accept(ASTVisitor <S,E> visitor) {
+        visitor.visit(this);
     }
 }

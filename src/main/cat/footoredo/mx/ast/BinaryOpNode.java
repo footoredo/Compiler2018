@@ -28,4 +28,9 @@ public class BinaryOpNode extends ExpressionNode {
     public String getOperator() {
         return operator;
     }
+
+    @Override
+    public <S,E> E accept(ASTVisitor<S,E> visitor) {
+        return visitor.visit(this);
+    }
 }

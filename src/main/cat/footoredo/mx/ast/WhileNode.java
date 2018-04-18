@@ -7,7 +7,7 @@ public class WhileNode extends StatementNode {
     private ExpressionNode judge;
     private StatementNode body;
 
-    public WhileNode(Location location, ExpressionNode judge, StatementNode body) {
+    WhileNode(Location location, ExpressionNode judge, StatementNode body) {
         super ();
         this.location = location;
         this.judge = judge;
@@ -25,4 +25,9 @@ public class WhileNode extends StatementNode {
     public StatementNode getBody() {
         return body;
     }
+    @Override
+    public <S,E> S accept(ASTVisitor <S,E> visitor) {
+        visitor.visit(this);
+    }
+
 }

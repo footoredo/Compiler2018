@@ -69,10 +69,14 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         else if (ctx.getChildCount() == 2) {
             ExpressionNode expressionNode = visitExpression(ctx.expression(0));
             if (ctx.getChild(0) instanceof TerminalNode) {                    // prefix unary expression
-                return new UnaryOpNode(location, ctx.getChild(0).getText(), expressionNode, true);
+                String operand = ctx.getChild(0).getText()
+                if (operand.equals("++") || operand.equals("--"))
+                    return new PrefixNode(location, operand, expressionNode);
+                else
+                    return new UnaryOpNode(location, operand, expressionNode);
             }
             else {                                                              // suffix unary expression
-                return new UnaryOpNode(location, ctx.getChild(1).getText(), expressionNode, false);
+                return new SuffixNode(location, ctx.getChild(1).getText(), expressionNode);
             }
         }
         else if (ctx.getChildCount() == 3) {
@@ -335,13 +339,13 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     public BlockNode visitBlock(MxParser.BlockContext ctx) {
         BlockNode blockNode = new BlockNode(getLocation(ctx));
         for (MxParser.BlockStatementContext blockStatementContext : ctx.blockStatement()) {
-            blockNode.addBlockStatement(visitBlockStatement(blockStatementContext));
+            blockNode.addStatement(visitBlockStatement(blockStatementContext));
         }
         return blockNode;
     }
 
     @Override
-    public BlockStatementNode visitBlockStatement(MxParser.BlockStatementContext ctx) {
+    public StatementNode visitBlockStatement(MxParser.BlockStatementContext ctx) {
         if (ctx.localVariableDeclarationStatement() != null) {
             return visitLocalVariableDeclarationStatement(ctx.localVariableDeclarationStatement());
         }

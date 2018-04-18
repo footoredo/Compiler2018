@@ -13,4 +13,9 @@ public class ContinueNode extends StatementNode {
     public Location getLocation() {
         return location;
     }
+
+    @Override
+    public <S, E> S accept(ASTVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

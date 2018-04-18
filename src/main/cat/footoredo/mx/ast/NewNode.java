@@ -27,11 +27,20 @@ public class NewNode extends ExpressionNode {
         return creator.getType();
     }
 
-    public List<ExpressionNode> getLength () {
-        return creator.getLength();
+    public List<ExpressionNode> getLengths () {
+        return creator.getLengths();
     }
 
     public List<ExpressionNode> getArgs () {
         return creator.getArgs();
+    }
+
+    public boolean hasArgs() { return creator.hasArgs(); }
+
+    public boolean hasLengths() { return creator.hasLengths(); }
+
+    @Override
+    public <S,E> E accept(ASTVisitor<S,E> visitor) {
+        return visitor.visit(this);
     }
 }

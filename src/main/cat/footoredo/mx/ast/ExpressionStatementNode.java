@@ -17,4 +17,9 @@ public class ExpressionStatementNode extends StatementNode {
     public Location getLocation () {
         return expr.getLocation();
     }
+
+    @Override
+    public <S, E> S accept(ASTVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

@@ -10,22 +10,22 @@ import java.util.List;
 public class CreatorNode extends ExpressionNode {
     protected Location location;
     protected TypeNode type;
-    protected List<ExpressionNode> length;
+    protected List<ExpressionNode> lengths;
     protected List<ExpressionNode> args;
 
     public CreatorNode (Location location, TypeRef typeRef) {
         super ();
         this.location = location;
         this.type = new TypeNode(typeRef);
-        this.length = null;
+        this.lengths = null;
         this.args = null;
     }
 
-    public CreatorNode (Location location, ArrayTypeRef arrayTypeRef, List<ExpressionNode> length) {
+    public CreatorNode (Location location, ArrayTypeRef arrayTypeRef, List<ExpressionNode> lengths) {
         super ();
         this.location = location;
         this.type = new TypeNode(arrayTypeRef);
-        this.length = length;
+        this.lengths = lengths;
         this.args = null;
         System.out.println ("new " + type.toString() + " (" + Integer.toString(length.size ()) + " dim known) @ " + location.toString());
     }
@@ -34,7 +34,7 @@ public class CreatorNode extends ExpressionNode {
         super ();
         this.location = location;
         this.type = new TypeNode(userTypeRef);
-        this.length = null;
+        this.lengths = null;
         this.args = args;
     }
 
@@ -47,9 +47,13 @@ public class CreatorNode extends ExpressionNode {
         return args;
     }
 
-    public List<ExpressionNode> getLength() {
-        return length;
+    public List<ExpressionNode> getLengths() {
+        return lengths;
     }
+
+    public boolean hasArgs() { return args != null; }
+
+    public boolean hasLengths() { return lengths != null; }
 
     public TypeNode getType() {
         return type;

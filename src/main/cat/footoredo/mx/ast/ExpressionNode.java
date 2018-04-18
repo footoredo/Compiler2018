@@ -7,4 +7,6 @@ abstract public class ExpressionNode extends Node {
         return "";
     }
     abstract Location getLocation();
+
+    abstract public <S,E> E accept(ASTVisitor<S,E> visitor);
 }

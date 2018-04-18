@@ -2,7 +2,7 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
 
-public class LocalVariableDeclarationNode extends BlockStatementNode {
+public class LocalVariableDeclarationNode extends StatementNode {
     private TypeNode typeNode;
     private String name;
     private ExpressionNode initExpr;
@@ -12,9 +12,14 @@ public class LocalVariableDeclarationNode extends BlockStatementNode {
         this.typeNode = typeNode;
         this.name = name;
         this.initExpr = initExpr;
-
-        System.out.println ("Local variable declaration: " + typeNode.toString() + " " + name + " = " + initExpr.toString() + " @ " + getLocation().toString());
     }
+
+    LocalVariableDeclarationNode(TypeNode typeNode, String name) {
+        super ();
+        this.typeNode = typeNode;
+        this.name = name;
+        this.initExpr = null;
+   }
 
     public TypeNode getTypeNode() {
         return typeNode;
@@ -30,5 +35,10 @@ public class LocalVariableDeclarationNode extends BlockStatementNode {
 
     public ExpressionNode getInitExpr() {
         return initExpr;
+    }
+
+    @Override
+    public <S,E> S accept(ASTVisitor <S,E> visitor) {
+        visitor.visit(this);
     }
 }

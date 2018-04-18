@@ -15,4 +15,9 @@ public class VariableNode extends LHSNode {
     public String getName () {
         return name;
     }
+
+    @Override
+    public <S,E> E accept(ASTVisitor<S,E> visitor) {
+        return visitor.visit(this);
+    }
 }

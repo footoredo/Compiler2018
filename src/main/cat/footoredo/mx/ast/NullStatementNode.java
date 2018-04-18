@@ -13,4 +13,9 @@ public class NullStatementNode extends StatementNode {
     public Location getLocation() {
         return location;
     }
+
+    @Override
+    public <S,E> S accept(ASTVisitor <S,E> visitor) {
+        visitor.visit(this);
+    }
 }

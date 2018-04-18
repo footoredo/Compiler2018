@@ -21,4 +21,9 @@ public class ArefNode extends LHSNode {
     public Location getLocation () {
         return expr.getLocation();
     }
+
+    @Override
+    public <S,E> E accept(ASTVisitor<S,E> visitor) {
+        return visitor.visit(this);
+    }
 }

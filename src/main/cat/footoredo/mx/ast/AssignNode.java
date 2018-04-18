@@ -23,4 +23,9 @@ public class AssignNode extends ExpressionNode {
     public ExpressionNode getRhs() {
         return rhs;
     }
+
+    @Override
+    public <S,E> E accept(ASTVisitor<S,E> visitor) {
+        return visitor.visit(this);
+    }
 }

@@ -7,23 +7,28 @@ import java.util.List;
 
 public class BlockNode extends StatementNode {
     protected Location location;
-    private List<BlockStatementNode> blockStatements;
+    private List<StatementNode> statements;
 
     BlockNode (Location location) {
         super ();
         this.location = location;
-        this.blockStatements = new ArrayList<>();
+        this.statements = new ArrayList<>();
     }
 
-    public void addBlockStatement (BlockStatementNode blockStatement) {
-        blockStatements.add (blockStatement);
+    public void addStatement (StatementNode statement) {
+        statements.add (statement);
     }
 
-    public List<BlockStatementNode> getBlockStatements() {
-        return blockStatements;
+    public List<StatementNode> getStatements() {
+        return statements;
     }
 
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public <S, E> S accept(ASTVisitor<S, E> visitor) {
+        return visitor.visit(this);
     }
 }

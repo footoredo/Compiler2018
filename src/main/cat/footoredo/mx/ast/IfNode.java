@@ -41,4 +41,11 @@ public class IfNode extends StatementNode {
     public StatementNode getElseStatement() {
         return elseStatement;
     }
+
+    public boolean hasElseStatement() {return elseStatement != null;}
+
+    @Override
+    public <S, E> S accept(ASTVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

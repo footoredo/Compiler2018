@@ -18,4 +18,9 @@ public class StringLiteralNode extends LiteralNode {
     public String toString () {
         return "[string " + value + "]";
     }
+
+    @Override
+    public <S,E> E accept(ASTVisitor <S,E> visitor) {
+        visitor.visit(this);
+    }
 }

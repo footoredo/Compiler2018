@@ -6,14 +6,12 @@ public class UnaryOpNode extends ExpressionNode {
     private Location location;
     private String operator;
     private ExpressionNode expr;
-    private boolean opFront;
 
-    public UnaryOpNode (Location location, String operator, ExpressionNode expr, boolean opFront) {
+    public UnaryOpNode (Location location, String operator, ExpressionNode expr) {
         super ();
         this.location = location;
         this.operator = operator;
         this.expr = expr;
-        this.opFront = opFront;
     }
 
     public String getOperator() {
@@ -24,15 +22,12 @@ public class UnaryOpNode extends ExpressionNode {
         return expr;
     }
 
-    public boolean isOpFront() {
-        return opFront;
-    }
-
-    public boolean isOpBack () {
-        return !opFront;
-    }
-
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public <S,E> E accept(ASTVisitor<S,E> visitor) {
+        return visitor.visit(this);
     }
 }

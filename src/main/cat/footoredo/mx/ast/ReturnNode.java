@@ -25,4 +25,11 @@ public class ReturnNode extends StatementNode {
     public ExpressionNode getExpr() {
         return expr;
     }
+
+    public boolean hasExpr() { return expr != null; }
+
+    @Override
+    public <S,E> S accept(ASTVisitor <S,E> visitor) {
+        visitor.visit(this);
+    }
 }

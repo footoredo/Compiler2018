@@ -37,4 +37,15 @@ public class ForNode extends StatementNode {
     public StatementNode getBody() {
         return body;
     }
+
+    public boolean hasInit() { return init != null; }
+
+    public boolean hasJudge() { return judge != null; }
+
+    public boolean hasUpdate() { return update != null; }
+
+    @Override
+    public <S, E> S accept(ASTVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

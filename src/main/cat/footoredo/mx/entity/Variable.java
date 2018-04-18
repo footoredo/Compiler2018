@@ -20,4 +20,6 @@ public class Variable extends Entity {
     public ExpressionNode getInitializer() {
         return initializer;
     }
+
+    public boolean hasInitializer() { return initializer != null; }
 }
