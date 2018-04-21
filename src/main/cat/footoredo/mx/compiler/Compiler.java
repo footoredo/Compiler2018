@@ -32,11 +32,17 @@ public class Compiler {
         MxLexer lexer = new MxLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         MxParser parser = new MxParser(tokens);
+        // System.out.println("here");
         // parser.setErrorHandler(new MxANTLRErrorStrategy());
         parser.setErrorHandler(new DefaultErrorStrategy());
         ASTBuilderVisitor astBuilderVisitor = new ASTBuilderVisitor();
-        AST ast = astBuilderVisitor.visitCompilationUnit(parser.compilationUnit());
-        return ast;
+        try {
+            AST ast = astBuilderVisitor.visitCompilationUnit(parser.compilationUnit());
+            return ast;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     AST semanticAnalyze(AST ast) throws SemanticError {

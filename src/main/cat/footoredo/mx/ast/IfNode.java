@@ -23,7 +23,7 @@ public class IfNode extends StatementNode {
         this.thenStatement = thenStatement;
         this.elseStatement = elseStatement;
 
-        System.out.println("If statement with else @ " + location.toString());
+        // System.out.println("If statement with else @ " + location.toString());
     }
 
     public Location getLocation() {

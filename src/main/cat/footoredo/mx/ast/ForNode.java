@@ -15,7 +15,7 @@ public class ForNode extends StatementNode {
         this.update = update;
         this.body = body;
 
-        System.out.println("For statement @ " + location.toString());
+        //System.out.println("For statement @ " + location.toString());
     }
 
     public Location getLocation() {

@@ -86,7 +86,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         else if (ctx.creator() != null) {                                       // new creator
             return new NewNode(location, visitCreator(ctx.creator()));
         }
-        else if (ctx.expressionList() != null) {                                // expression (...)
+        else if (ctx.expressionList() != null) {
             ExpressionNode caller = visitExpression(ctx.expression(0));
             ExpressionListNode expressionListNode = visitExpressionList(ctx.expressionList());
             return new FuncallNode(caller, expressionListNode.getExprs());
@@ -104,11 +104,22 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                 return new SuffixNode(location, ctx.getChild(1).getText(), expressionNode);
             }
         }
+        else if (ctx.getChildCount() >= 3 && ctx.getChild(1).getText().equals("(")) {   // expression (...)
+            ExpressionNode caller = visitExpression(ctx.expression(0));
+            if (ctx.expressionList() != null) {
+                ExpressionListNode expressionListNode = visitExpressionList(ctx.expressionList());
+                return new FuncallNode(caller, expressionListNode.getExprs());
+            }
+            else {
+                return new FuncallNode(caller, new ArrayList<>());
+            }
+        }
         else if (ctx.getChildCount() == 3) {
             if (ctx.getChild(0) instanceof TerminalNode) {                    // ( expression )
                 return visitExpression(ctx.expression(0));
             }
             else {                                                              // binary expression
+                // System.out.println(ctx.getText());
                 ExpressionNode lhs = visitExpression(ctx.expression(0)),
                         rhs = visitExpression(ctx.expression(1));
                 if (ctx.getChild(1).getText().equals("=")) {                  // assign
