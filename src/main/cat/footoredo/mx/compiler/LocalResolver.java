@@ -42,8 +42,8 @@ public class LocalResolver extends Visitor {
         }
     }
 
-    private void resolveFunctions(List<Function> funs) {
-        for (Function f: funs) {
+    private void resolveFunctions(List<DefinedFunction> funs) {
+        for (DefinedFunction f: funs) {
             pushScope(f.getParameters());
             resolve(f.getBlock());
             f.setScope(popScope());

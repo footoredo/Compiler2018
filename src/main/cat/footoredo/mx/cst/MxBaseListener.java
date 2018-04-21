@@ -1,5 +1,4 @@
 package cat.footoredo.mx.cst;
-
 // Generated from Mx.g4 by ANTLR 4.7.1
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -24,6 +23,30 @@ public class MxBaseListener implements MxListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCompilationUnit(MxParser.CompilationUnitContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -240,6 +263,18 @@ public class MxBaseListener implements MxListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMemberDeclaration(MxParser.MemberDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMethodDescription(MxParser.MethodDescriptionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMethodDescription(MxParser.MethodDescriptionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

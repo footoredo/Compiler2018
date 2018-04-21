@@ -1,5 +1,4 @@
 package cat.footoredo.mx.cst;
-
 // Generated from Mx.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -18,6 +17,26 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCompilationUnit(MxParser.CompilationUnitContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#builtinDeclarations}.
+	 * @param ctx the parse tree
+	 */
+	void enterBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#builtinDeclarations}.
+	 * @param ctx the parse tree
+	 */
+	void exitBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#builtinDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void enterBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#builtinDeclaration}.
+	 * @param ctx the parse tree
+	 */
+	void exitBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#expression}.
 	 * @param ctx the parse tree
@@ -198,6 +217,16 @@ public interface MxListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMemberDeclaration(MxParser.MemberDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MxParser#methodDescription}.
+	 * @param ctx the parse tree
+	 */
+	void enterMethodDescription(MxParser.MethodDescriptionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MxParser#methodDescription}.
+	 * @param ctx the parse tree
+	 */
+	void exitMethodDescription(MxParser.MethodDescriptionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MxParser#methodDeclaration}.
 	 * @param ctx the parse tree

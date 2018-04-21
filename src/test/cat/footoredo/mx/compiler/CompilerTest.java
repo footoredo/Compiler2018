@@ -21,4 +21,14 @@ public class CompilerTest {
             System.out.println(e);
         }
     }
+
+    @Test
+    public void T698() {
+        try {
+            compiler.compile("example/T698.m");
+        } catch (Exception e) {
+            System.out.println("Error occurred:");
+            System.out.println(e);
+        }
+    }
 }

@@ -2,9 +2,7 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.cst.MxVisitor;
-import cat.footoredo.mx.entity.Function;
-import cat.footoredo.mx.entity.Location;
-import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -36,7 +34,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
         for (MxParser.MethodDeclarationContext methodDeclarationContext : ctx.methodDeclaration()) {
             MethodNode methodNode = visitMethodDeclaration(methodDeclarationContext);
-            declarations.addFun (new Function(methodNode));
+            declarations.addFun (new DefinedFunction(methodNode));
         }
 
         for (MxParser.VariableDeclarationContext variableDeclarationContext : ctx.variableDeclaration()) {
@@ -45,6 +43,34 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         }
 
         return new AST(getLocation(ctx), declarations);
+    }
+
+    @Override
+    public BuiltinDeclarationsNode visitBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx) {
+        Declarations declarations = new Declarations();
+        for (MxParser.BuiltinDeclarationContext builtinDeclarationContext: ctx.builtinDeclaration()) {
+            MethodDescriptionNode methodDescriptionNode = visitBuiltinDeclaration(builtinDeclarationContext);
+            declarations.addFun(new BuiltinFunction(methodDescriptionNode));
+        }
+
+        return new BuiltinDeclarationsNode(declarations);
+    }
+
+    @Override
+    public MethodDescriptionNode visitBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx) {
+        return visitMethodDescription(ctx.methodDescription());
+    }
+
+    @Override
+    public MethodDescriptionNode visitMethodDescription(MxParser.MethodDescriptionContext ctx) {
+        TypeNode typeNode;
+        if (ctx.typeSpec() != null)
+            typeNode = visitTypeSpec(ctx.typeSpec());
+        else
+            typeNode = new TypeNode(new VoidTypeRef(getLocation(ctx)));
+        String name = ctx.Identifier().getText();
+        ParameterListNode parameterListNode = visitParameters(ctx.parameters());
+        return new MethodDescriptionNode(typeNode, name, parameterListNode.getParameterNodes());
     }
 
     @Override
@@ -289,15 +315,9 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public MethodNode visitMethodDeclaration(MxParser.MethodDeclarationContext ctx) {
-        TypeNode typeNode;
-        if (ctx.typeSpec() != null)
-            typeNode = visitTypeSpec(ctx.typeSpec());
-        else
-            typeNode = new TypeNode(new VoidTypeRef(getLocation(ctx)));
-        String name = ctx.Identifier().getText();
-        ParameterListNode parameterListNode = visitParameters(ctx.parameters());
+        MethodDescriptionNode methodDescriptionNode = visitMethodDescription(ctx.methodDescription());
         BlockNode block = visitBlock(ctx.block());
-        return new MethodNode(typeNode, name, parameterListNode.getParameterNodes(), block);
+        return new MethodNode(methodDescriptionNode, block);
     }
 
     @Override

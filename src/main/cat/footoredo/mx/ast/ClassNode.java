@@ -13,7 +13,7 @@ public class ClassNode extends Node {
     private List<Function> memberMethods;
     private Function constructor;
 
-    public ClassNode(Location location, String name, ClassBodyNode classBodyNode) throws SemanticError {
+    ClassNode(Location location, String name, ClassBodyNode classBodyNode) throws SemanticError {
         super ();
         this.location = location;
         this.name = name;
@@ -24,13 +24,13 @@ public class ClassNode extends Node {
             if (memberDeclarationNode instanceof MemberVariableDeclarationNode)
                 memberVariables.add (new Variable(((MemberVariableDeclarationNode) memberDeclarationNode).getVariableDeclarationNode()));
             else if (memberDeclarationNode instanceof MemberMethodDeclarationNode)
-                memberMethods.add(new Function(((MemberMethodDeclarationNode) memberDeclarationNode).getMethodNode()));
+                memberMethods.add(new DefinedFunction(((MemberMethodDeclarationNode) memberDeclarationNode).getMethodNode()));
             else if (memberDeclarationNode instanceof ConstructorDeclarationNode) {
                 if (this.constructor != null) {
                     // System.out.println("sss");
                     throw new SemanticError(memberDeclarationNode.getLocation(), "Multiple constructors.");
                 }
-                this.constructor = new Function(((ConstructorDeclarationNode) memberDeclarationNode).getConstructorNode());
+                this.constructor = new DefinedFunction(((ConstructorDeclarationNode) memberDeclarationNode).getConstructorNode());
             }
         }
 

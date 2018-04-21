@@ -1,5 +1,4 @@
 package cat.footoredo.mx.cst;
-
 // Generated from Mx.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -17,6 +16,18 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCompilationUnit(MxParser.CompilationUnitContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#builtinDeclarations}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#builtinDeclaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#expression}.
 	 * @param ctx the parse tree
@@ -125,6 +136,12 @@ public interface MxVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMemberDeclaration(MxParser.MemberDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MxParser#methodDescription}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMethodDescription(MxParser.MethodDescriptionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MxParser#methodDeclaration}.
 	 * @param ctx the parse tree

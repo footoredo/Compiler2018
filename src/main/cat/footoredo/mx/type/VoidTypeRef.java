@@ -6,6 +6,7 @@ public class VoidTypeRef extends TypeRef {
     public VoidTypeRef (Location location) {
         super (location);
     }
+    public VoidTypeRef () {super (null);}
     public String toString () {
         return "void";
     }

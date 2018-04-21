@@ -4,6 +4,14 @@ compilationUnit
   : (classDeclaration | methodDeclaration | variableDeclaration)* EOF
   ;
 
+builtinDeclarations
+  : builtinDeclaration* EOF
+  ;
+
+builtinDeclaration
+  : methodDescription ';'
+  ;
+
 expression
   : primary
   | expression '.' Identifier
@@ -139,8 +147,12 @@ memberDeclaration
   | variableDeclaration
   ;
 
+methodDescription
+  : (typeSpec | 'void') Identifier parameters
+  ;
+
 methodDeclaration
-  : (typeSpec | 'void') Identifier parameters block
+  : methodDescription block
   ;
 
 parameters

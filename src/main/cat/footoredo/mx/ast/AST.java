@@ -1,9 +1,6 @@
 package cat.footoredo.mx.ast;
 
-import cat.footoredo.mx.entity.Entity;
-import cat.footoredo.mx.entity.Function;
-import cat.footoredo.mx.entity.Location;
-import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +8,9 @@ import java.util.Set;
 
 public class AST extends Node {
     protected Location location;
-    protected Declarations declarations;
+    private Declarations declarations;
 
-    public AST (Location location, Declarations declarations) {
+    AST (Location location, Declarations declarations) {
         super ();
         this.location = location;
         this.declarations = declarations;
@@ -26,6 +23,7 @@ public class AST extends Node {
     public List<Entity> getDeclarations() {
         List<Entity> result = new ArrayList<>();
         result.addAll(declarations.getFuns());
+        result.addAll(declarations.getBuiltinFuns());
         result.addAll(declarations.getVars());
         return result;
     }
@@ -34,5 +32,13 @@ public class AST extends Node {
         return declarations.getVars();
     }
 
-    public List<Function> getFunctions() { return declarations.getFuns(); }
+    public List<DefinedFunction> getFunctions() { return declarations.getFuns(); }
+
+    public void addFunction(DefinedFunction fun) {
+        declarations.addFun(fun);
+    }
+
+    public void addFunction(BuiltinFunction fun) {
+        declarations.addFun(fun);
+    }
 }
