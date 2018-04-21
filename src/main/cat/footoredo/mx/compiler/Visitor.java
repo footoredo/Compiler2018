@@ -27,6 +27,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(BlockNode node) {
+        // System.out.println("asdasd");
         visitStatements(node.getStatements());
         return null;
     }

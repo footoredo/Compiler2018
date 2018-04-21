@@ -10,7 +10,7 @@ import java.util.List;
 abstract public class Function extends Entity {
     private Params params;
     public Function (MethodDescriptionNode methodDescriptionNode) {
-        super (methodDescriptionNode.getType(), methodDescriptionNode.getName());
+        super (methodDescriptionNode.getReturnType(), methodDescriptionNode.getName());
         this.params = methodDescriptionNode.getParams();
 
     }

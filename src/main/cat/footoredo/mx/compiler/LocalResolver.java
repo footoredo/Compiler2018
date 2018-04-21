@@ -25,13 +25,15 @@ public class LocalResolver extends Visitor {
 
         resolveGvarInitializers(ast.getVariables());
         resolveFunctions(ast.getFunctions());
+        resolveClasses(ast.getClasses());
 
-        Entity main = toplevelScope.get("main");
-        // System.out.println(main.getTypeNode().getTypeRef().toString());
-        if (main == null ||
-                !(main instanceof DefinedFunction &&
-                        main.getTypeNode().getTypeRef() instanceof IntegerTypeRef)) {
-            // System.out.println("asdasd");
+        try {
+            Entity main = toplevelScope.get("main");
+            if (!(main instanceof DefinedFunction &&
+                            main.getTypeNode().getTypeRef() instanceof IntegerTypeRef)) {
+                throw new SemanticException("no main function found");
+            }
+        } catch (SemanticException e) {
             throw new SemanticException("no main function found");
         }
 
@@ -48,9 +50,19 @@ public class LocalResolver extends Visitor {
 
     private void resolveFunctions(List<DefinedFunction> funs) {
         for (DefinedFunction f: funs) {
+            // System.out.println("asdas");
             pushScope(f.getParameters());
             super.visit(f.getBlock());
             f.setScope(popScope());
+        }
+    }
+
+    private void resolveClasses(List<ClassNode> classes) {
+        for (ClassNode c: classes) {
+            // System.out.println("asdas");
+            pushScope(c.getMemberVariables());
+            resolveFunctions(c.getMemberMethods());
+            c.setScope(popScope());
         }
     }
 

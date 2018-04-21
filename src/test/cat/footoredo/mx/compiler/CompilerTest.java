@@ -59,4 +59,9 @@ public class CompilerTest {
             throw e;
         }
     }
+
+    @Test(expected = SemanticException.class)
+    public void testClassLocalResolver() throws IOException, SemanticException {
+        compiler.compile("example/test_class_local_resolver.m");
+    }
 }

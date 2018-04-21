@@ -50,4 +50,8 @@ public class AST extends Node {
     public void setScop(ToplevelScope scop) {
         this.scop = scop;
     }
+
+    public List<ClassNode> getClasses() {
+        return declarations.getClasses();
+    }
 }

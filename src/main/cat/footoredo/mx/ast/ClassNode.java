@@ -11,10 +11,11 @@ public class ClassNode extends Node {
     protected Location location;
     private String name;
     private List<Variable> memberVariables;
-    private List<Function> memberMethods;
-    private Function constructor;
+    private List<DefinedFunction> memberMethods;
+    private DefinedFunction constructor;
     private TypeNode typeNode;
     private List<Slot> members;
+    private LocalScope scope;
 
     ClassNode(Location location, String name, ClassBodyNode classBodyNode) throws SemanticException {
         super ();
@@ -65,17 +66,36 @@ public class ClassNode extends Node {
         return memberVariables;
     }
 
-    public List<Function> getMemberMethods() {
-        return memberMethods;
+    public List<DefinedFunction> getMemberMethods() {
+        if (constructor == null)
+            return memberMethods;
+        else {
+            List<DefinedFunction> ret = memberMethods;
+            ret.add(constructor);
+            return ret;
+        }
     }
 
     public List<Entity> getEntitis() {
         List<Entity> ret = new ArrayList<>();
         ret.addAll(getMemberVariables());
         ret.addAll(getMemberMethods());
+        return ret;
     }
 
-    public Function getConstructor() {
+    public DefinedFunction getConstructor() {
         return constructor;
+    }
+
+    public LocalScope getScope() {
+        return scope;
+    }
+
+    public void setScope(LocalScope scope) {
+        this.scope = scope;
+    }
+
+    public boolean hasConstructor() {
+        return constructor != null;
     }
 }
