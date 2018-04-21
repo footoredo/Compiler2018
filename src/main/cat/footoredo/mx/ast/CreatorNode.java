@@ -3,7 +3,7 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.ArrayTypeRef;
 import cat.footoredo.mx.type.TypeRef;
-import cat.footoredo.mx.type.UserTypeRef;
+import cat.footoredo.mx.type.ClassTypeRef;
 
 import java.util.List;
 
@@ -30,10 +30,10 @@ public class CreatorNode extends Node {
         // System.out.println ("new " + type.toString() + " (" + Integer.toString(lengths.size ()) + " dim known) @ " + location.toString());
     }
 
-    public CreatorNode(Location location, UserTypeRef userTypeRef, List<ExpressionNode> args) {
+    public CreatorNode(Location location, ClassTypeRef classTypeRef, List<ExpressionNode> args) {
         super ();
         this.location = location;
-        this.type = new TypeNode(userTypeRef);
+        this.type = new TypeNode(classTypeRef);
         this.lengths = null;
         this.args = args;
     }

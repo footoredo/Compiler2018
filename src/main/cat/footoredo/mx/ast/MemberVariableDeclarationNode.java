@@ -14,6 +14,14 @@ public class MemberVariableDeclarationNode extends MemberDeclarationNode {
         return variableDeclarationNode.getLocation();
     }
 
+    public TypeNode getTypeNode() {
+        return variableDeclarationNode.getTypeNode();
+    }
+
+    public String getName() {
+        return variableDeclarationNode.getName();
+    }
+
     public VariableDeclarationNode getVariableDeclarationNode() {
         return variableDeclarationNode;
     }

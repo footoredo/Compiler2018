@@ -2,7 +2,8 @@ package cat.footoredo.mx.compiler;
 
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
-import cat.footoredo.mx.exception.SemanticError;
+import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.IntegerTypeRef;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class LocalResolver extends Visitor {
         this.scopeStack = new LinkedList<>();
     }
 
-    public void resolve (AST ast) throws SemanticError {
+    public void resolve (AST ast) throws SemanticException {
         ToplevelScope toplevelScope = new ToplevelScope();
         scopeStack.add(toplevelScope);
 
@@ -24,20 +25,23 @@ public class LocalResolver extends Visitor {
 
         resolveGvarInitializers(ast.getVariables());
         resolveFunctions(ast.getFunctions());
-    }
 
-    private void resolve (StatementNode node) {
-        node.accept(this);
-    }
+        Entity main = toplevelScope.get("main");
+        // System.out.println(main.getTypeNode().getTypeRef().toString());
+        if (main == null ||
+                !(main instanceof DefinedFunction &&
+                        main.getTypeNode().getTypeRef() instanceof IntegerTypeRef)) {
+            // System.out.println("asdasd");
+            throw new SemanticException("no main function found");
+        }
 
-    private void resolve (ExpressionNode node) {
-        node.accept(this);
+        ast.setScop(toplevelScope);
     }
 
     private void resolveGvarInitializers(List<Variable> vars) {
         for (Variable v: vars) {
             if (v.hasInitializer()) {
-                resolve(v.getInitializer());
+                visitExpression(v.getInitializer());
             }
         }
     }
@@ -45,15 +49,17 @@ public class LocalResolver extends Visitor {
     private void resolveFunctions(List<DefinedFunction> funs) {
         for (DefinedFunction f: funs) {
             pushScope(f.getParameters());
-            resolve(f.getBlock());
+            super.visit(f.getBlock());
             f.setScope(popScope());
         }
     }
 
-    private void resolve (BlockNode node) {
+    @Override
+    public Void visit(BlockNode node) {
         pushScope();
         super.visit(node);
         node.setScope(popScope());
+        return null;
     }
 
     @Override

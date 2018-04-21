@@ -2,9 +2,7 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.cst.*;
 import cat.footoredo.mx.exception.MxANTLRErrorStrategy;
-import cat.footoredo.mx.exception.ParsingError;
 import org.antlr.v4.runtime.*;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ASTBuilderVisitorTest {

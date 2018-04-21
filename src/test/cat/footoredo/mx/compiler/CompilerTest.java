@@ -1,7 +1,6 @@
 package cat.footoredo.mx.compiler;
 
-import cat.footoredo.mx.OJ.Semantic;
-import cat.footoredo.mx.exception.SemanticError;
+import cat.footoredo.mx.exception.SemanticException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,7 +19,7 @@ public class CompilerTest {
     public void testLocalResolver() throws IOException {
         try {
             compiler.compile("example/test_local_resolver.m");
-        } catch (SemanticError e) {
+        } catch (SemanticException e) {
             System.out.println("Error occurred:");
             System.out.println(e);
         }
@@ -40,6 +39,21 @@ public class CompilerTest {
     public void T690() throws Exception {
         try {
             compiler.compile("example/T690.m");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test(expected = SemanticException.class)
+    public void T671() throws Exception {
+        compiler.compile("example/T671.m");
+    }
+
+    @Test
+    public void T613() throws Exception {
+        try {
+            compiler.compile("example/T613.m");
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

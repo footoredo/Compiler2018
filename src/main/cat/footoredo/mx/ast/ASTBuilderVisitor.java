@@ -162,7 +162,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             return visitArrayCreator(ctx.arrayCreator());
         }
         else {
-            UserTypeRef userTypeRef = (UserTypeRef) visitClassType(ctx.classType()).getTypeRef();
+            ClassTypeRef classTypeRef = (ClassTypeRef) visitClassType(ctx.classType()).getTypeRef();
             List<ExpressionNode> args;
             if (ctx.arguments() == null) {
                 args = new ArrayList<>();
@@ -170,7 +170,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             else {
                 args = visitArguments(ctx.arguments()).getExprs();
             }
-            return new CreatorNode(getLocation(ctx), userTypeRef, args);
+            return new CreatorNode(getLocation(ctx), classTypeRef, args);
         }
     }
 
@@ -237,7 +237,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     @Override
     public VariableDeclaratorNode visitVariableDeclarator(MxParser.VariableDeclaratorContext ctx) {
         VariableDeclaratorIdNode variableDeclaratorIdNode = visitVariableDeclaratorId(ctx.variableDeclaratorId());
-        // if (ctx.variableInitializer() == null) throw new SemanticError(getLocation(ctx), "sss");
+        // if (ctx.variableInitializer() == null) throw new SemanticException(getLocation(ctx), "sss");
         // System.out.println("asdasd");
         ExpressionNode expressionNode =
                 ctx.variableInitializer() == null ? null : visitVariableInitializer(ctx.variableInitializer());
@@ -289,7 +289,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
     @Override
     public TypeNode visitClassType(MxParser.ClassTypeContext ctx) {
-        return new TypeNode(new UserTypeRef(getLocation(ctx.Identifier()), ctx.Identifier().getText()));
+        return new TypeNode(new ClassTypeRef(getLocation(ctx.Identifier()), ctx.Identifier().getText()));
     }
 
     @Override

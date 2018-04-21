@@ -10,17 +10,17 @@ public class MxANTLRErrorStrategy extends BailErrorStrategy {
     }
 
     @Override
-    public void recover(Parser recognizer, RecognitionException e) throws ParsingError {
+    public void recover(Parser recognizer, RecognitionException e) throws ParsingException {
         Location location = getLocation(e);
         if (e instanceof FailedPredicateException)
-            throw new ParsingError("FailedPredicateException occurred @ " + location.toString());
+            throw new ParsingException("FailedPredicateException occurred @ " + location.toString());
         else if (e instanceof InputMismatchException)
-            throw new ParsingError("InputMismatchException occurred @ " + location.toString());
+            throw new ParsingException("InputMismatchException occurred @ " + location.toString());
         else if (e instanceof LexerNoViableAltException)
-            throw new ParsingError("LexerNoViableAltException occurred @ " + location.toString());
+            throw new ParsingException("LexerNoViableAltException occurred @ " + location.toString());
         else if (e instanceof NoViableAltException)
-            throw new ParsingError("NoViableAltException occurred @ " + location.toString());
+            throw new ParsingException("NoViableAltException occurred @ " + location.toString());
         else
-            throw new ParsingError("wtf??");
+            throw new ParsingException("wtf??");
     }
 }

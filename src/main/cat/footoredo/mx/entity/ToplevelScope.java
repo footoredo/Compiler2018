@@ -1,6 +1,6 @@
 package cat.footoredo.mx.entity;
 
-import cat.footoredo.mx.exception.SemanticError;
+import cat.footoredo.mx.exception.SemanticException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,20 +28,20 @@ public class ToplevelScope extends Scope {
         return null;
     }
 
-    public void declareEntity(Entity entity) throws SemanticError {
+    public void declareEntity(Entity entity) throws SemanticException {
         if (entityMap.containsKey(entity.getName())) {
-            throw new SemanticError(entity.getLocation(), "duplicated declaration of " + entity.getName());
+            throw new SemanticException(entity.getLocation(), "duplicated declaration of " + entity.getName());
         }
         entityMap.put(entity.name, entity);
     }
 
     @Override
-    public Entity get(String name) throws SemanticError {
+    public Entity get(String name) throws SemanticException {
         if (entityMap.containsKey(name)) {
             return entityMap.get(name);
         }
         else {
-            throw new SemanticError("unresolved reference: " + name);
+            throw new SemanticException("unresolved reference: " + name);
         }
     }
 }

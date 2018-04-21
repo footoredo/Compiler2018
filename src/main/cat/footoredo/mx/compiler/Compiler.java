@@ -2,16 +2,10 @@ package cat.footoredo.mx.compiler;
 
 import cat.footoredo.mx.ast.AST;
 import cat.footoredo.mx.ast.ASTBuilderVisitor;
-import cat.footoredo.mx.ast.BuiltinDeclarationsNode;
-import cat.footoredo.mx.ast.TypeNode;
 import cat.footoredo.mx.cst.MxLexer;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.BuiltinFunction;
-import cat.footoredo.mx.entity.Function;
-import cat.footoredo.mx.entity.Parameter;
-import cat.footoredo.mx.entity.Params;
-import cat.footoredo.mx.exception.SemanticError;
-import cat.footoredo.mx.type.VoidTypeRef;
+import cat.footoredo.mx.exception.SemanticException;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -21,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class Compiler {
-    public void compile(String strPath) throws IOException, SemanticError {
+    public void compile(String strPath) throws IOException, SemanticException {
         AST ast = parseFile(strPath);
         AST ast_builtin = addBuiltin(ast);
         AST sem = semanticAnalyze(ast_builtin);
@@ -45,7 +39,7 @@ public class Compiler {
         }
     }
 
-    AST semanticAnalyze(AST ast) throws SemanticError {
+    AST semanticAnalyze(AST ast) throws SemanticException {
         new LocalResolver().resolve(ast);
         return ast;
     }
