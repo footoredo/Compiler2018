@@ -1,5 +1,6 @@
 package cat.footoredo.mx.type;
 
+import cat.footoredo.mx.ast.Slot;
 import cat.footoredo.mx.exception.SemanticException;
 
 import java.util.*;
@@ -16,13 +17,17 @@ public class TypeTable {
     }
 
     public void put(TypeRef typeRef, Type type) {
+        // System.out.println("Putting " + typeRef.toString() + " " + typeRef.hashCode());
         if (table.containsKey(typeRef)) {
             throw new SemanticException(typeRef.getLocation(), "duplicated type definition of " + typeRef.toString());
         }
         table.put(typeRef, type);
+        // System.out.println(table.containsKey(typeRef));
     }
 
     public Type get(TypeRef typeRef) {
+        // System.out.println("Getting " + typeRef.toString() + " " + typeRef.hashCode());
+        // System.out.println(table.containsKey(typeRef));
         if (table.containsKey(typeRef)) {
             return table.get(typeRef);
         }
@@ -58,7 +63,35 @@ public class TypeTable {
 
     public void semanticCheck() {
         for (Type t: getTypes()) {
-            //if (t instanceof )
+            if (t instanceof ClassType) {
+                checkVoidMembers((ClassType) t);
+                checkDuplicatedMembers((ClassType) t);
+            }
+            else if (t instanceof ArrayType) {
+                checkVoidMembers((ArrayType) t);
+            }
+        }
+    }
+
+    private void checkVoidMembers(ArrayType arrayType) {
+        if (arrayType.getBaseType() instanceof VoidType)
+            throw new SemanticException("got array of void");
+    }
+
+    private void checkVoidMembers(ClassType classType) {
+        for (Slot slot: classType.getMembers()) {
+            if (slot.getTypeNode().isVoid())
+                throw new SemanticException("class " + classType.getName() + " has a void type member " + slot.getName());
+        }
+    }
+
+    private void checkDuplicatedMembers(ClassType classType) {
+        Set<String> pool = new HashSet<>();
+        for (Slot slot: classType.getMembers()) {
+            if (pool.contains(slot.getName())) {
+                throw new SemanticException("class " + classType.getName() + "has duplicated member " + slot.getName());
+            }
+            pool.add(slot.getName());
         }
     }
 }

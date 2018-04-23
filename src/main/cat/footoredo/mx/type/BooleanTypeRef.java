@@ -2,7 +2,7 @@ package cat.footoredo.mx.type;
 
 import cat.footoredo.mx.entity.Location;
 
-public class BooleanTypeRef extends TypeRef {
+public class BooleanTypeRef extends BuiltinTypeRef {
     public BooleanTypeRef(Location location) {
         super (location);
     }
@@ -11,5 +11,14 @@ public class BooleanTypeRef extends TypeRef {
     }
     public String toString() {
         return "bool";
+    }
+
+    @Override
+    public Type definingType() {
+        return new BooleanType();
+    }
+
+    public boolean equals(Object other) {
+        return (other instanceof BooleanTypeRef);
     }
 }

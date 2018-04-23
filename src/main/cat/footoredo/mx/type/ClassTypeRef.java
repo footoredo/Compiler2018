@@ -18,4 +18,8 @@ public class ClassTypeRef extends TypeRef {
     public String toString() {
         return name;
     }
+
+    public boolean equals(Object other) {
+        return (other instanceof ClassTypeRef);
+    }
 }

@@ -23,4 +23,9 @@ public class DefinedFunction extends Function {
     public void setScope(LocalScope scope) {
         this.scope = scope;
     }
+
+    @Override
+    public <T> T accept(EntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

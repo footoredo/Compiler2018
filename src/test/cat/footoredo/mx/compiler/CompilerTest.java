@@ -64,4 +64,9 @@ public class CompilerTest {
     public void testClassLocalResolver() throws IOException, SemanticException {
         compiler.compile("example/test_class_local_resolver.m");
     }
+
+    @Test
+    public void testTypeResolver() throws IOException, SemanticException {
+        compiler.compile("example/test_type_resolver.m");
+    }
 }

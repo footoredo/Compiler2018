@@ -22,4 +22,9 @@ public class Variable extends Entity {
     }
 
     public boolean hasInitializer() { return initializer != null; }
+
+    @Override
+    public <T> T accept(EntityVisitor<T> visitor) {
+        return visitor.visit(this);
+    }
 }

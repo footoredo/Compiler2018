@@ -28,4 +28,6 @@ abstract public class Entity {
     public void referred () {
         referredCount ++;
     }
+
+    abstract public <T> T accept(EntityVisitor<T> visitor);
 }

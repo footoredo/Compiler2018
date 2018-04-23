@@ -29,7 +29,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
 
         for (MxParser.ClassDeclarationContext classDeclarationContext : ctx.classDeclaration()) {
             ClassNode classNode = visitClassDeclaration (classDeclarationContext);
-            declarations.addClass(classNode);
+            declarations.addTypeDefinition(classNode);
         }
 
         for (MxParser.MethodDeclarationContext methodDeclarationContext : ctx.methodDeclaration()) {

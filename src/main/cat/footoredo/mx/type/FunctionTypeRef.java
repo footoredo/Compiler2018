@@ -33,4 +33,8 @@ public class FunctionTypeRef extends TypeRef {
         buf.append (")");
         return buf.toString();
     }
+
+    public boolean equals(Object other) {
+        return (other instanceof FunctionTypeRef);
+    }
 }

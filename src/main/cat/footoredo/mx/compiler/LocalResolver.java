@@ -25,7 +25,7 @@ public class LocalResolver extends Visitor {
 
         resolveGvarInitializers(ast.getVariables());
         resolveFunctions(ast.getFunctions());
-        resolveClasses(ast.getClasses());
+        resolveTypeDefinition(ast.getTypeDefinitions());
 
         try {
             Entity main = toplevelScope.get("main");
@@ -37,7 +37,7 @@ public class LocalResolver extends Visitor {
             throw new SemanticException("no main function found");
         }
 
-        ast.setScop(toplevelScope);
+        ast.setScope(toplevelScope);
     }
 
     private void resolveGvarInitializers(List<Variable> vars) {
@@ -57,12 +57,15 @@ public class LocalResolver extends Visitor {
         }
     }
 
-    private void resolveClasses(List<ClassNode> classes) {
-        for (ClassNode c: classes) {
-            // System.out.println("asdas");
-            pushScope(c.getMemberVariables());
-            resolveFunctions(c.getMemberMethods());
-            c.setScope(popScope());
+    private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
+        for (TypeDefinition t: typeDefinitions) {
+            if (t instanceof ClassNode) {
+                ClassNode c = (ClassNode) t;
+                // System.out.println("asdas");
+                pushScope(c.getMemberVariables());
+                resolveFunctions(c.getMemberMethods());
+                c.setScope(popScope());
+            }
         }
     }
 

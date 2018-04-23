@@ -2,10 +2,12 @@ package cat.footoredo.mx.compiler;
 
 import cat.footoredo.mx.ast.AST;
 import cat.footoredo.mx.ast.ASTBuilderVisitor;
+import cat.footoredo.mx.ast.BuiltinTypeNode;
 import cat.footoredo.mx.cst.MxLexer;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.BuiltinFunction;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -17,8 +19,9 @@ import java.util.List;
 public class Compiler {
     public void compile(String strPath) throws IOException, SemanticException {
         AST ast = parseFile(strPath);
-        AST ast_builtin = addBuiltin(ast);
-        AST sem = semanticAnalyze(ast_builtin);
+        AST ast_builtin_functions = addBuiltinFunctions(ast);
+        AST ast_builtin_types = addBuiltinTypes(ast);
+        AST sem = semanticAnalyze(ast_builtin_types);
     }
 
     AST parseFile(String path) throws IOException {
@@ -41,10 +44,11 @@ public class Compiler {
 
     AST semanticAnalyze(AST ast) throws SemanticException {
         new LocalResolver().resolve(ast);
+        new TypeResolver().resolve(ast);
         return ast;
     }
 
-    AST addBuiltin(AST ast) throws IOException {
+    AST addBuiltinFunctions(AST ast) throws IOException {
         CharStream input = CharStreams.fromFileName("builtin/global_builtin.m");
         MxLexer lexer = new MxLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -56,6 +60,14 @@ public class Compiler {
         for (BuiltinFunction function: builtinDeclarations) {
             ast.addFunction(function);
         }
+        return ast;
+    }
+
+    AST addBuiltinTypes(AST ast) {
+        ast.addTypeDefinition(new BuiltinTypeNode(new IntegerTypeRef()));
+        ast.addTypeDefinition(new BuiltinTypeNode(new BooleanTypeRef()));
+        ast.addTypeDefinition(new BuiltinTypeNode(new StringTypeRef()));
+        ast.addTypeDefinition(new BuiltinTypeNode(new VoidTypeRef()));
         return ast;
     }
 }

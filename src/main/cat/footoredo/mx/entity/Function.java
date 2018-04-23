@@ -5,6 +5,7 @@ import cat.footoredo.mx.ast.MethodDescriptionNode;
 import cat.footoredo.mx.ast.MethodNode;
 import cat.footoredo.mx.ast.TypeNode;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 abstract public class Function extends Entity {
@@ -22,5 +23,9 @@ abstract public class Function extends Entity {
 
     public List<Parameter> getParameters() {
         return params.getParamDescriptors();
+    }
+
+    public TypeNode getReturnType() {
+        return typeNode;
     }
 }

@@ -2,23 +2,24 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.ClassType;
 import cat.footoredo.mx.type.ClassTypeRef;
+import cat.footoredo.mx.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassNode extends Node {
+public class ClassNode extends TypeDefinition {
     protected Location location;
-    private String name;
     private List<Variable> memberVariables;
     private List<DefinedFunction> memberMethods;
     private DefinedFunction constructor;
-    private TypeNode typeNode;
     private List<Slot> members;
     private LocalScope scope;
+    private String name;
 
     ClassNode(Location location, String name, ClassBodyNode classBodyNode) throws SemanticException {
-        super ();
+        super (new TypeNode(new ClassTypeRef(location, name)));
         this.location = location;
         this.name = name;
         this.memberVariables = new ArrayList<>();
@@ -46,7 +47,6 @@ public class ClassNode extends Node {
                 members.add(new Slot(constructorDeclarationNode.getConstructorNode().getTypeNode(), constructorDeclarationNode.getConstructorNode().getName()));
             }
         }
-        this.typeNode = new TypeNode(new ClassTypeRef(location, name));
 
         /*System.out.println("A new class \"" + this.name + "\" is found @ " +
                 this.location.toString() + " with " + Integer.toString(memberMethods.size()) + " methods and "
@@ -97,5 +97,15 @@ public class ClassNode extends Node {
 
     public boolean hasConstructor() {
         return constructor != null;
+    }
+
+    @Override
+    public Type definingType() {
+        return new ClassType(location, name, members);
+    }
+
+    @Override
+    public <T> T accept(TypeDefinitionVisitor<T> visitor) {
+        return visitor.visit(this);
     }
 }

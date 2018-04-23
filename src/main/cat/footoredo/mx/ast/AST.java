@@ -9,7 +9,7 @@ import java.util.Set;
 public class AST extends Node {
     protected Location location;
     private Declarations declarations;
-    private ToplevelScope scop;
+    private ToplevelScope scope;
 
     AST (Location location, Declarations declarations) {
         super ();
@@ -43,15 +43,19 @@ public class AST extends Node {
         declarations.addFun(fun);
     }
 
-    public ToplevelScope getScop() {
-        return scop;
+    public void addTypeDefinition(TypeDefinition typeDefinition) {
+        declarations.addTypeDefinition(typeDefinition);
     }
 
-    public void setScop(ToplevelScope scop) {
-        this.scop = scop;
+    public ToplevelScope getScope() {
+        return scope;
     }
 
-    public List<ClassNode> getClasses() {
-        return declarations.getClasses();
+    public void setScope(ToplevelScope scope) {
+        this.scope = scope;
+    }
+
+    public List<TypeDefinition> getTypeDefinitions() {
+        return declarations.getTypeDefinitions();
     }
 }
