@@ -17,4 +17,8 @@ public class FunctionType extends Type {
     public ParamTypes getParams() {
         return params;
     }
+
+    public int getArgc() {
+        return params.size();
+    }
 }

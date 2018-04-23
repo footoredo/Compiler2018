@@ -50,7 +50,8 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         Declarations declarations = new Declarations();
         for (MxParser.BuiltinDeclarationContext builtinDeclarationContext: ctx.builtinDeclaration()) {
             MethodDescriptionNode methodDescriptionNode = visitBuiltinDeclaration(builtinDeclarationContext);
-            declarations.addFun(new BuiltinFunction(methodDescriptionNode));
+            MethodNode methodNode = new MethodNode(methodDescriptionNode, null);
+            declarations.addFun(new BuiltinFunction(methodNode));
         }
 
         return new BuiltinDeclarationsNode(declarations);
@@ -130,7 +131,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                     if (operator.equals("&&") || operator.equals("||"))
                         return new LogicalOpNode(lhs, operator, rhs);
                     else
-                        return new BinaryOpNode(lhs, operator, rhs);
+                        return new ArithmeticOpNode(lhs, operator, rhs);
                 }
             }
         }

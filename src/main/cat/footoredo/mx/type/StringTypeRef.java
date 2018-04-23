@@ -13,11 +13,6 @@ public class StringTypeRef extends BuiltinTypeRef {
         return "string";
     }
 
-    @Override
-    public Type definingType() {
-        return new StringType();
-    }
-
     public boolean equals(Object other) {
         return (other instanceof StringTypeRef);
     }

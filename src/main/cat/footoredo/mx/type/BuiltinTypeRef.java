@@ -6,6 +6,4 @@ abstract public class BuiltinTypeRef extends TypeRef {
     BuiltinTypeRef (Location location) {
         super(location);
     }
-
-    abstract public Type definingType();
 }

@@ -69,4 +69,9 @@ public class CompilerTest {
     public void testTypeResolver() throws IOException, SemanticException {
         compiler.compile("example/test_type_resolver.m");
     }
+
+    @Test
+    public void testTypeChecker() throws IOException, SemanticException {
+        compiler.compile("example/test_type_checker.m");
+    }
 }

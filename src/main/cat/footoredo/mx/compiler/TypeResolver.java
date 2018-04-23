@@ -12,8 +12,8 @@ public class TypeResolver extends Visitor
         implements TypeDefinitionVisitor<Void>, EntityVisitor<Void> {
     private TypeTable typeTable;
 
-    public TypeResolver() {
-        this.typeTable = new TypeTable();
+    public TypeResolver(TypeTable types) {
+        this.typeTable = types;
     }
 
     public void resolve(AST ast) {
@@ -43,28 +43,29 @@ public class TypeResolver extends Visitor
         }
     }
 
-    @Override
     public Void visit(ClassNode classNode) {
         resolveClassNode(classNode);
         return null;
     }
 
-    @Override
     public Void visit(BuiltinTypeNode builtinTypeNode) {
         return null;
     }
 
     @Override
     public Void visit(DefinedFunction definedFunction) {
-        bindType(definedFunction.getReturnType());
+        bindType(definedFunction.getTypeNode());
+        bindType(definedFunction.getReturnTypeNode());
         resolveParameters(definedFunction.getParameters());
+        // System.out.println("resolving defined function " + definedFunction.getName());
         visitStatement(definedFunction.getBlock());
         return null;
     }
 
     @Override
     public Void visit(BuiltinFunction builtinFunction) {
-        bindType(builtinFunction.getReturnType());
+        bindType(builtinFunction.getTypeNode());
+        bindType(builtinFunction.getReturnTypeNode());
         resolveParameters(builtinFunction.getParameters());
         return null;
     }
@@ -73,6 +74,14 @@ public class TypeResolver extends Visitor
     public Void visit(Variable variable) {
         bindType(variable.getTypeNode());
         if (variable.hasInitializer()) visitExpression(variable.getInitializer());
+        return null;
+    }
+
+    @Override
+    public Void visit(VariableNode node) {
+        // System.out.println("resolving variable " + node.getName());
+        super.visit(node);
+        bindType(node.getEntity().getTypeNode());
         return null;
     }
 
@@ -114,7 +123,7 @@ public class TypeResolver extends Visitor
 
     @Override
     public Void visit(NewNode node) {
-        bindType(node.getType());
+        bindType(node.getTypeNode());
         return null;
     }
 }

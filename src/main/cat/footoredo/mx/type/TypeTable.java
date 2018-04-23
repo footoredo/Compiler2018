@@ -28,6 +28,7 @@ public class TypeTable {
     public Type get(TypeRef typeRef) {
         // System.out.println("Getting " + typeRef.toString() + " " + typeRef.hashCode());
         // System.out.println(table.containsKey(typeRef));
+        System.out.println("in typeTable " + typeRef.toString());
         if (table.containsKey(typeRef)) {
             return table.get(typeRef);
         }
@@ -47,6 +48,7 @@ public class TypeTable {
                 for (TypeRef paramTypeRef : functionTypeRef.getParams().getTypeRefs()) {
                     paramTypes.add(get(paramTypeRef));
                 }
+                // System.out.println("in typeTable " + typeRef.toString());
                 type = new FunctionType(get(functionTypeRef.getReturnType()), new ParamTypes(paramTypes));
             }
             else {

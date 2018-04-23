@@ -14,7 +14,8 @@ public class Declarations {
     private Set<Variable> vars = new LinkedHashSet<>();
     private Set<BuiltinFunction> builtinFuns = new LinkedHashSet<>();
     private Set<DefinedFunction> funs = new LinkedHashSet<>();
-    private Set<TypeDefinition> typeDefinitions = new LinkedHashSet<>();
+    private Set<ClassNode> classes = new LinkedHashSet<>();
+    private Set<BuiltinTypeNode> builtinTypeNodes = new LinkedHashSet<>();
 
     public void addVar (Variable var) {
         vars.add (var);
@@ -40,13 +41,17 @@ public class Declarations {
         builtinFuns.addAll(_funs);
     }
 
-    public void addTypeDefinition (TypeDefinition typeDefinition) {
-        typeDefinitions.add (typeDefinition);
+    public void addTypeDefinition (ClassNode typeDefinition) {
+        classes.add (typeDefinition);
     }
 
-    public void addTypeDefinitions (List<ClassNode> typeDefinitions) {
-        this.typeDefinitions.addAll (typeDefinitions);
+    public void addTypeDefinition (BuiltinTypeNode typeDefinition) {
+        builtinTypeNodes.add (typeDefinition);
     }
+
+    /*public void addTypeDefinitions (List<TypeDefinition> typeDefinitions) {
+        classes.addAll (typeDefinitions);
+    }*/
 
     public List<Variable> getVars () {
         return new ArrayList<> (vars);
@@ -60,7 +65,11 @@ public class Declarations {
         return new ArrayList<> (builtinFuns);
     }
 
-    public List<TypeDefinition> getTypeDefinitions () {
-        return new ArrayList<>(typeDefinitions);
+    public List<ClassNode> getClasses() {
+        return new ArrayList<>(classes);
+    }
+
+    public List<BuiltinTypeNode> getBuiltinTypes() {
+        return new ArrayList<>(builtinTypeNodes);
     }
 }

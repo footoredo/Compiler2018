@@ -2,7 +2,7 @@ package cat.footoredo.mx.type;
 
 import cat.footoredo.mx.entity.Location;
 
-public class VoidTypeRef extends BuiltinTypeRef {
+public class VoidTypeRef extends BuiltinTypeRef implements SelfDefiningType  {
     public VoidTypeRef (Location location) {
         super (location);
     }
@@ -11,7 +11,6 @@ public class VoidTypeRef extends BuiltinTypeRef {
         return "void";
     }
 
-    @Override
     public Type definingType() {
         return new VoidType();
     }

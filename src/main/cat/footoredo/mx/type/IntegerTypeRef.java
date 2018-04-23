@@ -3,7 +3,7 @@ package cat.footoredo.mx.type;
 import cat.footoredo.mx.ast.IntegerLiteralNode;
 import cat.footoredo.mx.entity.Location;
 
-public class IntegerTypeRef extends BuiltinTypeRef {
+public class IntegerTypeRef extends BuiltinTypeRef implements SelfDefiningType  {
     public IntegerTypeRef (Location location) {
         super (location);
     }
@@ -14,7 +14,6 @@ public class IntegerTypeRef extends BuiltinTypeRef {
         return "int";
     }
 
-    @Override
     public Type definingType() {
         return new IntegerType();
     }

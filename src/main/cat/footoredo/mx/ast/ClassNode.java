@@ -15,7 +15,6 @@ public class ClassNode extends TypeDefinition {
     private List<DefinedFunction> memberMethods;
     private DefinedFunction constructor;
     private List<Slot> members;
-    private LocalScope scope;
     private String name;
 
     ClassNode(Location location, String name, ClassBodyNode classBodyNode) throws SemanticException {
@@ -66,14 +65,13 @@ public class ClassNode extends TypeDefinition {
         return memberVariables;
     }
 
-    public List<DefinedFunction> getMemberMethods() {
-        if (constructor == null)
-            return memberMethods;
-        else {
-            List<DefinedFunction> ret = memberMethods;
+    public List<Function> getMemberMethods() {
+        List<Function> ret = new ArrayList<>();
+        ret.addAll(memberMethods);
+        if (constructor != null) {
             ret.add(constructor);
-            return ret;
         }
+        return ret;
     }
 
     public List<Entity> getEntitis() {
@@ -85,14 +83,6 @@ public class ClassNode extends TypeDefinition {
 
     public DefinedFunction getConstructor() {
         return constructor;
-    }
-
-    public LocalScope getScope() {
-        return scope;
-    }
-
-    public void setScope(LocalScope scope) {
-        this.scope = scope;
     }
 
     public boolean hasConstructor() {

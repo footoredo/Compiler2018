@@ -1,5 +1,7 @@
 package cat.footoredo.mx.ast;
 
+import cat.footoredo.mx.type.Type;
+
 public class Slot extends Node {
     private TypeNode typeNode;
     private String name;
@@ -11,6 +13,10 @@ public class Slot extends Node {
 
     public TypeNode getTypeNode() {
         return typeNode;
+    }
+
+    public Type getType() {
+        return typeNode.getType();
     }
 
     public String getName() {

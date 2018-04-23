@@ -43,7 +43,11 @@ public class AST extends Node {
         declarations.addFun(fun);
     }
 
-    public void addTypeDefinition(TypeDefinition typeDefinition) {
+    public void addTypeDefinition(ClassNode typeDefinition) {
+        declarations.addTypeDefinition(typeDefinition);
+    }
+
+    public void addTypeDefinition(BuiltinTypeNode typeDefinition) {
         declarations.addTypeDefinition(typeDefinition);
     }
 
@@ -55,7 +59,18 @@ public class AST extends Node {
         this.scope = scope;
     }
 
-    public List<TypeDefinition> getTypeDefinitions() {
-        return declarations.getTypeDefinitions();
+    public List<TypeDefinition> getTypeDefinitions () {
+        List<TypeDefinition> ret = new ArrayList<>();
+        ret.addAll(declarations.getClasses());
+        ret.addAll(declarations.getBuiltinTypes());
+        return ret;
+    }
+
+    public List<ClassNode> getClasses() {
+        return declarations.getClasses();
+    }
+
+    public List<BuiltinTypeNode> getBuiltinTypes() {
+        return declarations.getBuiltinTypes();
     }
 }

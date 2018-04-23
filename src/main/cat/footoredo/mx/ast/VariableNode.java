@@ -2,6 +2,7 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Entity;
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.Type;
 
 public class VariableNode extends LHSNode {
     protected Location location;
@@ -34,5 +35,12 @@ public class VariableNode extends LHSNode {
     @Override
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public Type getType() {
+        // System.out.println("asdasd");
+        // System.out.println(entity.getTypeNode().toString());
+        return entity.getTypeNode().getType();
     }
 }

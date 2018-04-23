@@ -5,6 +5,7 @@ import cat.footoredo.mx.entity.Location;
 public class FunctionTypeRef extends TypeRef {
     protected TypeRef returnType;
     protected ParamTypeRefs params;
+    private Location location;
 
     public FunctionTypeRef (Location location, TypeRef returnType, ParamTypeRefs params) {
         super (location);
@@ -30,7 +31,11 @@ public class FunctionTypeRef extends TypeRef {
             isFirst = false;
             buf.append (ref.toString());
         }
-        buf.append (")");
+        buf.append (") @");
+        if (location != null)
+            buf.append (location.toString());
+        else
+            buf.append ("__builtin");
         return buf.toString();
     }
 

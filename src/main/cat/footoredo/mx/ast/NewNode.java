@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.Type;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class NewNode extends ExpressionNode {
         return creator;
     }
 
-    public TypeNode getType () {
+    public TypeNode getTypeNode () {
         return creator.getType();
     }
 
@@ -42,5 +43,10 @@ public class NewNode extends ExpressionNode {
     @Override
     public <S,E> E accept(ASTVisitor<S,E> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Type getType() {
+        return creator.getType().getType();
     }
 }

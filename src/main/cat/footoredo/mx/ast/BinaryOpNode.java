@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.Type;
 
 public class BinaryOpNode extends ExpressionNode {
     protected ExpressionNode lhs, rhs;
@@ -27,6 +28,11 @@ public class BinaryOpNode extends ExpressionNode {
 
     public String getOperator() {
         return operator;
+    }
+
+    @Override
+    public Type getType() {
+        return lhs.getType();
     }
 
     @Override

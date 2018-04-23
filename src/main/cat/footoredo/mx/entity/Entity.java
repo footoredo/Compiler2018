@@ -1,6 +1,7 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.ast.TypeNode;
+import cat.footoredo.mx.type.Type;
 
 abstract public class Entity {
     protected TypeNode typeNode;
@@ -21,6 +22,8 @@ abstract public class Entity {
         return typeNode;
     }
 
+    public Type getType() {return typeNode.getType();}
+
     public Location getLocation () {
         return typeNode.getLocation();
     }
@@ -28,6 +31,8 @@ abstract public class Entity {
     public void referred () {
         referredCount ++;
     }
+
+    public boolean isReferred() { return referredCount > 0; }
 
     abstract public <T> T accept(EntityVisitor<T> visitor);
 }

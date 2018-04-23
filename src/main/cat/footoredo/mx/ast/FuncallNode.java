@@ -1,6 +1,10 @@
 package cat.footoredo.mx.ast;
 
+import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.type.FunctionType;
+import cat.footoredo.mx.type.Type;
 
 import java.util.List;
 
@@ -25,6 +29,26 @@ public class FuncallNode extends ExpressionNode {
 
     public List<ExpressionNode> getParams() {
         return params;
+    }
+
+    public int getArgc() {
+        return params.size();
+    }
+
+    public FunctionType getFunctionType() {
+        try {
+            System.out.println(((MemberNode) caller).getName());
+        }
+        catch (Exception e) {
+
+        }
+        System.out.println("ASD" + caller.getLocation());
+        return (FunctionType) caller.getType();
+    }
+
+    @Override
+    public Type getType() {
+        return ((FunctionType) caller.getType()).getReturnType();
     }
 
     @Override

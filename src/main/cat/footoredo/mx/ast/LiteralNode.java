@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.Type;
 import cat.footoredo.mx.type.TypeRef;
 
 abstract public class LiteralNode extends ExpressionNode {
@@ -15,6 +16,11 @@ abstract public class LiteralNode extends ExpressionNode {
 
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public Type getType() {
+        return typeNode.getType();
     }
 
     public TypeNode getTypeNode() {

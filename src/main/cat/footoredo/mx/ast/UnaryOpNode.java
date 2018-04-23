@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.Type;
 
 public class UnaryOpNode extends ExpressionNode {
     private Location location;
@@ -29,5 +30,10 @@ public class UnaryOpNode extends ExpressionNode {
     @Override
     public <S,E> E accept(ASTVisitor<S,E> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Type getType() {
+        return expr.getType();
     }
 }

@@ -8,7 +8,7 @@ public class DefinedFunction extends Function {
     LocalScope scope;
 
     public DefinedFunction (MethodNode methodNode) {
-        super (methodNode.getMethodDescription());
+        super (methodNode.getTypeNode(), methodNode.getMethodDescription());
         this.block = methodNode.getBlock();
     }
 

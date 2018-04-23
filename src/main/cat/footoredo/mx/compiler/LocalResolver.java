@@ -4,6 +4,7 @@ import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.type.IntegerTypeRef;
+import cat.footoredo.mx.type.StringType;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,13 +25,13 @@ public class LocalResolver extends Visitor {
         }
 
         resolveGvarInitializers(ast.getVariables());
-        resolveFunctions(ast.getFunctions());
+        resolveDefinedFunctions(ast.getFunctions());
         resolveTypeDefinition(ast.getTypeDefinitions());
 
         try {
             Entity main = toplevelScope.get("main");
             if (!(main instanceof DefinedFunction &&
-                            main.getTypeNode().getTypeRef() instanceof IntegerTypeRef)) {
+                    ((DefinedFunction)main).getReturnTypeNode().isInteger())) {
                 throw new SemanticException("no main function found");
             }
         } catch (SemanticException e) {
@@ -48,24 +49,31 @@ public class LocalResolver extends Visitor {
         }
     }
 
-    private void resolveFunctions(List<DefinedFunction> funs) {
+    private void resolveFunction(DefinedFunction df) {
+        pushScope(df.getParameters());
+        super.visit(df.getBlock());
+        df.setScope(popScope());
+    }
+
+    private void resolveFunctions(List<Function> funs) {
+        for (Function f: funs) {
+            if (f instanceof DefinedFunction) {
+                resolveFunction((DefinedFunction)f);
+            }
+        }
+    }
+
+    private void resolveDefinedFunctions(List<DefinedFunction> funs) {
         for (DefinedFunction f: funs) {
-            // System.out.println("asdas");
-            pushScope(f.getParameters());
-            super.visit(f.getBlock());
-            f.setScope(popScope());
+            resolveFunction(f);
         }
     }
 
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
-            if (t instanceof ClassNode) {
-                ClassNode c = (ClassNode) t;
-                // System.out.println("asdas");
-                pushScope(c.getMemberVariables());
-                resolveFunctions(c.getMemberMethods());
-                c.setScope(popScope());
-            }
+            pushScope(t.getMemberVariables());
+            resolveFunctions(t.getMemberMethods());
+            t.setScope(popScope());
         }
     }
 
@@ -107,9 +115,11 @@ public class LocalResolver extends Visitor {
 
     @Override
     public Void visit(VariableNode node) {
+        System.out.println("resolving variable " + node.getName());
         Entity entity = currentScope().get(node.getName());
         entity.referred();
         node.setEntity(entity);
+        System.out.println(entity.getTypeNode());
         return null;
     }
 }

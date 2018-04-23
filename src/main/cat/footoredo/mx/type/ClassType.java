@@ -3,18 +3,19 @@ package cat.footoredo.mx.type;
 import cat.footoredo.mx.ast.Slot;
 import cat.footoredo.mx.entity.Location;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ClassType extends Type {
+public class ClassType extends MemberType {
     private String name;
     protected Location location;
-    private List<Slot> members;
 
     public ClassType(Location location, String name, List<Slot> members) {
-        super ();
+        super (members);
         this.location = location;
         this.name = name;
-        this.members = members;
     }
 
     public String getName() {
@@ -23,9 +24,5 @@ public class ClassType extends Type {
 
     public Location getLocation() {
         return location;
-    }
-
-    public List<Slot> getMembers() {
-        return members;
     }
 }

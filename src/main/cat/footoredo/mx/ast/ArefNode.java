@@ -1,6 +1,8 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.ArrayType;
+import cat.footoredo.mx.type.Type;
 
 public class ArefNode extends LHSNode {
     private ExpressionNode expr, index;
@@ -25,5 +27,10 @@ public class ArefNode extends LHSNode {
     @Override
     public <S,E> E accept(ASTVisitor<S,E> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Type getType() {
+        return ((ArrayType) expr.getType()).getBaseType();
     }
 }

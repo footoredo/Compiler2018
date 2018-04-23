@@ -1,6 +1,8 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.MemberType;
+import cat.footoredo.mx.type.Type;
 
 public class MemberNode extends LHSNode {
     protected ExpressionNode expr;
@@ -27,5 +29,12 @@ public class MemberNode extends LHSNode {
     @Override
     public <S, E> E accept(ASTVisitor<S, E> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Type getType() {
+        // System.out.println(expr);
+        // System.out.println(expr.getType().toString());
+        return ((MemberType)expr.getType()).getMemberType(name);
     }
 }

@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.type.Type;
 
 public class AssignNode extends ExpressionNode {
     protected ExpressionNode lhs, rhs;
@@ -12,7 +13,7 @@ public class AssignNode extends ExpressionNode {
     }
 
     @Override
-    Location getLocation() {
+    public Location getLocation() {
         return lhs.getLocation();
     }
 
@@ -27,5 +28,10 @@ public class AssignNode extends ExpressionNode {
     @Override
     public <S,E> E accept(ASTVisitor<S,E> visitor) {
         return visitor.visit(this);
+    }
+
+    @Override
+    public Type getType() {
+        return lhs.getType();
     }
 }
