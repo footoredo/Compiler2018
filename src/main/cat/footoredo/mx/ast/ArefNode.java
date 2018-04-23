@@ -31,6 +31,7 @@ public class ArefNode extends LHSNode {
 
     @Override
     public Type getType() {
+        System.out.println(expr.getLocation());
         return ((ArrayType) expr.getType()).getBaseType();
     }
 }

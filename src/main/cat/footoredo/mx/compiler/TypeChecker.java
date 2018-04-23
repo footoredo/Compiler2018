@@ -105,6 +105,7 @@ public class TypeChecker extends Visitor {
     }
 
     private void checkCond(ExpressionNode cond) {
+        // System.out.println(cond.getType());
         if (!(cond.getType().isBoolean()))
             throw new SemanticException(cond.getLocation(), "not valid condition expression");
     }
@@ -125,19 +126,27 @@ public class TypeChecker extends Visitor {
 
     public Void visit(ArithmeticOpNode node) {
         super.visit(node);
-        if (!node.getLhs().getType().isInteger())
-            throw new SemanticException(node.getLhs().getLocation(), "lhs of arithmetic op is not integer");
-        if (!node.getRhs().getType().isInteger())
-            throw new SemanticException(node.getRhs().getLocation(), "rhs of arithmetic op is not integer");
+        if (node.getOperator() == "+") {
+            if (!areSameType(node.getLhs().getType(), node.getRhs().getType()))
+                throw new SemanticException(node.getLhs().getLocation(), "incompatible operands");
+            if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString())
+                throw new SemanticException(node.getLhs().getLocation(), "wrong operand type for \"+\"");
+        }
+        else {
+            if (!node.getLhs().getType().isInteger())
+                throw new SemanticException(node.getLhs().getLocation(), "lhs of arithmetic op is not integer");
+            if (!node.getRhs().getType().isInteger())
+                throw new SemanticException(node.getRhs().getLocation(), "rhs of arithmetic op is not integer");
+        }
         return null;
     }
 
     public Void visit(LogicalOpNode node) {
         super.visit(node);
-        if (!node.getLhs().getType().isInteger())
-            throw new SemanticException(node.getLhs().getLocation(), "lhs of arithmetic op is not integer");
-        if (!node.getRhs().getType().isInteger())
-            throw new SemanticException(node.getRhs().getLocation(), "rhs of arithmetic op is not integer");
+        if (!node.getLhs().getType().isBoolean())
+            throw new SemanticException(node.getLhs().getLocation(), "lhs of logical op is not boolean");
+        if (!node.getRhs().getType().isBoolean())
+            throw new SemanticException(node.getRhs().getLocation(), "rhs of logical op is not boolean");
         return null;
     }
 

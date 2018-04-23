@@ -60,6 +60,26 @@ public class CompilerTest {
         }
     }
 
+    @Test
+    public void T697() throws Exception {
+        try {
+            compiler.compile("example/T697.m");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test
+    public void testTmp() throws Exception {
+        try {
+            compiler.compile("example/tmp.m");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
     @Test(expected = SemanticException.class)
     public void testClassLocalResolver() throws IOException, SemanticException {
         compiler.compile("example/test_class_local_resolver.m");

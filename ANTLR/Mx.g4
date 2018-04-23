@@ -14,17 +14,17 @@ builtinDeclaration
 
 expression
   : primary
+  | 'new' creator
   | expression '.' Identifier
   | expression '[' expression ']'
   | expression '(' expressionList? ')'
-  | 'new' creator
   | '(' expression ')'
   | expression ('++' | '--')
   | ('+'|'-'|'++'|'--') expression
   | ('~'|'!') expression
   | expression ('*'|'/'|'%') expression
   | expression ('+'|'-') expression
-  | expression ('<' '<' | '>' '>' '>' | '>' '>') expression
+  | expression ('<<' | '>>') expression
   | expression ('<=' | '>=' | '>' | '<') expression
   | expression ('==' | '!=') expression
   | expression '&' expression
@@ -40,13 +40,14 @@ expressionList
   ;
 
 creator
-  : primitiveType
+  : arrayCreator
+  | primitiveType
   | classType arguments?
-  | arrayCreator
   ;
 
 arrayCreator
-  : baseTypeSpec ('[' expression ']')* ('[' ']')*
+  : baseTypeSpec ('[' expression ']')+ ('[' ']')*
+  | baseTypeSpec ('[' ']')+
   ;
 
 arguments

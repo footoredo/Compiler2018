@@ -36,13 +36,6 @@ public class FuncallNode extends ExpressionNode {
     }
 
     public FunctionType getFunctionType() {
-        try {
-            System.out.println(((MemberNode) caller).getName());
-        }
-        catch (Exception e) {
-
-        }
-        System.out.println("ASD" + caller.getLocation());
         return (FunctionType) caller.getType();
     }
 

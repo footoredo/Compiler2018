@@ -85,6 +85,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             return new MemberNode(expr, ctx.Identifier().getText());
         }
         else if (ctx.creator() != null) {                                       // new creator
+            // System.out.println("got new");
             return new NewNode(location, visitCreator(ctx.creator()));
         }
         else if (ctx.expressionList() != null) {
@@ -130,6 +131,10 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                     String operator = ctx.getChild(1).getText();
                     if (operator.equals("&&") || operator.equals("||"))
                         return new LogicalOpNode(lhs, operator, rhs);
+                    else if (operator.equals("<") || operator.equals(">") ||
+                            operator.equals("<=") || operator.equals(">=") ||
+                            operator.equals("=="))
+                        return new ComparationNode(lhs, operator, rhs);
                     else
                         return new ArithmeticOpNode(lhs, operator, rhs);
                 }
@@ -160,6 +165,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             return new CreatorNode(getLocation(ctx), visitPrimitiveType(ctx.primitiveType()).getTypeRef());
         }
         else if (ctx.arrayCreator() != null) {
+            // System.out.println("asdas");
             return visitArrayCreator(ctx.arrayCreator());
         }
         else {

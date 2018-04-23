@@ -115,11 +115,11 @@ public class LocalResolver extends Visitor {
 
     @Override
     public Void visit(VariableNode node) {
-        System.out.println("resolving variable " + node.getName());
+        // System.out.println("resolving variable " + node.getName());
         Entity entity = currentScope().get(node.getName());
         entity.referred();
         node.setEntity(entity);
-        System.out.println(entity.getTypeNode());
+        // System.out.println(entity.getTypeNode());
         return null;
     }
 }

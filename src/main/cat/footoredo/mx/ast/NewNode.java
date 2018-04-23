@@ -25,7 +25,7 @@ public class NewNode extends ExpressionNode {
     }
 
     public TypeNode getTypeNode () {
-        return creator.getType();
+        return creator.getTypeNode();
     }
 
     public List<ExpressionNode> getLengths () {
@@ -47,6 +47,7 @@ public class NewNode extends ExpressionNode {
 
     @Override
     public Type getType() {
-        return creator.getType().getType();
+        // System.out.println(creator.getTypeNode().toString());
+        return creator.getType();
     }
 }

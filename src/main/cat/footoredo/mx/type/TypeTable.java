@@ -28,7 +28,7 @@ public class TypeTable {
     public Type get(TypeRef typeRef) {
         // System.out.println("Getting " + typeRef.toString() + " " + typeRef.hashCode());
         // System.out.println(table.containsKey(typeRef));
-        System.out.println("in typeTable " + typeRef.toString());
+        // System.out.println("in typeTable " + typeRef.toString());
         if (table.containsKey(typeRef)) {
             return table.get(typeRef);
         }
