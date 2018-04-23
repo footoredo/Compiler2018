@@ -28,4 +28,8 @@ abstract public class Type {
     public boolean isBoolean() {
         return this instanceof BooleanType;
     }
+
+    public boolean isNull() {
+        return this instanceof NullType;
+    }
 }

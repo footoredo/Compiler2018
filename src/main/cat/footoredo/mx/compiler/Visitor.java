@@ -106,6 +106,13 @@ public class Visitor implements ASTVisitor<Void, Void> {
     }
 
     @Override
+    public Void visit(ArithmeticOpNode node) {
+        visitExpression(node.getLhs());
+        visitExpression(node.getRhs());
+        return null;
+    }
+
+    @Override
     public Void visit(BinaryOpNode node) {
         visitExpression(node.getLhs());
         visitExpression(node.getRhs());
@@ -118,7 +125,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
         return null;
     }
 
-    @Override
+    /*@Override
     public Void visit(PrefixNode node) {
         visitExpression(node.getExpr());
         return null;
@@ -128,7 +135,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
     public Void visit(SuffixNode node) {
         visitExpression(node.getExpr());
         return null;
-    }
+    }*/
 
     @Override
     public Void visit(ArefNode node) {
@@ -174,6 +181,11 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(BooleanLiteralNode node) {
+        return null;
+    }
+
+    @Override
+    public Void visit(NullLiteralNode node) {
         return null;
     }
 }

@@ -106,24 +106,37 @@ public class TypeResolver extends Visitor
     @Override
     public Void visit(IntegerLiteralNode node) {
         bindType(node.getTypeNode());
-        return null;
+        return super.visit(node);
     }
 
     @Override
     public Void visit(StringLiteralNode node) {
         bindType(node.getTypeNode());
-        return null;
+        return super.visit(node);
     }
 
     @Override
     public Void visit(BooleanLiteralNode node) {
         bindType(node.getTypeNode());
-        return null;
+        return super.visit(node);
     }
+
+    @Override
+    public Void visit(NullLiteralNode node) {
+        bindType(node.getTypeNode());
+        return super.visit(node);
+    }
+
 
     @Override
     public Void visit(NewNode node) {
         bindType(node.getTypeNode());
-        return null;
+        return super.visit(node);
+    }
+
+    @Override
+    public Void visit(LocalVariableDeclarationNode node) {
+        bindType(node.getTypeNode());
+        return super.visit(node);
     }
 }

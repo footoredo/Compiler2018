@@ -76,6 +76,7 @@ public class Compiler {
         ast.addTypeDefinition(new BuiltinTypeNode(new IntegerTypeRef()));
         ast.addTypeDefinition(new BuiltinTypeNode(new BooleanTypeRef()));
         ast.addTypeDefinition(new BuiltinTypeNode(new VoidTypeRef()));
+        ast.addTypeDefinition(new BuiltinTypeNode(new NullTypeRef()));
         ast.addTypeDefinition(new StringTypeNode(getBuiltinDeclarations("builtin/string_builtin.m")));
         return ast;
     }

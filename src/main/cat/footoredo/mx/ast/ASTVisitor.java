@@ -16,10 +16,11 @@ public interface ASTVisitor <S, E> {
     // Expressions
     E visit(AssignNode node);
     E visit(LogicalOpNode node);
+    E visit(ArithmeticOpNode node);
     E visit(BinaryOpNode node);
     E visit(UnaryOpNode node);
-    E visit(PrefixNode node);
-    E visit(SuffixNode node);
+    //E visit(PrefixNode node);
+    //E visit(SuffixNode node);
     E visit(ArefNode node);
     E visit(MemberNode node);
     E visit(FuncallNode node);
@@ -28,4 +29,5 @@ public interface ASTVisitor <S, E> {
     E visit(IntegerLiteralNode node);
     E visit(StringLiteralNode node);
     E visit(BooleanLiteralNode node);
+    E visit(NullLiteralNode node);
 }

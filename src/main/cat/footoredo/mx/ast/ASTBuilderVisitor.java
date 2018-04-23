@@ -230,7 +230,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             return new BooleanLiteralNode(location, value);
         }
         else {
-            return null;
+            return new NullLiteralNode(location);
         }
     }
 

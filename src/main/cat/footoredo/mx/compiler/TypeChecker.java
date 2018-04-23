@@ -2,11 +2,10 @@ package cat.footoredo.mx.compiler;
 
 import cat.footoredo.mx.OJ.Semantic;
 import cat.footoredo.mx.ast.*;
-import cat.footoredo.mx.entity.DefinedFunction;
-import cat.footoredo.mx.entity.Function;
-import cat.footoredo.mx.entity.Parameter;
-import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.ClassType;
+import cat.footoredo.mx.type.MemberType;
 import cat.footoredo.mx.type.Type;
 import cat.footoredo.mx.type.TypeTable;
 
@@ -31,14 +30,35 @@ public class TypeChecker extends Visitor {
             checkClass(cls);
         }
     }
+    
+    private void checkAssignType(Location location, Type a, Type b) {
+        if (a instanceof ClassType) {
+            if (!b.isNull() && !areSameType(a, b))
+                throw new SemanticException(location, "incompatible assign type");
+        }
+        else {
+            if (!areSameType(a, b))
+                throw new SemanticException(location, "incompatible assign type");
+        }
+    }
+
+    @Override
+    public Void visit(LocalVariableDeclarationNode node) {
+        super.visit(node);
+        if (node.hasInitExpr()) {
+            System.out.println(node.getInitExpr().getType().isNull());
+            checkAssignType(node.getLocation(), node.getTypeNode().getType(), node.getInitExpr().getType());
+        }
+        return null;
+    }
 
     private void checkVariable(Variable variable) {
+        System.out.println("Asd");
         if (!isValidVariableType(variable.getType()))
             throw new SemanticException(variable.getLocation(), "variable " + variable.getName() + "has invalid variable type");
         if (variable.hasInitializer()) {
             visitExpression(variable.getInitializer());
-            if (!areSameType(variable.getType(), variable.getInitializer().getType()))
-                throw new SemanticException(variable.getInitializer().getLocation(), "initializer has incompatible type");
+            checkAssignType(variable.getLocation(), variable.getType(), variable.getInitializer().getType());
         }
     }
 
@@ -101,6 +121,8 @@ public class TypeChecker extends Visitor {
         super.visit(node);
         checkLhs(node.getLhs());
         checkRhs(node.getRhs());
+        // System.out.println("asda");
+        checkAssignType(node.getLocation(), node.getLhs().getType(), node.getRhs().getType());
         return null;
     }
 
@@ -126,11 +148,14 @@ public class TypeChecker extends Visitor {
 
     public Void visit(ArithmeticOpNode node) {
         super.visit(node);
-        if (node.getOperator() == "+") {
+        // System.out.println("sadas");
+        if (node.getOperator().equals("+")) {
+            // System.out.println("asdasd");
             if (!areSameType(node.getLhs().getType(), node.getRhs().getType()))
                 throw new SemanticException(node.getLhs().getLocation(), "incompatible operands");
-            if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString())
+            if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString()) {
                 throw new SemanticException(node.getLhs().getLocation(), "wrong operand type for \"+\"");
+            }
         }
         else {
             if (!node.getLhs().getType().isInteger())
@@ -173,6 +198,13 @@ public class TypeChecker extends Visitor {
         for (int i = 0; i < argc; ++ i)
             if (!areSameType(funcallParams.get(i).getType(), params.get(i)))
                 throw new SemanticException(funcallParams.get(i).getLocation(), "incompatible arg type");
+        return null;
+    }
+
+    public Void visit(ArefNode node) {
+        super.visit(node);
+        if (!node.getExpr().getType().isArray())
+            throw new SemanticException(node.getLocation(), "accessing a non-array variable by index");
         return null;
     }
 }
