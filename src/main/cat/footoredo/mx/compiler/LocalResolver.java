@@ -87,7 +87,7 @@ public class LocalResolver extends Visitor {
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
             pushScope(t.getMemberVariables());
-            currentScope().declareEntity(new Variable(t.getTypeNode(), "this"), reservedWords);
+            currentScope().declareEntity(new Variable(t.getTypeNode(), "this"));
             for (Function function: t.getMemberMethods())
                 currentScope().declareEntity(function, reservedWords);
             if (t instanceof ClassNode) {

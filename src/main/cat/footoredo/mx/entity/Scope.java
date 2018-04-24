@@ -22,11 +22,16 @@ abstract public class Scope {
         if (reservedWords.contains(entity.getName())) {
             throw new SemanticException(entity.getLocation(), "using reserverd word \"" + entity.getName() + "\"");
         }
+        declareEntity(entity);
+    }
+
+    public void declareEntity(Entity entity) throws SemanticException {
         if (entityMap.containsKey(entity.getName())) {
             throw new SemanticException(entity.getLocation(), "duplicated declaration of " + entity.getName());
         }
         entityMap.put(entity.name, entity);
     }
+
 
     public void addChild (LocalScope s) {
         children.add (s);
