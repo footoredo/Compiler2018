@@ -209,8 +209,8 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         for (int i = 1; i < totalDimensionCount; ++ i)
             arrayTypeRef = new ArrayTypeRef(arrayTypeRef);
         for (int i = 0; i < specifiedDimensionCount; ++ i) {
-            if (ctx.getChild(2 + i * 2 ) instanceof TerminalNode)
-                throw new SemanticException(getLocation((TerminalNode)ctx.getChild(2 + i * 2)), "not specified dimension");
+            if (ctx.getChild(2 + i * 3 ) instanceof TerminalNode)
+                throw new SemanticException(getLocation((TerminalNode)ctx.getChild(2 + i * 3)), "not specified dimension");
         }
         List<ExpressionNode> length = new ArrayList<>();
         for (MxParser.ExpressionContext expressionContext : ctx.expression()) {
