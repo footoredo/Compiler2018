@@ -19,8 +19,20 @@ abstract public class MemberType extends Type {
         }
     }
     public Type getMemberType(String member) {
-        // System.out.println("querying " + member);
-        return memberMap.get(member).getType();
+        /*System.out.println("querying " + member);
+        for (String key: memberMap.keySet()) {
+            System.out.println(" --- " + key);
+        }*/
+        // System.out.println(memberMap.get(member).getTypeNode());
+
+        try {
+            return memberMap.get(member).getType();
+        }catch (NullPointerException e) {
+            for (String key: memberMap.keySet()) {
+                // System.out.println(" --- " + key);
+            }
+            throw e;
+        }
     }
     public List<Slot> getMembers() {
         return new ArrayList<>(memberMap.values());

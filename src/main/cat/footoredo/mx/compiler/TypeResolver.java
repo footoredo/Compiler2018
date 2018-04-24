@@ -4,6 +4,8 @@ import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.type.ClassType;
+import cat.footoredo.mx.type.MemberType;
+import cat.footoredo.mx.type.Type;
 import cat.footoredo.mx.type.TypeTable;
 
 import java.util.List;
@@ -43,14 +45,14 @@ public class TypeResolver extends Visitor
         }
     }
 
-    public Void visit(ClassNode classNode) {
-        resolveClassNode(classNode);
+    public Void visit(TypeDefinition typeDefinition) {
+        resolveTypeDefinition(typeDefinition);
         return null;
     }
 
-    public Void visit(BuiltinTypeNode builtinTypeNode) {
+    /* public Void visit(BuiltinTypeNode builtinTypeNode) {
         return null;
-    }
+    }*/
 
     @Override
     public Void visit(DefinedFunction definedFunction) {
@@ -79,21 +81,38 @@ public class TypeResolver extends Visitor
 
     @Override
     public Void visit(VariableNode node) {
-        // System.out.println("resolving variable " + node.getName());
+        // System.out.println("type resolving variable " + node.getName() + "@ " + node.getLocation());
         super.visit(node);
         bindType(node.getEntity().getTypeNode());
+        // System.out.println(node.getEntity().getType());
         return null;
     }
 
-    private void resolveClassNode(ClassNode classNode) {
+    /*private void resolveClassNode(ClassNode classNode) {
         ClassType classType = (ClassType) typeTable.get(classNode.getTypeRef());
-        /*if (classType == null)
-            throw new Error(classNode.getLocation().toString() + ": wtf??");*/
+        if (classType == null)
+            throw new Error(classNode.getLocation().toString() + ": wtf??");
         for (Slot s: classType.getMembers()) {
             bindType(s.getTypeNode());
         }
         for (Entity e: classNode.getEntitis()) {
             e.accept(this);
+        }
+    }*/
+
+    private void resolveTypeDefinition(TypeDefinition typeDefinition) {
+        Type type = typeTable.get(typeDefinition.getTypeRef());
+        if (!(type instanceof MemberType)) return;
+        MemberType memberType = (MemberType) type;
+        /*if (classType == null)
+            throw new Error(classNode.getLocation().toString() + ": wtf??");*/
+        for (Slot s: memberType.getMembers()) {
+            bindType(s.getTypeNode());
+        }
+        if (typeDefinition instanceof ClassNode) {
+            for (Entity e : ((ClassNode)typeDefinition).getEntitis()) {
+                e.accept(this);
+            }
         }
     }
 

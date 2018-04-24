@@ -39,6 +39,11 @@ public class FunctionTypeRef extends TypeRef {
         return buf.toString();
     }
 
+    @Override
+    public Location getLocation() {
+        return location;
+    }
+
     public boolean equals(Object other) {
         return (other instanceof FunctionTypeRef);
     }

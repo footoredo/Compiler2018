@@ -133,7 +133,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                         return new LogicalOpNode(lhs, operator, rhs);
                     else if (operator.equals("<") || operator.equals(">") ||
                             operator.equals("<=") || operator.equals(">=") ||
-                            operator.equals("=="))
+                            operator.equals("==") || operator.equals("!="))
                         return new ComparationNode(lhs, operator, rhs);
                     else
                         return new ArithmeticOpNode(lhs, operator, rhs);

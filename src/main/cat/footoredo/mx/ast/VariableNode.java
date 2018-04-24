@@ -41,6 +41,6 @@ public class VariableNode extends LHSNode {
     public Type getType() {
         // System.out.println("asdasd");
         // System.out.println(entity.getTypeNode().toString());
-        return entity.getTypeNode().getType();
+        return entity.getType();
     }
 }

@@ -34,7 +34,8 @@ public class MemberNode extends LHSNode {
     @Override
     public Type getType() {
         // System.out.println(expr);
-        // System.out.println(expr.getType().toString());
+        // System.out.println(expr.getType().toString() +  "." + name);
         return ((MemberType)expr.getType()).getMemberType(name);
     }
+
 }

@@ -26,6 +26,10 @@ abstract public class TypeDefinition extends Node {
         this.typeNode = typeNode;
     }
 
+    public String getName() {
+        return typeNode.getTypeRef().toString();
+    }
+
     public TypeNode getTypeNode() {
         return typeNode;
     }

@@ -49,7 +49,7 @@ public class TypeTable {
                     paramTypes.add(get(paramTypeRef));
                 }
                 // System.out.println("in typeTable " + typeRef.toString());
-                type = new FunctionType(get(functionTypeRef.getReturnType()), new ParamTypes(paramTypes));
+                type = new FunctionType(functionTypeRef.getLocation(), get(functionTypeRef.getReturnType()), new ParamTypes(paramTypes));
             }
             else {
                 throw new Error("unregistered type: " + typeRef.toString());

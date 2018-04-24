@@ -18,6 +18,8 @@ public class ClassType extends MemberType {
         this.name = name;
     }
 
+    public String toString() {return "[class " + name + "]";}
+
     public String getName() {
         return name;
     }

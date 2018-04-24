@@ -3,6 +3,7 @@ package cat.footoredo.mx.compiler;
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.ClassTypeRef;
 import cat.footoredo.mx.type.IntegerTypeRef;
 import cat.footoredo.mx.type.StringType;
 
@@ -72,6 +73,7 @@ public class LocalResolver extends Visitor {
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
             pushScope(t.getMemberVariables());
+            currentScope().declareEntity(new Variable(t.getTypeNode(), "this"));
             for (Function function: t.getMemberMethods())
                 currentScope().declareEntity(function);
             resolveFunctions(t.getMemberMethods());

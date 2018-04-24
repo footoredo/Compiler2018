@@ -38,6 +38,8 @@ public class TypeChecker extends Visitor {
                 throw new SemanticException(location, "incompatible assign type");
         }
         else {
+            // System.out.println(a.toString());
+            // System.out.println(b.toString());
             if (!areSameType(a, b))
                 throw new SemanticException(location, "incompatible assign type");
         }
@@ -47,7 +49,7 @@ public class TypeChecker extends Visitor {
     public Void visit(LocalVariableDeclarationNode node) {
         super.visit(node);
         if (node.hasInitExpr()) {
-            System.out.println(node.getInitExpr().getType().isNull());
+            // System.out.println(node.getInitExpr().getType().isNull());
             checkAssignType(node.getLocation(), node.getTypeNode().getType(), node.getInitExpr().getType());
         }
         return null;
@@ -130,8 +132,11 @@ public class TypeChecker extends Visitor {
                 throw new SemanticException(node.getLocation(), "return in void function");
         }
         else {
-            if (!areSameType(node.getExpr().getType(), currentFunction.getReturnType()))
+            if (!areSameType(node.getExpr().getType(), currentFunction.getReturnType())) {
+                // System.out.println(node.getExpr().getType().toString());
+                // System.out.println(currentFunction.getReturnType().toString());
                 throw new SemanticException(node.getLocation(), "incompatible return type");
+            }
         }
         return null;
     }
@@ -166,6 +171,7 @@ public class TypeChecker extends Visitor {
     }
 
     private boolean areSameType(Type a, Type b) {
+        // System.out.println(a.hashCode() + " " + b.hashCode());
         return a.hashCode() == b.hashCode();
     }
 
@@ -213,6 +219,8 @@ public class TypeChecker extends Visitor {
 
     public Void visit(FuncallNode node) {
         super.visit(node);
+        // System.out.println(node.getLocation());
+        // System.out.println(node.getType().toString());
         if (node.getArgc() != node.getFunctionType().getArgc())
             throw new SemanticException(node.getLocation(), "incompatible argc");
         List<ExpressionNode> funcallParams = node.getParams();

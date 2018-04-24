@@ -41,7 +41,16 @@ public class FuncallNode extends ExpressionNode {
 
     @Override
     public Type getType() {
-        return ((FunctionType) caller.getType()).getReturnType();
+        /*if (caller.getType() == null)
+            System.out.println(caller.getLocation().toString());*/
+        // System.out.println("asdasd" + (caller.getType() == null));
+        try {
+            // System.out.println("asdasdasdasdasdasdasdad");
+            return ((FunctionType) caller.getType()).getReturnType();
+        } catch (NullPointerException e) {
+            // System.out.println("fucking fuck" + ((MemberNode)caller).getName());
+            throw e;
+        }
     }
 
     @Override

@@ -32,4 +32,8 @@ abstract public class Type {
     public boolean isNull() {
         return this instanceof NullType;
     }
+
+    public int hashCode() {
+        return toString().hashCode();
+    }
 }
