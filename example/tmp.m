@@ -1,18 +1,18 @@
-
 int main() {
-    string str = "sjtu";
-    str++;
+    int[] a = new int[];
+    return 0;
 }
 
 
 
 /*!! metadata:
 === comment ===
-incop-1-5120309049-liaochao.mx
+creator test
+creator-515030910117-zhenglianmin.mx
 === assert ===
 failure_compile
 === phase ===
-semantic pretest
+semantic extended
 === is_public ===
 True
 

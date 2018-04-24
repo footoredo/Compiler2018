@@ -46,8 +46,8 @@ creator
   ;
 
 arrayCreator
-  : baseTypeSpec ('[' expression ']')+ ('[' ']')*
-  | baseTypeSpec ('[' ']')+
+  : baseTypeSpec ('[' expression? ']')+
+  //| baseTypeSpec ('[' ']')+
   ;
 
 arguments

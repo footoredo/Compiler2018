@@ -3,6 +3,7 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.*;
+import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -207,6 +208,10 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         ArrayTypeRef arrayTypeRef = new ArrayTypeRef(baseTypeRef);
         for (int i = 1; i < totalDimensionCount; ++ i)
             arrayTypeRef = new ArrayTypeRef(arrayTypeRef);
+        for (int i = 0; i < specifiedDimensionCount; ++ i) {
+            if (ctx.getChild(2 + i * 2 ) instanceof TerminalNode)
+                throw new SemanticException(getLocation((TerminalNode)ctx.getChild(2 + i * 2)), "not specified dimension");
+        }
         List<ExpressionNode> length = new ArrayList<>();
         for (MxParser.ExpressionContext expressionContext : ctx.expression()) {
             length.add(visitExpression(expressionContext));
