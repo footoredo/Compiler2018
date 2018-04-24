@@ -2,21 +2,29 @@ package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.exception.SemanticException;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 abstract public class Scope {
-    protected List <LocalScope> children;
+    private List <LocalScope> children;
+    protected Map<String, Entity> entityMap;
 
     public Scope () {
         children = new ArrayList <> ();
+        entityMap = new LinkedHashMap<>();
     }
 
     abstract public boolean isTopLevel ();
     abstract public ToplevelScope toplevel ();
     abstract public Scope parent ();
 
-    protected void addChild (LocalScope s) {
+    public void declareEntity(Entity entity) throws SemanticException {
+        if (entityMap.containsKey(entity.getName())) {
+            throw new SemanticException(entity.getLocation(), "duplicated declaration of " + entity.getName());
+        }
+        entityMap.put(entity.name, entity);
+    }
+
+    public void addChild (LocalScope s) {
         children.add (s);
     }
 

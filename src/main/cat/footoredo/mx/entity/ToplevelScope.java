@@ -6,11 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ToplevelScope extends Scope {
-    private Map<String, Entity> entityMap;
 
     public ToplevelScope () {
         super ();
-        entityMap = new LinkedHashMap<>();
     }
 
     @Override
@@ -26,13 +24,6 @@ public class ToplevelScope extends Scope {
     @Override
     public Scope parent() {
         return null;
-    }
-
-    public void declareEntity(Entity entity) throws SemanticException {
-        if (entityMap.containsKey(entity.getName())) {
-            throw new SemanticException(entity.getLocation(), "duplicated declaration of " + entity.getName());
-        }
-        entityMap.put(entity.name, entity);
     }
 
     @Override

@@ -72,6 +72,8 @@ public class LocalResolver extends Visitor {
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
             pushScope(t.getMemberVariables());
+            for (Function function: t.getMemberMethods())
+                currentScope().declareEntity(function);
             resolveFunctions(t.getMemberMethods());
             t.setScope(popScope());
         }
@@ -88,14 +90,14 @@ public class LocalResolver extends Visitor {
     @Override
     public Void visit(LocalVariableDeclarationNode node) {
         super.visit(node);
-        ((LocalScope) currentScope()).defineVariable(node.getVariable());
+        ((LocalScope) currentScope()).declareEntity(node.getVariable());
         return null;
     }
 
     private void pushScope (List <? extends Variable> vars) {
         LocalScope scope = new LocalScope(currentScope());
         for (Variable var: vars) {
-            scope.defineVariable(var);
+            scope.declareEntity(var);
         }
         scopeStack.addLast(scope);
     }

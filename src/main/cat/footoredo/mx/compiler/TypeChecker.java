@@ -14,6 +14,7 @@ import java.util.List;
 public class TypeChecker extends Visitor {
     private TypeTable typeTable;
     private Function currentFunction;
+    private boolean inLoopBody;
 
     public TypeChecker(TypeTable typeTable) {
         this.typeTable = typeTable;
@@ -53,7 +54,7 @@ public class TypeChecker extends Visitor {
     }
 
     private void checkVariable(Variable variable) {
-        System.out.println("Asd");
+        // System.out.println("Asd");
         if (!isValidVariableType(variable.getType()))
             throw new SemanticException(variable.getLocation(), "variable " + variable.getName() + "has invalid variable type");
         if (variable.hasInitializer()) {
@@ -92,15 +93,33 @@ public class TypeChecker extends Visitor {
     }
 
     public Void visit(ForNode node) {
+        boolean originalInLoopBody = inLoopBody;
+        inLoopBody = true;
         super.visit(node);
+        inLoopBody = originalInLoopBody;
         if (node.hasJudge())
             checkCond(node.getJudge());
         return null;
     }
 
     public Void visit(WhileNode node) {
+        boolean originalInLoopBody = inLoopBody;
+        inLoopBody = true;
         super.visit(node);
+        inLoopBody = originalInLoopBody;
         checkCond(node.getJudge());
+        return null;
+    }
+
+    public Void visit(ContinueNode node) {
+        if (!inLoopBody)
+            throw new SemanticException(node.getLocation(), "continue in non-loop block");
+        return null;
+    }
+
+    public Void visit(BreakNode node) {
+        if (!inLoopBody)
+            throw new SemanticException(node.getLocation(), "break in non-loop block");
         return null;
     }
 
@@ -119,6 +138,10 @@ public class TypeChecker extends Visitor {
 
     public Void visit(AssignNode node) {
         super.visit(node);
+        if (!(node.getLhs() instanceof ArefNode ||
+            node.getLhs() instanceof VariableNode ||
+            node.getLhs() instanceof MemberNode))
+            throw new SemanticException(node.getLocation(), "not valid lhs node");
         checkLhs(node.getLhs());
         checkRhs(node.getRhs());
         // System.out.println("asda");
