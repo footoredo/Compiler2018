@@ -214,12 +214,16 @@ public class TypeChecker extends Visitor {
     public Void visit(PrefixNode node) {
         super.visit(node);
         checkLhs(node.getExpr());
+        if (!node.getExpr().getType().isInteger())
+            throw new SemanticException(node.getExpr().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
         return null;
     }
 
     public Void visit(SuffixNode node) {
         super.visit(node);
         checkLhs(node.getExpr());
+        if (!node.getExpr().getType().isInteger())
+            throw new SemanticException(node.getExpr().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
         return null;
     }
 
