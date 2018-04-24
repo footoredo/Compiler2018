@@ -21,6 +21,7 @@ public interface ASTVisitor <S, E> {
     E visit(UnaryOpNode node);
     //E visit(PrefixNode node);
     //E visit(SuffixNode node);
+    E visit(ComparationNode node);
     E visit(ArefNode node);
     E visit(MemberNode node);
     E visit(FuncallNode node);

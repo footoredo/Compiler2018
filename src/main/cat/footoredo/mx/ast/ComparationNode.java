@@ -12,4 +12,9 @@ public class ComparationNode extends ArithmeticOpNode {
     public Type getType() {
         return new BooleanType();
     }
+
+    @Override
+    public <S, E> E accept(ASTVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

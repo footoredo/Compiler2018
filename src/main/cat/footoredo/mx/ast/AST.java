@@ -22,11 +22,11 @@ public class AST extends Node {
     }
 
     public List<Entity> getDeclarations() {
-        List<Entity> result = new ArrayList<>();
+        /*List<Entity> result = new ArrayList<>();
         result.addAll(declarations.getFuns());
         result.addAll(declarations.getBuiltinFuns());
-        result.addAll(declarations.getVars());
-        return result;
+        result.addAll(declarations.getVars());*/;
+        return declarations.getDeclarations();
     }
 
     public List<Variable> getVariables() {

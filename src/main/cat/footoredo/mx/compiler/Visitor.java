@@ -125,6 +125,12 @@ public class Visitor implements ASTVisitor<Void, Void> {
         return null;
     }
 
+    public Void visit(ComparationNode node) {
+        visitExpression(node.getLhs());
+        visitExpression(node.getRhs());
+        return null;
+    }
+
     /*@Override
     public Void visit(PrefixNode node) {
         visitExpression(node.getExpr());

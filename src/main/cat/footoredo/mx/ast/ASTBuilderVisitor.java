@@ -5,6 +5,7 @@ import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -27,6 +28,23 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
         // System.out.println ("123" + ctx.EOF().getSymbol().getTokenSource().getSourceName());
         Declarations declarations = new Declarations();
 
+        int decl_size = ctx.getChildCount() - 1;
+        for (int i = 0; i < decl_size; ++ i) {
+            ParseTree context = ctx.getChild(i);
+            if (context instanceof MxParser.ClassDeclarationContext) {
+                ClassNode classNode = visitClassDeclaration ((MxParser.ClassDeclarationContext) context);
+                declarations.addTypeDefinition(classNode);
+            }
+            else if (context instanceof MxParser.MethodDeclarationContext) {
+                MethodNode methodNode = visitMethodDeclaration((MxParser.MethodDeclarationContext) context);
+                declarations.addFun (new DefinedFunction(methodNode));
+            }
+            else if (context instanceof MxParser.VariableDeclarationContext) {
+                VariableDeclarationNode variableDeclarationNode = visitVariableDeclaration((MxParser.VariableDeclarationContext) context );
+                declarations.addVar(new Variable(variableDeclarationNode));
+            }
+        }
+/*
         for (MxParser.ClassDeclarationContext classDeclarationContext : ctx.classDeclaration()) {
             ClassNode classNode = visitClassDeclaration (classDeclarationContext);
             declarations.addTypeDefinition(classNode);
@@ -41,7 +59,7 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             VariableDeclarationNode variableDeclarationNode = visitVariableDeclaration(variableDeclarationContext);
             declarations.addVar(new Variable(variableDeclarationNode));
         }
-
+*/
         return new AST(getLocation(ctx), declarations);
     }
 

@@ -22,11 +22,22 @@ public class LocalResolver extends Visitor {
         scopeStack.add(toplevelScope);
 
         for (Entity decl : ast.getDeclarations()) {
+            // System.out.println(decl.getName());
+            if (decl instanceof Variable) continue;
             toplevelScope.declareEntity(decl);
         }
 
-        resolveGvarInitializers(ast.getVariables());
-        resolveDefinedFunctions(ast.getFunctions());
+        for (Entity decl : ast.getDeclarations()) {
+            if (decl instanceof Variable) {
+                toplevelScope.declareEntity(decl);
+                resolveGvarInitializer((Variable) decl);
+            }
+            else if (decl instanceof DefinedFunction){
+                resolveFunction((DefinedFunction) decl);
+            }
+        }
+
+        // resolveDefinedFunctions(ast.getFunctions());
         resolveTypeDefinition(ast.getTypeDefinitions());
 
         try {
@@ -42,11 +53,9 @@ public class LocalResolver extends Visitor {
         ast.setScope(toplevelScope);
     }
 
-    private void resolveGvarInitializers(List<Variable> vars) {
-        for (Variable v: vars) {
-            if (v.hasInitializer()) {
-                visitExpression(v.getInitializer());
-            }
+    private void resolveGvarInitializer(Variable var) {
+        if (var.hasInitializer()) {
+            visitExpression(var.getInitializer());
         }
     }
 

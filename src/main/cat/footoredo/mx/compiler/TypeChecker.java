@@ -33,15 +33,9 @@ public class TypeChecker extends Visitor {
     }
     
     private void checkAssignType(Location location, Type a, Type b) {
-        if (a instanceof ClassType) {
-            if (!b.isNull() && !areSameType(a, b))
-                throw new SemanticException(location, "incompatible assign type");
-        }
-        else {
-            // System.out.println(a.toString());
-            // System.out.println(b.toString());
-            if (!areSameType(a, b))
-                throw new SemanticException(location, "incompatible assign type");
+        if (!areAssignableTypes(a, b)) {
+            // System.out.println(a.toString() + "  x  " + b.toString());
+            throw new SemanticException(location, "incompatible assign type");
         }
     }
 
@@ -132,7 +126,7 @@ public class TypeChecker extends Visitor {
                 throw new SemanticException(node.getLocation(), "return in void function");
         }
         else {
-            if (!areSameType(node.getExpr().getType(), currentFunction.getReturnType())) {
+            if (!areAssignableTypes(currentFunction.getReturnType(),node.getExpr().getType())) {
                 // System.out.println(node.getExpr().getType().toString());
                 // System.out.println(currentFunction.getReturnType().toString());
                 throw new SemanticException(node.getLocation(), "incompatible return type");
@@ -175,6 +169,12 @@ public class TypeChecker extends Visitor {
         return a.hashCode() == b.hashCode();
     }
 
+    private boolean areAssignableTypes(Type a, Type b) {
+        // System.out.println(a.toString() + " " + b.toString());
+        // System.out.println(a.isClass() + " " + b.isNull());
+        return areSameType(a, b) || (a.isArray() && b.isNull()) || (a.isClass() && b.isNull());
+    }
+
     public Void visit(ArithmeticOpNode node) {
         super.visit(node);
         // System.out.println("sadas");
@@ -191,6 +191,22 @@ public class TypeChecker extends Visitor {
                 throw new SemanticException(node.getLhs().getLocation(), "lhs of arithmetic op is not integer");
             if (!node.getRhs().getType().isInteger())
                 throw new SemanticException(node.getRhs().getLocation(), "rhs of arithmetic op is not integer");
+        }
+        return null;
+    }
+
+    public Void visit(ComparationNode node) {
+        // System.out.println(node.getLocation());
+        super.visit(node);
+        if (node.getOperator().equals("==") ||
+                node.getOperator().equals("!=")) {
+            if (areAssignableTypes(node.getLhs().getType(), node.getRhs().getType()))
+                return null;
+        }
+        if (!areSameType(node.getLhs().getType(), node.getRhs().getType()))
+            throw new SemanticException(node.getLhs().getLocation(), "incompatible operands");
+        if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString()) {
+            throw new SemanticException(node.getLhs().getLocation(), "wrong operand type for \"+\"");
         }
         return null;
     }
@@ -227,7 +243,7 @@ public class TypeChecker extends Visitor {
         List<Type> params = node.getFunctionType().getParams().getParamDescriptors();
         int argc = funcallParams.size();
         for (int i = 0; i < argc; ++ i)
-            if (!areSameType(funcallParams.get(i).getType(), params.get(i)))
+            if (!areAssignableTypes(params.get(i), funcallParams.get(i).getType()))
                 throw new SemanticException(funcallParams.get(i).getLocation(), "incompatible arg type");
         return null;
     }

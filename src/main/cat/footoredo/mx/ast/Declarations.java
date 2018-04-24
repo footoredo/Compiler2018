@@ -1,9 +1,6 @@
 package cat.footoredo.mx.ast;
 
-import cat.footoredo.mx.entity.BuiltinFunction;
-import cat.footoredo.mx.entity.DefinedFunction;
-import cat.footoredo.mx.entity.Function;
-import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.entity.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -16,29 +13,36 @@ public class Declarations {
     private Set<DefinedFunction> funs = new LinkedHashSet<>();
     private Set<ClassNode> classes = new LinkedHashSet<>();
     private Set<BuiltinTypeNode> builtinTypeNodes = new LinkedHashSet<>();
+    private List<Entity> entities = new ArrayList<>();
 
     public void addVar (Variable var) {
         vars.add (var);
+        entities.add(var);
     }
 
     public void addVars (List<Variable> _vars) {
         vars.addAll(_vars);
+        entities.addAll(_vars);
     }
 
     public void addFun (DefinedFunction fun) {
         funs.add (fun);
+        entities.add(fun);
     }
 
     public void addFuns (List<DefinedFunction> _funs) {
         funs.addAll(_funs);
+        entities.addAll(_funs);
     }
 
     public void addFun (BuiltinFunction fun) {
         builtinFuns.add (fun);
+        entities.add(fun);
     }
 
     public void addBuiltinFuns (List<BuiltinFunction> _funs) {
         builtinFuns.addAll(_funs);
+        entities.addAll(_funs);
     }
 
     public void addTypeDefinition (ClassNode typeDefinition) {
@@ -52,6 +56,10 @@ public class Declarations {
     /*public void addTypeDefinitions (List<TypeDefinition> typeDefinitions) {
         classes.addAll (typeDefinitions);
     }*/
+
+    public List<Entity> getDeclarations() {
+        return entities;
+    }
 
     public List<Variable> getVars () {
         return new ArrayList<> (vars);

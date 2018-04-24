@@ -18,6 +18,12 @@ abstract public class MemberType extends Type {
             memberMap.put(slot.getName(), slot);
         }
     }
+    public MemberType() {
+        this.memberMap = new HashMap<>();
+    }
+    public void addMember(Slot slot) {
+        memberMap.put(slot.getName(), slot);
+    }
     public Type getMemberType(String member) {
         /*System.out.println("querying " + member);
         for (String key: memberMap.keySet()) {
