@@ -155,8 +155,8 @@ public class TypeChecker extends Visitor {
     }
 
     private void checkLhs(ExpressionNode lhs) {
-        if (lhs.getType().isVoid())
-            throw new SemanticException(lhs.getLocation(), "LHS is void");
+        if (!(lhs instanceof LHSNode || lhs instanceof PrefixNode))
+            throw new SemanticException(lhs.getLocation(), "invalid lhs type");
     }
 
     private void checkRhs(ExpressionNode rhs) {
@@ -208,6 +208,18 @@ public class TypeChecker extends Visitor {
         if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString()) {
             throw new SemanticException(node.getLhs().getLocation(), "wrong operand type for \"+\"");
         }
+        return null;
+    }
+
+    public Void visit(PrefixNode node) {
+        super.visit(node);
+        checkLhs(node.getExpr());
+        return null;
+    }
+
+    public Void visit(SuffixNode node) {
+        super.visit(node);
+        checkLhs(node.getExpr());
         return null;
     }
 

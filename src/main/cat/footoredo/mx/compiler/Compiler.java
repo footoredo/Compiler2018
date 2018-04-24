@@ -45,7 +45,9 @@ public class Compiler {
     }
 
     AST semanticAnalyze(AST ast, TypeTable types) throws SemanticException {
-        new LocalResolver().resolve(ast);
+        String[] reservedWords = {"bool", "int", "string", "null", "void", "true", "false",
+            "if", "for", "while", "break", "continue", "return", "new", "class", "this"};
+        new LocalResolver(reservedWords).resolve(ast);
         new TypeResolver(types).resolve(ast);
         types.semanticCheck();
         new TypeChecker(types).check(ast);

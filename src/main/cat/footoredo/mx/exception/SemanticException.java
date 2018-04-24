@@ -5,7 +5,7 @@ import cat.footoredo.mx.entity.Location;
 public class SemanticException extends Error {
     protected Location location;
     public SemanticException(Location location, String msg) {
-        super (location.toString() + ": " + msg);
+        super ((location == null ? "" : location.toString() + ": ") + msg);
     }
     public SemanticException(String msg) {
         super (msg);

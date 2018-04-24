@@ -7,14 +7,19 @@ import cat.footoredo.mx.type.ClassTypeRef;
 import cat.footoredo.mx.type.IntegerTypeRef;
 import cat.footoredo.mx.type.StringType;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class LocalResolver extends Visitor {
     private LinkedList<Scope> scopeStack;
+    private final Set<String> reservedWords = new HashSet<>();
 
-    public LocalResolver () {
+    public LocalResolver (String[] reservedWords) {
         this.scopeStack = new LinkedList<>();
+        this.reservedWords.addAll(Arrays.asList(reservedWords));
+    }
+
+    public void addReservedWords(String name) {
+        reservedWords.add(name);
     }
 
     public void resolve (AST ast) throws SemanticException {
@@ -24,12 +29,12 @@ public class LocalResolver extends Visitor {
         for (Entity decl : ast.getDeclarations()) {
             // System.out.println(decl.getName());
             if (decl instanceof Variable) continue;
-            toplevelScope.declareEntity(decl);
+            toplevelScope.declareEntity(decl, reservedWords);
         }
 
         for (Entity decl : ast.getDeclarations()) {
             if (decl instanceof Variable) {
-                toplevelScope.declareEntity(decl);
+                toplevelScope.declareEntity(decl, reservedWords);
                 resolveGvarInitializer((Variable) decl);
             }
             else if (decl instanceof DefinedFunction){
@@ -82,9 +87,16 @@ public class LocalResolver extends Visitor {
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
             pushScope(t.getMemberVariables());
-            currentScope().declareEntity(new Variable(t.getTypeNode(), "this"));
+            currentScope().declareEntity(new Variable(t.getTypeNode(), "this"), reservedWords);
             for (Function function: t.getMemberMethods())
-                currentScope().declareEntity(function);
+                currentScope().declareEntity(function, reservedWords);
+            if (t instanceof ClassNode) {
+                ClassNode c = (ClassNode) t;
+                if (c.hasConstructor()) {
+                    if (!c.getConstructor().getName().equals(c.getName()))
+                        throw new SemanticException("constructor name incompatible with class name");
+                }
+            }
             resolveFunctions(t.getMemberMethods());
             t.setScope(popScope());
         }
@@ -101,14 +113,14 @@ public class LocalResolver extends Visitor {
     @Override
     public Void visit(LocalVariableDeclarationNode node) {
         super.visit(node);
-        ((LocalScope) currentScope()).declareEntity(node.getVariable());
+        ((LocalScope) currentScope()).declareEntity(node.getVariable(), reservedWords);
         return null;
     }
 
     private void pushScope (List <? extends Variable> vars) {
         LocalScope scope = new LocalScope(currentScope());
         for (Variable var: vars) {
-            scope.declareEntity(var);
+            scope.declareEntity(var, reservedWords);
         }
         scopeStack.addLast(scope);
     }

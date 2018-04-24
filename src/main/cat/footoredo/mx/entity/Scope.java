@@ -1,5 +1,6 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.OJ.Semantic;
 import cat.footoredo.mx.exception.SemanticException;
 
 import java.util.*;
@@ -17,7 +18,10 @@ abstract public class Scope {
     abstract public ToplevelScope toplevel ();
     abstract public Scope parent ();
 
-    public void declareEntity(Entity entity) throws SemanticException {
+    public void declareEntity(Entity entity, Set<String> reservedWords) throws SemanticException {
+        if (reservedWords.contains(entity.getName())) {
+            throw new SemanticException(entity.getLocation(), "using reserverd word \"" + entity.getName() + "\"");
+        }
         if (entityMap.containsKey(entity.getName())) {
             throw new SemanticException(entity.getLocation(), "duplicated declaration of " + entity.getName());
         }

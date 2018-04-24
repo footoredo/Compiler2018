@@ -26,6 +26,18 @@ public class Visitor implements ASTVisitor<Void, Void> {
     }
 
     @Override
+    public Void visit(PrefixNode node) {
+        visitExpression(node.getExpr());
+        return null;
+    }
+
+    @Override
+    public Void visit(SuffixNode node) {
+        visitExpression(node.getExpr());
+        return null;
+    }
+
+    @Override
     public Void visit(BlockNode node) {
         // System.out.println("asdasd");
         visitStatements(node.getStatements());
