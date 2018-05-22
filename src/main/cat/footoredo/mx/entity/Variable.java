@@ -3,9 +3,11 @@ package cat.footoredo.mx.entity;
 import cat.footoredo.mx.ast.ExpressionNode;
 import cat.footoredo.mx.ast.TypeNode;
 import cat.footoredo.mx.ast.VariableDeclarationNode;
+import cat.footoredo.mx.ir.Expression;
 
 public class Variable extends Entity {
-    protected ExpressionNode initializer;
+    private ExpressionNode initializer;
+    private Expression ir;
 
     public Variable (VariableDeclarationNode variableDeclarationNode) {
         super (variableDeclarationNode.getTypeNode(), variableDeclarationNode.getName());
@@ -15,6 +17,10 @@ public class Variable extends Entity {
     public Variable (TypeNode type, String name) {
         super (type, name);
         this.initializer = null;
+    }
+
+    public void setIr(Expression ir) {
+        this.ir = ir;
     }
 
     public ExpressionNode getInitializer() {

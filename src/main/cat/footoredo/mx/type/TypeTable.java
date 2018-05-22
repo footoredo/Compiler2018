@@ -96,4 +96,14 @@ public class TypeTable {
             pool.add(slot.getName());
         }
     }
+
+    public int integerSize () {
+        return 8;
+    }
+    public int pointerSize () {
+        return 8;
+    }
+    public int booleanSize () {
+        return 1;
+    }
 }

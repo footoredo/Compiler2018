@@ -43,4 +43,9 @@ public class FunctionType extends Type {
     public int getArgc() {
         return params.size();
     }
+
+    @Override
+    public int size() {
+        throw new Error("FunctionType#size called");
+    }
 }

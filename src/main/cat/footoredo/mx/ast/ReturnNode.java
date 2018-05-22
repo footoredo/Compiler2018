@@ -4,29 +4,29 @@ import cat.footoredo.mx.entity.Location;
 
 public class ReturnNode extends StatementNode {
     private Location location;
-    private ExpressionNode expr;
+    private ExpressionNode expression;
 
-    ReturnNode(Location location, ExpressionNode expr) {
+    ReturnNode(Location location, ExpressionNode expression) {
         super ();
         this.location = location;
-        this.expr = expr;
+        this.expression = expression;
     }
 
     ReturnNode(Location location) {
         super ();
         this.location = location;
-        this.expr = null;
+        this.expression = null;
     }
 
     public Location getLocation() {
         return location;
     }
 
-    public ExpressionNode getExpr() {
-        return expr;
+    public ExpressionNode getExpression() {
+        return expression;
     }
 
-    public boolean hasExpr() { return expr != null; }
+    public boolean hasExpression() { return expression != null; }
 
     @Override
     public <S,E> S accept(ASTVisitor <S,E> visitor) {

@@ -9,29 +9,31 @@ import java.util.List;
 
 public class ArrayType extends MemberType {
     private Type baseType;
-    private long length;
-    static final private long undefined = -1;
+    private int length;
+    private int pointerSize;
+    static final private int undefined = -1;
 
-    public ArrayType(Type baseType, long length) {
+    public ArrayType(Type baseType, int length, int pointerSize) {
         super ();
-        FunctionType sizeFunc = new FunctionType(null, new IntegerType(), new ParamTypes(new ArrayList<Type>()));
+        FunctionType sizeFunc = new FunctionType(null, new IntegerType(), new ParamTypes(new ArrayList<>()));
         Slot size = new Slot(new TypeNode(sizeFunc), "size");
         super.addMember(size);
         this.baseType = baseType;
         this.length = length;
+        this.pointerSize = pointerSize;
     }
 
-    public ArrayType(Type baseType) {
-        this(baseType, undefined);
+    public ArrayType(Type baseType, int pointerSize) {
+        this(baseType, undefined, pointerSize);
     }
 
     public Type getBaseType() {
         return baseType;
     }
 
-    public ArrayType(long length) {
+    /* public ArrayType(int length) {
         this.length = length;
-    }
+    }*/
 
     public String toString() {
         if (length == undefined) {
@@ -40,5 +42,10 @@ public class ArrayType extends MemberType {
         else {
             return baseType.toString() + "[" + length + "]";
         }
+    }
+
+    @Override
+    public int size() {
+        return pointerSize;
     }
 }

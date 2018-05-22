@@ -11,6 +11,7 @@ import java.util.Map;
 public class ClassType extends MemberType {
     private String name;
     protected Location location;
+    private int pointerSize;
 
     public ClassType(Location location, String name, List<Slot> members) {
         super (members);
@@ -26,5 +27,10 @@ public class ClassType extends MemberType {
 
     public Location getLocation() {
         return location;
+    }
+
+    @Override
+    public int size() {
+        return pointerSize;
     }
 }

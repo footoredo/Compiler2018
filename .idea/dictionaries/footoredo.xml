@@ -4,6 +4,7 @@
       <w>decl</w>
       <w>declarator</w>
       <w>toplevel</w>
+      <w>uminus</w>
     </words>
   </dictionary>
 </component>
