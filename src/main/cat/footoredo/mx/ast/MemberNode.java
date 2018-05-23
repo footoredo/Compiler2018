@@ -5,12 +5,12 @@ import cat.footoredo.mx.type.MemberType;
 import cat.footoredo.mx.type.Type;
 
 public class MemberNode extends LHSNode {
-    protected ExpressionNode expr;
+    protected ExpressionNode expression;
     protected String name;
 
-    public MemberNode (ExpressionNode expr, String name) {
+    public MemberNode (ExpressionNode expression, String name) {
         super ();
-        this.expr = expr;
+        this.expression = expression;
         this.name = name;
     }
 
@@ -18,12 +18,20 @@ public class MemberNode extends LHSNode {
         return name;
     }
 
-    public ExpressionNode getExpr() {
-        return expr;
+    public ExpressionNode getExpression() {
+        return expression;
     }
 
     public Location getLocation () {
-        return expr.getLocation ();
+        return expression.getLocation ();
+    }
+
+    public int getOffset () {
+        return getSlot().getOffset();
+    }
+
+    private Slot getSlot () {
+        return ((MemberType)expression.getType()).getMember(name);
     }
 
     @Override
@@ -33,9 +41,9 @@ public class MemberNode extends LHSNode {
 
     @Override
     public Type getType() {
-        // System.out.println(expr);
-        // System.out.println(expr.getType().toString() +  "." + name);
-        return ((MemberType)expr.getType()).getMemberType(name);
+        // System.out.println(expression);
+        // System.out.println(expression.getType().toString() +  "." + name);
+        return ((MemberType)expression.getType()).getMemberType(name);
     }
 
 }

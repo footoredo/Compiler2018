@@ -6,21 +6,21 @@ import cat.footoredo.mx.type.Type;
 public class UnaryOpNode extends ExpressionNode {
     private Location location;
     private String operator;
-    private ExpressionNode expr;
+    private ExpressionNode expression;
 
-    public UnaryOpNode (Location location, String operator, ExpressionNode expr) {
+    public UnaryOpNode (Location location, String operator, ExpressionNode expression) {
         super ();
         this.location = location;
         this.operator = operator;
-        this.expr = expr;
+        this.expression = expression;
     }
 
     public String getOperator() {
         return operator;
     }
 
-    public ExpressionNode getExpr() {
-        return expr;
+    public ExpressionNode getExpression() {
+        return expression;
     }
 
     public Location getLocation() {
@@ -34,6 +34,6 @@ public class UnaryOpNode extends ExpressionNode {
 
     @Override
     public Type getType() {
-        return expr.getType();
+        return expression.getType();
     }
 }

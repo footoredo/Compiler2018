@@ -3,7 +3,7 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.Type;
 
-public class BinaryOpNode extends ExpressionNode {
+abstract public class BinaryOpNode extends ExpressionNode {
     protected ExpressionNode lhs, rhs;
     protected String operator;
 

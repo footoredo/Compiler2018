@@ -43,4 +43,7 @@ abstract public class MemberType extends Type {
     public List<Slot> getMembers() {
         return new ArrayList<>(memberMap.values());
     }
+    public Slot getMember (String name) {
+        return memberMap.get(name);
+    }
 }

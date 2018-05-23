@@ -5,18 +5,18 @@ import cat.footoredo.mx.entity.Variable;
 
 public class LocalVariableDeclarationNode extends StatementNode {
     private Variable variable;
-    private ExpressionNode initExpr;
+    private ExpressionNode initialExpression;
 
-    LocalVariableDeclarationNode(TypeNode typeNode, String name, ExpressionNode initExpr) {
+    LocalVariableDeclarationNode(TypeNode typeNode, String name, ExpressionNode initialExpression) {
         super ();
         this.variable = new Variable(typeNode, name);
-        this.initExpr = initExpr;
+        this.initialExpression = initialExpression;
     }
 
     LocalVariableDeclarationNode(TypeNode typeNode, String name) {
         super ();
         this.variable = new Variable(typeNode, name);
-        this.initExpr = null;
+        this.initialExpression = null;
    }
 
     public TypeNode getTypeNode() {
@@ -31,11 +31,11 @@ public class LocalVariableDeclarationNode extends StatementNode {
         return variable.getName();
     }
 
-    public ExpressionNode getInitExpr() {
-        return initExpr;
+    public ExpressionNode getInitialExpression() {
+        return initialExpression;
     }
 
-    public boolean hasInitExpr () { return initExpr != null; }
+    public boolean hasInitialExpression () { return initialExpression != null; }
 
     public Variable getVariable() {
         return variable;

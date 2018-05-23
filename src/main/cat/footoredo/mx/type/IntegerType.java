@@ -1,11 +1,16 @@
 package cat.footoredo.mx.type;
 
 public class IntegerType extends Type {
-    private int size;
+    private static final int size = TypeTable.integerSize;
+    private boolean isSigned;
 
-    public IntegerType(int size) {
-        super ();
-        this.size = size;
+    public IntegerType(boolean isSigned) {
+        this.isSigned = isSigned;
+    }
+
+    @Override
+    public boolean isSigned() {
+        return isSigned;
     }
 
     @Override

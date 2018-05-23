@@ -12,4 +12,8 @@ abstract public class Expression {
     public Type getType() {
         return type;
     }
+
+    public Expression addressNode (Type type) {
+        throw new Error("unexpected node for LHS: " + getClass());
+    }
 }

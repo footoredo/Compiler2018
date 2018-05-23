@@ -5,6 +5,7 @@ import cat.footoredo.mx.type.Type;
 public class Slot extends Node {
     private TypeNode typeNode;
     private String name;
+    private int offset;
 
     public Slot(TypeNode typeNode, String name) {
         this.typeNode = typeNode;
@@ -21,5 +22,13 @@ public class Slot extends Node {
 
     public String getName() {
         return name;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 }

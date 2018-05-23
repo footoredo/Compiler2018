@@ -97,13 +97,9 @@ public class TypeTable {
         }
     }
 
-    public int integerSize () {
-        return 8;
-    }
-    public int pointerSize () {
-        return 8;
-    }
-    public int booleanSize () {
-        return 1;
-    }
+    public static final int integerSize = 8;
+    public static final int pointerSize = 8;
+    public static final int longSize = 8;
+    public static final int charSize = 1;
+    public static final int booleanSize = 1;
 }

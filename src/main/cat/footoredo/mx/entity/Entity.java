@@ -1,12 +1,17 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.asm.ImmediateValue;
+import cat.footoredo.mx.asm.MemoryReference;
+import cat.footoredo.mx.asm.Operand;
 import cat.footoredo.mx.ast.TypeNode;
 import cat.footoredo.mx.type.Type;
 
 abstract public class Entity {
     protected TypeNode typeNode;
     protected String name;
-    private long referredCount;
+    private int referredCount;
+    private MemoryReference memoryReference;
+    protected Operand address;
 
     public Entity (TypeNode typeNode, String name) {
         this.typeNode = typeNode;
@@ -33,6 +38,42 @@ abstract public class Entity {
     }
 
     public boolean isReferred() { return referredCount > 0; }
+
+    public int allocateSize () {
+        return getType().allocateSize();
+    }
+
+    public int size () {
+        return getType().size();
+    }
+
+    public MemoryReference getMemoryReference() {
+        checkAddress ();
+        return memoryReference;
+    }
+
+    public void setMemoryReference(MemoryReference memoryReference) {
+        this.memoryReference = memoryReference;
+    }
+
+    public Operand getAddress() {
+        checkAddress ();
+        return address;
+    }
+
+    public void setAddress(MemoryReference address) {
+        this.address = address;
+    }
+
+    public void setAddress(ImmediateValue address) {
+        this.address = address;
+    }
+
+    private void checkAddress () {
+        if (memoryReference == null && address == null) {
+            throw new Error("address did not resolved: " + name);
+        }
+    }
 
     abstract public <T> T accept(EntityVisitor<T> visitor);
 }

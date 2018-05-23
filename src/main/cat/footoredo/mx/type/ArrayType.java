@@ -10,21 +10,20 @@ import java.util.List;
 public class ArrayType extends MemberType {
     private Type baseType;
     private int length;
-    private int pointerSize;
+    private static final int pointerSize = TypeTable.integerSize;
     static final private int undefined = -1;
 
-    public ArrayType(Type baseType, int length, int pointerSize) {
+    public ArrayType(Type baseType, int length) {
         super ();
         FunctionType sizeFunc = new FunctionType(null, new IntegerType(), new ParamTypes(new ArrayList<>()));
         Slot size = new Slot(new TypeNode(sizeFunc), "size");
         super.addMember(size);
         this.baseType = baseType;
         this.length = length;
-        this.pointerSize = pointerSize;
     }
 
-    public ArrayType(Type baseType, int pointerSize) {
-        this(baseType, undefined, pointerSize);
+    public ArrayType(Type baseType) {
+        this(baseType, undefined);
     }
 
     public Type getBaseType() {
@@ -47,5 +46,15 @@ public class ArrayType extends MemberType {
     @Override
     public int size() {
         return pointerSize;
+    }
+
+    @Override
+    public int allocateSize() {
+        if (length == undefined) {
+            return 0;
+        }
+        else {
+            return baseType.size() * length;
+        }
     }
 }

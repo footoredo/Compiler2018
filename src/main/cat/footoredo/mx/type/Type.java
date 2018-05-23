@@ -1,7 +1,12 @@
 package cat.footoredo.mx.type;
 
 abstract public class Type {
+    static final public int sizeUnknown = -1;
+
     abstract public int size ();
+    public int allocateSize () {
+        return size ();
+    }
 
     public boolean isVoid() {
         return this instanceof VoidType;
@@ -27,6 +32,8 @@ abstract public class Type {
     public boolean isNull() {
         return this instanceof NullType;
     }
+
+    public boolean isSigned() { throw new Error("#isSigned for non-integer type"); }
 
     public int hashCode() {
         return toString().hashCode();

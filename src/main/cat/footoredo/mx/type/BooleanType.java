@@ -1,11 +1,9 @@
 package cat.footoredo.mx.type;
 
 public class BooleanType extends Type {
-    private int size;
+    private static final int size = TypeTable.booleanSize;
 
-    public BooleanType(int size) {
-        this.size = size;
-    }
+    public BooleanType() {}
 
     public String toString() {
         return "bool";

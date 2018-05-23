@@ -5,15 +5,15 @@ import cat.footoredo.mx.type.ArrayType;
 import cat.footoredo.mx.type.Type;
 
 public class ArefNode extends LHSNode {
-    private ExpressionNode expr, index;
+    private ExpressionNode expression, index;
 
-    public ArefNode(ExpressionNode expr, ExpressionNode index) {
-        this.expr = expr;
+    public ArefNode(ExpressionNode expression, ExpressionNode index) {
+        this.expression = expression;
         this.index = index;
     }
 
-    public ExpressionNode getExpr() {
-        return expr;
+    public ExpressionNode getExpression() {
+        return expression;
     }
 
     public ExpressionNode getIndex() {
@@ -21,7 +21,15 @@ public class ArefNode extends LHSNode {
     }
 
     public Location getLocation () {
-        return expr.getLocation();
+        return expression.getLocation();
+    }
+
+    public int elementSize () {
+        return getType().size();
+    }
+
+    public Type getElementType () {
+        return ((ArrayType) expression.getType()).getBaseType();
     }
 
     @Override
@@ -31,7 +39,7 @@ public class ArefNode extends LHSNode {
 
     @Override
     public Type getType() {
-        // System.out.println(expr.getLocation());
-        return ((ArrayType) expr.getType()).getBaseType();
+        // System.out.println(expression.getLocation());
+        return getElementType();
     }
 }

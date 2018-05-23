@@ -1,6 +1,7 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.Type;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -12,6 +13,12 @@ public class LocalScope extends Scope {
         super ();
         this.parent = parent;
         parent.addChild(this);
+    }
+
+    public Variable allocateTmpVariable (Type type) {
+        Variable tmp = Variable.tmp (type);
+        declareEntity(tmp);
+        return tmp;
     }
 
     @Override

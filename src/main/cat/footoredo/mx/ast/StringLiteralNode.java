@@ -4,7 +4,7 @@ import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.StringTypeRef;
 
 public class StringLiteralNode extends LiteralNode {
-    protected String value;
+    private String value;
 
     public StringLiteralNode (Location location, String value) {
         super (location, new StringTypeRef());

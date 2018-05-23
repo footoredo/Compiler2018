@@ -9,4 +9,8 @@ abstract public class ExpressionNode extends Node {
     abstract public <S,E> E accept(ASTVisitor<S,E> visitor);
 
     abstract public Type getType();
+
+    public boolean isLoadable () {
+        return false;
+    }
 }
