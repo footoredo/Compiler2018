@@ -25,11 +25,21 @@ public class StringType extends MemberType {
             return 0;
         }
         else {
-            return charSize * length;
+            return charSize * (length + 1);
         }
     }
 
     public String toString () {
         return "string";
+    }
+
+    @Override
+    public String getName() {
+        return "string";
+    }
+
+    @Override
+    public boolean isScaler() {
+        return false;
     }
 }

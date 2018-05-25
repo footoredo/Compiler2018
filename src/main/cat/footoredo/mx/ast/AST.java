@@ -1,6 +1,7 @@
 package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.*;
+import cat.footoredo.mx.ir.IR;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,11 +67,19 @@ public class AST extends Node {
         return ret;
     }
 
+    public TypeDefinition getTypeDefinition (String name) {
+        return declarations.getTypeDefinition(name);
+    }
+
     public List<ClassNode> getClasses() {
         return declarations.getClasses();
     }
 
     public List<BuiltinTypeNode> getBuiltinTypes() {
         return declarations.getBuiltinTypes();
+    }
+
+    public IR generateIR () {
+
     }
 }

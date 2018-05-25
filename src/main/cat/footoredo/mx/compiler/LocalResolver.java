@@ -3,6 +3,7 @@ package cat.footoredo.mx.compiler;
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.ClassType;
 import cat.footoredo.mx.type.ClassTypeRef;
 import cat.footoredo.mx.type.IntegerTypeRef;
 import cat.footoredo.mx.type.StringType;
@@ -12,6 +13,7 @@ import java.util.*;
 public class LocalResolver extends Visitor {
     private LinkedList<Scope> scopeStack;
     private final Set<String> reservedWords = new HashSet<>();
+    private ClassNode currentClass;
 
     public LocalResolver (String[] reservedWords) {
         this.scopeStack = new LinkedList<>();
@@ -23,6 +25,7 @@ public class LocalResolver extends Visitor {
     }
 
     public void resolve (AST ast) throws SemanticException {
+        currentClass = null;
         ToplevelScope toplevelScope = new ToplevelScope();
         scopeStack.add(toplevelScope);
 
@@ -86,6 +89,9 @@ public class LocalResolver extends Visitor {
 
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
+            if (t instanceof ClassNode) {
+                currentScope().declareEntity(((ClassNode)t).getConstructor());
+            }
             pushScope(t.getMemberVariables());
             currentScope().declareEntity(new Variable(t.getTypeNode(), "this"));
             for (Function function: t.getMemberMethods())
@@ -96,8 +102,12 @@ public class LocalResolver extends Visitor {
                     if (!c.getConstructor().getName().equals(c.getName()))
                         throw new SemanticException("constructor name incompatible with class name");
                 }
+                currentClass = c;
             }
             resolveFunctions(t.getMemberMethods());
+            if (t instanceof ClassNode) {
+                currentClass = null;
+            }
             t.setScope(popScope());
         }
     }
@@ -115,6 +125,20 @@ public class LocalResolver extends Visitor {
         super.visit(node);
         ((LocalScope) currentScope()).declareEntity(node.getVariable(), reservedWords);
         return null;
+    }
+
+    @Override
+    public Void visit(NewNode node) {
+        super.visit(node);
+        resolveCreator (node.getCreator());
+        return null;
+    }
+
+    private void resolveCreator (CreatorNode node) {
+        if (node.hasArgs()) {
+            DefinedFunction constructor = (DefinedFunction) (currentScope().get (node.getClassName()));
+            node.setConstructor(constructor);
+        }
     }
 
     private void pushScope (List <? extends Variable> vars) {
@@ -141,6 +165,10 @@ public class LocalResolver extends Visitor {
     @Override
     public Void visit(VariableNode node) {
         // System.out.println("resolving variable " + node.getName());
+        if (currentClass != null && currentScope().directGet(node.getName()) == null &&
+                currentClass.hasMemberVariable(node.getName())) {
+            node.setMember(true);
+        }
         Entity entity = currentScope().get(node.getName());
         entity.referred();
         node.setEntity(entity);

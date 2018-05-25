@@ -2,7 +2,7 @@ package cat.footoredo.mx.type;
 
 import cat.footoredo.mx.entity.Location;
 
-public class ArrayTypeRef extends TypeRef {
+public class ArrayTypeRef extends BuiltinTypeRef {
     public static final int undefined = -1;
     protected TypeRef baseType;
     protected int len;

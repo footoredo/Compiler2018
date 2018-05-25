@@ -146,7 +146,6 @@ public class TypeResolver extends Visitor
         return super.visit(node);
     }
 
-
     @Override
     public Void visit(NewNode node) {
         bindType(node.getTypeNode());

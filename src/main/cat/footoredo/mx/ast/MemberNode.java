@@ -1,12 +1,16 @@
 package cat.footoredo.mx.ast;
 
+import cat.footoredo.mx.entity.Entity;
 import cat.footoredo.mx.entity.Location;
+import cat.footoredo.mx.ir.Expression;
 import cat.footoredo.mx.type.MemberType;
 import cat.footoredo.mx.type.Type;
 
 public class MemberNode extends LHSNode {
     protected ExpressionNode expression;
     protected String name;
+    private Expression instance;
+    private Entity entity;
 
     public MemberNode (ExpressionNode expression, String name) {
         super ();
@@ -14,8 +18,28 @@ public class MemberNode extends LHSNode {
         this.name = name;
     }
 
+    public Expression getInstance() {
+        return instance;
+    }
+
+    public void setInstance(Expression instance) {
+        this.instance = instance;
+    }
+
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getTypeName () {
+        return expression.getMemberType().getName();
     }
 
     public ExpressionNode getExpression() {
@@ -31,7 +55,7 @@ public class MemberNode extends LHSNode {
     }
 
     private Slot getSlot () {
-        return ((MemberType)expression.getType()).getMember(name);
+        return (expression.getMemberType()).getMember(name);
     }
 
     @Override
@@ -43,7 +67,7 @@ public class MemberNode extends LHSNode {
     public Type getType() {
         // System.out.println(expression);
         // System.out.println(expression.getType().toString() +  "." + name);
-        return ((MemberType)expression.getType()).getMemberType(name);
+        return (expression.getMemberType()).getMemberType(name);
     }
 
 }

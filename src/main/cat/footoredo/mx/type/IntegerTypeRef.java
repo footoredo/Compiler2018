@@ -15,7 +15,7 @@ public class IntegerTypeRef extends BuiltinTypeRef implements SelfDefiningType {
     }
 
     public Type definingType() {
-        return new IntegerType();
+        return new IntegerType(true);
     }
 
     public boolean equals(Object other) {

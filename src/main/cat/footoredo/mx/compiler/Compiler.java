@@ -1,13 +1,11 @@
 package cat.footoredo.mx.compiler;
 
-import cat.footoredo.mx.ast.AST;
-import cat.footoredo.mx.ast.ASTBuilderVisitor;
-import cat.footoredo.mx.ast.BuiltinTypeNode;
-import cat.footoredo.mx.ast.StringTypeNode;
+import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.cst.MxLexer;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.BuiltinFunction;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.ir.IR;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -24,6 +22,7 @@ public class Compiler {
         AST ast_builtin_types = addBuiltinTypes(ast);
         TypeTable types = new TypeTable();
         AST sem = semanticAnalyze(ast_builtin_types, types);
+        IR ir = new IRGenerator(types).generate(sem);
     }
 
     AST parseFile(String path) throws IOException {
@@ -79,6 +78,7 @@ public class Compiler {
         ast.addTypeDefinition(new BuiltinTypeNode(new BooleanTypeRef()));
         ast.addTypeDefinition(new BuiltinTypeNode(new VoidTypeRef()));
         ast.addTypeDefinition(new BuiltinTypeNode(new NullTypeRef()));
+        ast.addTypeDefinition(new ProtoArrayTypeNode(getBuiltinDeclarations("builtin/array_builtin.m")));
         ast.addTypeDefinition(new StringTypeNode(getBuiltinDeclarations("builtin/string_builtin.m")));
         return ast;
     }

@@ -4,13 +4,11 @@ import cat.footoredo.mx.asm.Label;
 import cat.footoredo.mx.asm.Type;
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
-import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.ir.*;
 import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
-import cat.footoredo.mx.ir.Variable;
-import cat.footoredo.mx.type.TypeTable;
+import cat.footoredo.mx.type.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,23 +16,45 @@ import java.util.List;
 
 public class IRGenerator implements ASTVisitor<Void, Expression> {
     private final TypeTable typeTable;
+    private AST ast;
 
     public IRGenerator(TypeTable typeTable) {
         this.typeTable = typeTable;
     }
 
+    private Expression thisPointer;
+    private ClassType currentClass;
     public IR generate(AST ast) throws SemanticException {
-        for (Variable variable: ast.getVariables()) {
+        this.ast = ast;
+        thisPointer = ref(tmpVariable(new PointerType()));
+        currentClass = null;
+        for (cat.footoredo.mx.entity.Variable variable: ast.getVariables()) {
             if (variable.hasInitializer())
                 variable.setIr(transformExpression(variable.getInitializer()));
         }
         for (DefinedFunction f: ast.getFunctions()) {
-            f.setIR(compileFunctionBody(f))
+            f.setIR(compileFunctionBody(f));
         }
+        for (TypeDefinition t: ast.getTypeDefinitions()) {
+            if (t instanceof ClassNode) {
+                currentClass = ((ClassNode) t).getClassType();
+            }
+            for (Function f: t.getMemberMethods()) {
+                if (f instanceof DefinedFunction) {
+                    ((DefinedFunction) f).setIR(compileFunctionBody((DefinedFunction) f));
+                }
+            }
+            currentClass = null;
+        }
+        return ast.generateIR();
     }
 
-    private Statement transformStatement(StatementNode statementNode) {
-        return null;
+    private void transformStatement(StatementNode statementNode) {
+        statementNode.accept(this);
+    }
+
+    private void transformStatement(ExpressionNode expressionNode) {
+        expressionNode.accept(this);
     }
 
     private int expressionLevel = 0;
@@ -50,10 +70,10 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         return expressionLevel == 0;
     }
 
-    List<Statement> statements;
-    LinkedList<LocalScope> scopeStack;
-    LinkedList<Label> breakStack;
-    LinkedList<Label> continueStack;
+    private List<Statement> statements;
+    private LinkedList<LocalScope> scopeStack;
+    private LinkedList<Label> breakStack;
+    private LinkedList<Label> continueStack;
 
     private List<Statement> compileFunctionBody (DefinedFunction function) {
         statements = new ArrayList<>();
@@ -115,6 +135,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     private Expression transformOpAssign (Location location, Op op, Expression lhs, Expression rhs) {
         assign (location, lhs, binary(op, lhs, rhs));
+        return isStatement() ? null : lhs;
     }
 
     private Binary binary (Op op, Expression lhs, Expression rhs) {
@@ -125,6 +146,17 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         return transformExpression(node.getIndex());
     }
 
+    private Expression setThisPointer (Location location, Expression newThisPointer) {
+        Expression originalThisPointer = ref (tmpVariable(new PointerType()));
+        assign(location, originalThisPointer, thisPointer);
+        assign(location, thisPointer, newThisPointer);
+        return originalThisPointer;
+    }
+
+    private void recoverThisPointer (Location location, Expression originalThisPointer) {
+        assign(location, thisPointer, originalThisPointer);
+    }
+
     @Override
     public Void visit(BlockNode node) {
         return null;
@@ -132,6 +164,10 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Void visit(ExpressionStatementNode node) {
+        Expression e = node.getExpression().accept(this);
+        if (e != null) {
+            System.out.println("useless statement @" + node.getLocation());
+        }
         return null;
     }
 
@@ -332,7 +368,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         else {
             cat.footoredo.mx.entity.Variable variable = tmpVariable(type);
             assign (location, ref (variable), expression);
-            assign (location, expression, binary(op, ref (v), immediate(type, 1)));
+            assign (location, expression, binary(op, ref (variable), immediate(type, 1)));
             return ref (variable);
         }
     }
@@ -362,16 +398,18 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Expression visit(MemberNode node) {
-        if (node.getType().isFunction()) {
-            // TODO..
-        }
-        else {
-            Expression expression = addressOf(transformExpression(node.getExpression()));
+        Expression expression = addressOf(transformExpression(node.getExpression()));
+        node.setInstance (expression);
+        if (!node.getType().isFunction()) {
             Expression offset = ptrdiff(node.getOffset());
             Expression address = new Binary(ptr_t(), Op.ADD, expression, offset);
             return memory(address, node.getType());
         }
-        return null;
+        else {
+            java.lang.String typeName = node.getTypeName();
+            Entity entity = ast.getTypeDefinition(typeName).getScope().get(node.getName());
+            return ref (entity);
+        }
     }
 
     @Override
@@ -380,27 +418,111 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         for (ExpressionNode arg : node.getParams()) {
             args.add(transformExpression(arg));
         }
-        Expression call = new Call (asmType(node.getReturnType()), transformExpression(node.getCaller()), args);
+        Expression caller = transformExpression(node.getCaller());
+        Expression call;
+        Expression originalThisPointer = null;
+        if (node.getCaller() instanceof MemberNode) {
+            originalThisPointer = setThisPointer( node.getLocation(),
+                    addressOf(((MemberNode) node.getCaller()).getInstance()) );
+            call = new Call(asmType(node.getReturnType()), caller, args);
+        }
+        else {
+            call = new Call (asmType(node.getReturnType()), caller, args);
+        }
         if (isStatement()) {
             statements.add (new ExpressionStatement(node.getLocation(), call));
+            if (originalThisPointer != null) {
+                recoverThisPointer (node.getLocation(), originalThisPointer);
+            }
             return null;
         }
         else {
             cat.footoredo.mx.entity.Variable tmp = tmpVariable(node.getReturnType());
             assign(node.getLocation(), ref (tmp), call);
+            if (originalThisPointer != null) {
+                recoverThisPointer (node.getLocation(), originalThisPointer);
+            }
             return ref (tmp);
         }
     }
 
+    private Expression allocateArray(Location location, ArrayType arrayType, List<ExpressionNode> lengths) {
+        if (lengths.size() == 0) {
+            throw new Error("array size not specified.");
+        }
+        Expression length = transformExpression(lengths.get(0));
+        Expression entrySize = size(arrayType.getBaseType().size());
+        Expression sizeSize = size(8);
+        Expression totalSize = binary(Op.ADD, sizeSize, binary(Op.MUL, length, entrySize));
+        Malloc malloc = new Malloc(ptr_t(), totalSize);
+        Expression address = ref(tmpVariable(new PointerType()));
+        assign (location, address, malloc);
+        assign (location, memory(address, new IntegerType(false)), length);
+        lengths.remove(0);
+        if (lengths.size() > 0) {
+            Expression currentAddress = binary(Op.ADD, address, size(8));
+            Expression cond = binary(Op.NEQ, length, size(0));
+
+            Label begLabel = new Label ();
+            Label bodyLabel = new Label ();
+            Label endLabel = new Label ();
+
+            label (begLabel);
+            cjump (location, cond, bodyLabel, endLabel);
+            label (bodyLabel);
+            assign (location, memory(currentAddress, new PointerType()), allocateArray(location, (ArrayType) arrayType.getBaseType(), lengths));
+            binary(Op.ADD, currentAddress, size(8));
+            binary(Op.SUB, length, size(1));
+            jump (begLabel);
+            label (endLabel);
+        }
+        return address;
+    }
+
     @Override
     public Expression visit(NewNode node) {
-        return null;
+        CreatorNode creator = node.getCreator();
+        if (creator.hasArgs()) {
+            List<Expression> args = new ArrayList<>();
+            for (ExpressionNode arg : creator.getArgs()) {
+                args.add (transformExpression(arg));
+            }
+            Malloc malloc = new Malloc(ptr_t(), size(creator.getType().allocateSize()));
+            Expression address = ref(tmpVariable(new PointerType()));
+            assign (node.getLocation(), address, malloc);
+            java.lang.String typeName = creator.getTypeName ();
+            Entity constructor = ast.getTypeDefinition(typeName).getScope().get(typeName);
+            Expression originalThisPointer = setThisPointer(node.getLocation(), address);
+            Expression call = new Call(nullType(), ref(constructor), args);
+            statements.add (new ExpressionStatement(node.getLocation(), call));
+            recoverThisPointer(node.getLocation(), originalThisPointer);
+            return address;
+        }
+        else if (creator.hasLengths()) {
+            Expression address = allocateArray (node.getLocation(), (ArrayType) node.getType(), creator.getLengths());
+            return address;
+        }
+        else {
+            throw new SemanticException(node.getLocation(), "\"new type\" is not valid");
+        }
     }
 
     @Override
     public Expression visit(VariableNode node) {
-        cat.footoredo.mx.ir.Variable variable = ref (node.getEntity());
-        return node.isLoadable() ? variable : addressOf(variable);
+        if (node.isMember()) {
+            Expression offset = ptrdiff(currentClass.getOffset(node.getName()));
+            Expression address = new Binary(ptr_t(), Op.ADD, thisPointer, offset);
+            return memory(address, node.getType());
+        }
+        else {
+            cat.footoredo.mx.ir.Variable variable = ref(node.getEntity());
+            return node.isLoadable() ? variable : addressOf(variable);
+        }
+    }
+
+    @Override
+    public Expression visit(BinaryOpNode node) {
+        return null;
     }
 
     @Override
@@ -432,7 +554,14 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Type varType (cat.footoredo.mx.type.Type type) {
+        if (!type.isScaler ()) {
+            return null;
+        }
         return Type.get(type.size());
+    }
+
+    private Type nullType () {
+        return Type.get(0);
     }
 
     private cat.footoredo.mx.ir.Variable ref (Entity entity) {

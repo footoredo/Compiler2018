@@ -1,11 +1,13 @@
 package cat.footoredo.mx.type;
 
+import cat.footoredo.mx.ast.MemberNode;
+
 abstract public class Type {
     static final public int sizeUnknown = -1;
 
     abstract public int size ();
     public int allocateSize () {
-        return size ();
+        return 0;
     }
 
     public boolean isVoid() {
@@ -35,7 +37,15 @@ abstract public class Type {
 
     public boolean isSigned() { throw new Error("#isSigned for non-integer type"); }
 
+    public boolean isScaler () {
+        return true;
+    }
+
     public int hashCode() {
         return toString().hashCode();
+    }
+
+    public MemberType getMemberType () {
+        throw new Error ("requesting member type from non-member type");
     }
 }

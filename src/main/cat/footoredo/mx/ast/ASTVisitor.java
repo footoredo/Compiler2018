@@ -17,7 +17,7 @@ public interface ASTVisitor <S, E> {
     E visit(AssignNode node);
     E visit(LogicalOpNode node);
     E visit(ArithmeticOpNode node);
-    // E visit(BinaryOpNode node);
+    E visit(BinaryOpNode node);
     E visit(UnaryOpNode node);
     E visit(PrefixNode node);
     E visit(SuffixNode node);

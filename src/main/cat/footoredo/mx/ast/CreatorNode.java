@@ -1,5 +1,6 @@
 package cat.footoredo.mx.ast;
 
+import cat.footoredo.mx.entity.DefinedFunction;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.ArrayTypeRef;
 import cat.footoredo.mx.type.Type;
@@ -13,6 +14,7 @@ public class CreatorNode extends Node {
     protected TypeNode typeNode;
     protected List<ExpressionNode> lengths;
     protected List<ExpressionNode> args;
+    private DefinedFunction constructor;
 
     public CreatorNode (Location location, TypeRef typeNodeRef) {
         super ();
@@ -39,6 +41,21 @@ public class CreatorNode extends Node {
         this.args = args;
     }
 
+    public DefinedFunction getConstructor() {
+        return constructor;
+    }
+
+    public void setConstructor(DefinedFunction constructor) {
+        this.constructor = constructor;
+    }
+
+    public String getClassName () {
+        if (!hasArgs()) {
+            throw new Error ("requesting class name of non-class creator");
+        }
+        return ((ClassTypeRef)(typeNode.getTypeRef())).getName();
+    }
+
     public Location getLocation() {
         return location;
     }
@@ -61,5 +78,9 @@ public class CreatorNode extends Node {
 
     public Type getType() {
         return typeNode.getType();
+    }
+
+    public String getTypeName () {
+        return getType().getMemberType().getName();
     }
 }

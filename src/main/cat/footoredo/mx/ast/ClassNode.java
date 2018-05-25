@@ -7,11 +7,14 @@ import cat.footoredo.mx.type.ClassTypeRef;
 import cat.footoredo.mx.type.Type;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ClassNode extends TypeDefinition {
     protected Location location;
     private List<Variable> memberVariables;
+    private Set<String> memberVariableNames;
     private List<DefinedFunction> memberMethods;
     private DefinedFunction constructor;
     private List<Slot> members;
@@ -23,6 +26,7 @@ public class ClassNode extends TypeDefinition {
         this.name = name;
         this.memberVariables = new ArrayList<>();
         this.memberMethods = new ArrayList<>();
+        this.memberVariableNames = new HashSet<>();
         this.constructor = null;
         this.members = new ArrayList<>();
         for (MemberDeclarationNode memberDeclarationNode : classBodyNode.getMemberDeclarationNodes()) {
@@ -30,6 +34,7 @@ public class ClassNode extends TypeDefinition {
                 MemberVariableDeclarationNode memberVariableDeclarationNode = (MemberVariableDeclarationNode) memberDeclarationNode;
                 memberVariables.add(new Variable(memberVariableDeclarationNode.getVariableDeclarationNode()));
                 members.add(new Slot(memberVariableDeclarationNode.getTypeNode(), memberVariableDeclarationNode.getName()));
+                memberVariableNames.add (memberVariableDeclarationNode.getName());
             }
             else if (memberDeclarationNode instanceof MemberMethodDeclarationNode) {
                 MemberMethodDeclarationNode memberMethodDeclarationNode = (MemberMethodDeclarationNode) memberDeclarationNode;
@@ -45,6 +50,13 @@ public class ClassNode extends TypeDefinition {
                 this.constructor = new DefinedFunction(constructorDeclarationNode.getConstructorNode());
                 members.add(new Slot(constructorDeclarationNode.getConstructorNode().getTypeNode(), constructorDeclarationNode.getConstructorNode().getName()));
             }
+        }
+
+        if (this.constructor == null) {
+            BlockNode body = new BlockNode(null);
+            ConstructorNode constructorNode = new ConstructorNode(null, this.name, new ArrayList<>(), body);
+            this.constructor = new DefinedFunction(constructorNode);
+            members.add (new Slot (constructorNode.getTypeNode(), this.name));
         }
 
         /*System.out.println("A new class \"" + this.name + "\" is found @ " +
@@ -74,7 +86,11 @@ public class ClassNode extends TypeDefinition {
         return ret;
     }
 
-    public List<Entity> getEntitis() {
+    public boolean hasMemberVariable (String name) {
+        return memberVariableNames.contains(name);
+    }
+
+    public List<Entity> getEntities() {
         List<Entity> ret = new ArrayList<>();
         ret.addAll(getMemberVariables());
         ret.addAll(getMemberMethods());
@@ -87,6 +103,10 @@ public class ClassNode extends TypeDefinition {
 
     public boolean hasConstructor() {
         return constructor != null;
+    }
+
+    public ClassType getClassType () {
+        return (ClassType) getType();
     }
 
     @Override

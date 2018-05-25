@@ -1,5 +1,7 @@
 package cat.footoredo.mx.ir;
 
+import java.lang.String;
+
 public enum Op {
     ADD,
     SUB,
@@ -30,7 +32,7 @@ public enum Op {
     BIT_NOT,
     NOT;
 
-    static public Op internBinary(String op, boolean isSigned) {
+    static public Op internBinary(java.lang.String op, boolean isSigned) {
         if (op.equals("+")) {
             return Op.ADD;
         }

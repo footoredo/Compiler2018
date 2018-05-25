@@ -2,17 +2,16 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Declarations {
     private Set<Variable> vars = new LinkedHashSet<>();
     private Set<BuiltinFunction> builtinFuns = new LinkedHashSet<>();
     private Set<DefinedFunction> funs = new LinkedHashSet<>();
-    private Set<ClassNode> classes = new LinkedHashSet<>();
-    private Set<BuiltinTypeNode> builtinTypeNodes = new LinkedHashSet<>();
+    //private Set<ClassNode> classes = new LinkedHashSet<>();
+    //private Set<BuiltinTypeNode> builtinTypeNodes = new LinkedHashSet<>();
+    private Map<String, ClassNode> classes = new HashMap<>();
+    private Map<String, BuiltinTypeNode> builtinTypes = new HashMap<>();
     private List<Entity> entities = new ArrayList<>();
 
     public void addVar (Variable var) {
@@ -46,11 +45,11 @@ public class Declarations {
     }
 
     public void addTypeDefinition (ClassNode typeDefinition) {
-        classes.add (typeDefinition);
+        classes.put (typeDefinition.getName(), typeDefinition);
     }
 
     public void addTypeDefinition (BuiltinTypeNode typeDefinition) {
-        builtinTypeNodes.add (typeDefinition);
+        builtinTypes.put (typeDefinition.getName(), typeDefinition);
     }
 
     /*public void addTypeDefinitions (List<TypeDefinition> typeDefinitions) {
@@ -74,10 +73,19 @@ public class Declarations {
     }
 
     public List<ClassNode> getClasses() {
-        return new ArrayList<>(classes);
+        return new ArrayList<>(classes.values());
     }
 
     public List<BuiltinTypeNode> getBuiltinTypes() {
-        return new ArrayList<>(builtinTypeNodes);
+        return new ArrayList<>(builtinTypes.values());
+    }
+
+    public TypeDefinition getTypeDefinition (String name) {
+        if (builtinTypes.containsKey(name)) {
+            return builtinTypes.get(name);
+        }
+        else {
+            return classes.get(name);
+        }
     }
 }

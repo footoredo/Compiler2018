@@ -5,6 +5,8 @@ import cat.footoredo.mx.asm.Operand;
 import cat.footoredo.mx.asm.Type;
 import cat.footoredo.mx.entity.Entity;
 
+import java.lang.String;
+
 public class Variable extends Expression {
     private Entity entity;
 

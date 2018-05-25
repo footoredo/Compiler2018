@@ -38,4 +38,13 @@ abstract public class Scope {
     }
 
     abstract public Entity get (String name) throws SemanticException;
+
+    public Entity directGet (String name) {
+        if (entityMap.containsKey(name)) {
+            return entityMap.get (name);
+        }
+        else {
+            return null;
+        }
+    }
 }

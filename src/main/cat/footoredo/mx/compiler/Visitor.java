@@ -27,13 +27,13 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(PrefixNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }
 
     @Override
     public Void visit(SuffixNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }
 
@@ -46,7 +46,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(ExpressionStatementNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }
 
@@ -88,7 +88,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(ReturnNode node) {
-        if (node.hasExpr()) visitExpression(node.getExpr());
+        if (node.hasExpression()) visitExpression(node.getExpression());
         return null;
     }
 
@@ -99,7 +99,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(LocalVariableDeclarationNode node) {
-        if (node.hasInitExpr()) visitExpression(node.getInitExpr());
+        if (node.hasInitialExpression()) visitExpression(node.getInitialExpression());
         return null;
     }
 
@@ -133,7 +133,7 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     @Override
     public Void visit(UnaryOpNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }
 
@@ -145,26 +145,26 @@ public class Visitor implements ASTVisitor<Void, Void> {
 
     /*@Override
     public Void visit(PrefixNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }
 
     @Override
     public Void visit(SuffixNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }*/
 
     @Override
     public Void visit(ArefNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         visitExpression(node.getIndex());
         return null;
     }
 
     @Override
     public Void visit(MemberNode node) {
-        visitExpression(node.getExpr());
+        visitExpression(node.getExpression());
         return null;
     }
 

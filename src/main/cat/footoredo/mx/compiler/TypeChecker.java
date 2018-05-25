@@ -42,9 +42,9 @@ public class TypeChecker extends Visitor {
     @Override
     public Void visit(LocalVariableDeclarationNode node) {
         super.visit(node);
-        if (node.hasInitExpr()) {
+        if (node.hasInitialExpression()) {
             // System.out.println(node.getInitExpr().getType().isNull());
-            checkAssignType(node.getLocation(), node.getTypeNode().getType(), node.getInitExpr().getType());
+            checkAssignType(node.getLocation(), node.getTypeNode().getType(), node.getInitialExpression().getType());
         }
         return null;
     }
@@ -122,11 +122,11 @@ public class TypeChecker extends Visitor {
     public Void visit(ReturnNode node) {
         super.visit(node);
         if (currentFunction.getReturnType().isVoid()) {
-            if (node.hasExpr())
+            if (node.hasExpression())
                 throw new SemanticException(node.getLocation(), "return in void function");
         }
         else {
-            if (!areAssignableTypes(currentFunction.getReturnType(),node.getExpr().getType())) {
+            if (!areAssignableTypes(currentFunction.getReturnType(),node.getExpression().getType())) {
                 // System.out.println(node.getExpr().getType().toString());
                 // System.out.println(currentFunction.getReturnType().toString());
                 throw new SemanticException(node.getLocation(), "incompatible return type");
@@ -213,17 +213,17 @@ public class TypeChecker extends Visitor {
 
     public Void visit(PrefixNode node) {
         super.visit(node);
-        checkLhs(node.getExpr());
-        if (!node.getExpr().getType().isInteger())
-            throw new SemanticException(node.getExpr().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
+        checkLhs(node.getExpression());
+        if (!node.getExpression().getType().isInteger())
+            throw new SemanticException(node.getExpression().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
         return null;
     }
 
     public Void visit(SuffixNode node) {
         super.visit(node);
-        checkLhs(node.getExpr());
-        if (!node.getExpr().getType().isInteger())
-            throw new SemanticException(node.getExpr().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
+        checkLhs(node.getExpression());
+        if (!node.getExpression().getType().isInteger())
+            throw new SemanticException(node.getExpression().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
         return null;
     }
 
@@ -239,12 +239,12 @@ public class TypeChecker extends Visitor {
     public Void visit(UnaryOpNode node) {
         super.visit(node);
         if (node.getOperator().equals("!")) {
-            if (!node.getExpr().getType().isBoolean())
-                throw new SemanticException(node.getExpr().getLocation(), "object of unary operator \"!\" is not boolean");
+            if (!node.getExpression().getType().isBoolean())
+                throw new SemanticException(node.getExpression().getLocation(), "object of unary operator \"!\" is not boolean");
         }
         else {
-            if (!node.getExpr().getType().isInteger())
-                throw new SemanticException(node.getExpr().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
+            if (!node.getExpression().getType().isInteger())
+                throw new SemanticException(node.getExpression().getLocation(), "object of unary operator \"" + node.getOperator() + "\" is not integer");
         }
         return null;
     }
@@ -266,7 +266,7 @@ public class TypeChecker extends Visitor {
 
     public Void visit(ArefNode node) {
         super.visit(node);
-        if (!node.getExpr().getType().isArray())
+        if (!node.getExpression().getType().isArray())
             throw new SemanticException(node.getLocation(), "accessing a non-array variable by index");
         return null;
     }

@@ -48,4 +48,9 @@ public class FunctionType extends Type {
     public int size() {
         throw new Error("FunctionType#size called");
     }
+
+    @Override
+    public boolean isScaler() {
+        return false;
+    }
 }

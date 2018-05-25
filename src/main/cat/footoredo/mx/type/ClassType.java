@@ -61,4 +61,10 @@ public class ClassType extends MemberType {
         }
         return cachedSize;
     }
+
+    @Override
+    public boolean isScaler() {
+        return false;
+    }
+
 }

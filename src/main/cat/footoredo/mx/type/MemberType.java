@@ -1,6 +1,8 @@
 package cat.footoredo.mx.type;
 
+import cat.footoredo.mx.ast.MemberNode;
 import cat.footoredo.mx.ast.Slot;
+import cat.footoredo.mx.ir.Expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,5 +47,14 @@ abstract public class MemberType extends Type {
     }
     public Slot getMember (String name) {
         return memberMap.get(name);
+    }
+    public int getOffset (String name) {
+        return getMember(name).getOffset();
+    }
+    public abstract String getName ();
+
+    @Override
+    public MemberType getMemberType() {
+        return ProtoArrayType.protoArrayTypeInstance;
     }
 }
