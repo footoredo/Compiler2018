@@ -11,6 +11,7 @@ public class AST extends Node {
     protected Location location;
     private Declarations declarations;
     private ToplevelScope scope;
+    private ConstantTable constantTable;
 
     AST (Location location, Declarations declarations) {
         super ();
@@ -60,6 +61,14 @@ public class AST extends Node {
         this.scope = scope;
     }
 
+    public ConstantTable getConstantTable() {
+        return constantTable;
+    }
+
+    public void setConstantTable(ConstantTable constantTable) {
+        this.constantTable = constantTable;
+    }
+
     public List<TypeDefinition> getTypeDefinitions () {
         List<TypeDefinition> ret = new ArrayList<>();
         ret.addAll(declarations.getClasses());
@@ -80,6 +89,6 @@ public class AST extends Node {
     }
 
     public IR getIR () {
-        return new IR (location, declarations.getVars(), declarations.getFuns(), declarations.getBuiltinFuns(), scope);
+        return new IR (location, declarations.getVars(), declarations.getFuns(), declarations.getBuiltinFuns(), scope, constantTable);
     }
 }

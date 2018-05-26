@@ -11,12 +11,14 @@ import cat.footoredo.mx.type.StringType;
 import java.util.*;
 
 public class LocalResolver extends Visitor {
-    private LinkedList<Scope> scopeStack;
+    private final LinkedList<Scope> scopeStack;
+    private final ConstantTable constantTable;
     private final Set<String> reservedWords = new HashSet<>();
     private ClassNode currentClass;
 
     public LocalResolver (String[] reservedWords) {
         this.scopeStack = new LinkedList<>();
+        this.constantTable = new ConstantTable();
         this.reservedWords.addAll(Arrays.asList(reservedWords));
     }
 
@@ -59,6 +61,7 @@ public class LocalResolver extends Visitor {
         }
 
         ast.setScope(toplevelScope);
+        ast.setConstantTable(constantTable);
     }
 
     private void resolveGvarInitializer(Variable var) {
@@ -131,6 +134,12 @@ public class LocalResolver extends Visitor {
     public Void visit(NewNode node) {
         super.visit(node);
         resolveCreator (node.getCreator());
+        return null;
+    }
+
+    @Override
+    public Void visit(StringLiteralNode node) {
+        node.setEntry(constantTable.intern(node.getValue()));;
         return null;
     }
 

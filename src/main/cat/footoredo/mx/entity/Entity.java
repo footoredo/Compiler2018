@@ -11,7 +11,7 @@ abstract public class Entity {
     protected String name;
     private int referredCount;
     private MemoryReference memoryReference;
-    protected Operand address;
+    private Operand address;
 
     public Entity (TypeNode typeNode, String name) {
         this.typeNode = typeNode;
@@ -22,6 +22,8 @@ abstract public class Entity {
     public String getName() {
         return name;
     }
+
+    public String getSymbolString () { return name; }
 
     public TypeNode getTypeNode() {
         return typeNode;

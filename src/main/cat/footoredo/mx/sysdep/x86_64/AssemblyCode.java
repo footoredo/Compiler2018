@@ -89,6 +89,10 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         _section(".text");
     }
 
+    public void _bss () {
+        _section(".bss");
+    }
+
     public void _data () {
         _section(".data");
     }
@@ -216,5 +220,53 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("neg", register);
     }
 
-    public add ()
+    public void add (Register base, Operand diff) {
+        instruction("add", base, diff);
+    }
+
+    public void sub (Register base, Operand diff) {
+        instruction("sub", base, diff);
+    }
+
+    public void imul (Register base, Operand diff) {
+        instruction("imul", base, diff);
+    }
+
+    public void div (Register base) {
+        instruction("div", base);
+    }
+
+    public void idiv (Register base) {
+        instruction("idiv", base);
+    }
+
+    public void not (Register register) {
+        instruction("not", register);
+    }
+
+    public void and (Register base, Operand bits) {
+        instruction("and", base, bits);
+    }
+
+    public void or (Register base, Operand bits) {
+        instruction("or", base, bits);
+    }
+
+    public void xor (Register base, Operand bits) {
+        instruction("xor", base, bits);
+    }
+
+    public void sar (Register base, Register bits) {
+        instruction("sar", base, bits);
+    }
+
+    public void sal (Register base, Register bits) {
+        instruction("sal", base, bits);
+    }
+
+    public void shr (Register base, Register bits) {
+        instruction("shr", base, bits);
+    }
+
+
 }
