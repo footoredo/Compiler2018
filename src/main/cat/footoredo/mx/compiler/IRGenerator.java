@@ -46,7 +46,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             }
             currentClass = null;
         }
-        return ast.generateIR();
+        return ast.getIR();
     }
 
     private void transformStatement(StatementNode statementNode) {

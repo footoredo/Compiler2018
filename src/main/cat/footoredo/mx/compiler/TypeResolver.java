@@ -110,7 +110,7 @@ public class TypeResolver extends Visitor
             bindType(s.getTypeNode());
         }
         if (typeDefinition instanceof ClassNode) {
-            for (Entity e : ((ClassNode)typeDefinition).getEntitis()) {
+            for (Entity e : ((ClassNode)typeDefinition).getEntities()) {
                 e.accept(this);
             }
         }

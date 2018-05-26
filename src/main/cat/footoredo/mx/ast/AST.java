@@ -79,7 +79,7 @@ public class AST extends Node {
         return declarations.getBuiltinTypes();
     }
 
-    public IR generateIR () {
-
+    public IR getIR () {
+        return new IR (location, declarations.getVars(), declarations.getFuns(), declarations.getBuiltinFuns(), scope);
     }
 }

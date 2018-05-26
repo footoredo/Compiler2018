@@ -70,7 +70,7 @@ public class CompilerTest {
         }
     }
 
-    @Test
+    @Test(expected = SemanticException.class)
     public void testTmp() throws Exception {
         try {
             compiler.compile("example/tmp.m");
