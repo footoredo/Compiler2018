@@ -12,4 +12,6 @@ abstract public class Statement {
     public Location getLocation() {
         return location;
     }
+
+    abstract public <S, E> S accept (IRVisitor<S, E> visitor);
 }

@@ -30,6 +30,10 @@ abstract public class BinaryOpNode extends ExpressionNode {
         return operator;
     }
 
+    public boolean isSigned () {
+        return lhs.getType().isSigned() || rhs.getType().isSigned();
+    }
+
     @Override
     public Type getType() {
         return lhs.getType();

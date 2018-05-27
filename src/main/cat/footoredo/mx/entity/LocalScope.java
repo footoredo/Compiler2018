@@ -3,7 +3,9 @@ package cat.footoredo.mx.entity;
 import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.type.Type;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LocalScope extends Scope {
@@ -45,4 +47,23 @@ public class LocalScope extends Scope {
             return parent.get(name);
         }
     }
+
+    public List<Variable> getLocalVariables () {
+        List<Variable> result = new ArrayList<>();
+        for (Entity entity: super.entityMap.values()) {
+            if (entity instanceof Variable) {
+                result.add ((Variable)entity);
+            }
+        }
+        return result;
+    }
+
+    public List<Variable> getAllLocalVariables () {
+        List<Variable> result = getLocalVariables();
+        for (LocalScope scope: getChildren()) {
+            result.addAll (scope.getAllLocalVariables());
+        }
+        return result;
+    }
+
 }

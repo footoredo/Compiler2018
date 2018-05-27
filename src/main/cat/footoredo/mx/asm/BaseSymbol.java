@@ -10,4 +10,9 @@ abstract public class BaseSymbol implements Symbol {
     public Literal plus(long diff) {
         throw new Error("must not happen: BaseSymbol.plus called");
     }
+
+    @Override
+    public void collectStatistics(Statistics statistics) {
+        statistics.useSymbol(this);
+    }
 }

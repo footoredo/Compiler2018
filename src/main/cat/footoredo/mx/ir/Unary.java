@@ -19,4 +19,9 @@ public class Unary extends Expression {
     public Expression getExpression() {
         return expression;
     }
+
+    @Override
+    public <S, E> E accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

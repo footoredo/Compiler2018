@@ -73,6 +73,10 @@ public class AST extends Node {
         this.constantTable = constantTable;
     }
 
+    public Entity getEntity (String name) {
+        return scope.get(name);
+    }
+
     public List<TypeDefinition> getTypeDefinitions () {
         List<TypeDefinition> ret = new ArrayList<>();
         ret.addAll(declarations.getClasses());
@@ -93,7 +97,7 @@ public class AST extends Node {
     }
 
     public void addStatement (Statement statement) {
-        globalStatements.add(statement)
+        globalStatements.add(statement);
     }
 
     public IR getIR () {

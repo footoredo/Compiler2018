@@ -8,6 +8,7 @@ import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.ir.*;
 import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
+import cat.footoredo.mx.ir.Variable;
 import cat.footoredo.mx.type.*;
 
 import java.util.ArrayList;
@@ -139,6 +140,10 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     private Expression transformOpAssign (Location location, Op op, Expression lhs, Expression rhs) {
         assign (location, lhs, binary(op, lhs, rhs));
         return isStatement() ? null : lhs;
+    }
+
+    private Binary binary (Type type, Op op, Expression lhs, Expression rhs) {
+        return new Binary(type, op, lhs, rhs);
     }
 
     private Binary binary (Op op, Expression lhs, Expression rhs) {
@@ -371,7 +376,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         else {
             cat.footoredo.mx.entity.Variable variable = tmpVariable(type);
             assign (location, ref (variable), expression);
-            assign (location, expression, binary(op, ref (variable), immediate(type, 1)));
+            assign (location, expression, binary(ref (variable).getType(), op, ref (variable), immediate(type, 1)));
             return ref (variable);
         }
     }
@@ -383,8 +388,11 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Op op = Op.internBinary(node.getOperator(), node.getType().isSigned());
         cat.footoredo.mx.type.Type type = node.getType();
         if (node.getLhs().getType().isString()) {
-            // TODO..
-            return null;
+            Entity compareFunction = ast.getEntity("strcmp");
+            Expression caller = ref(compareFunction);
+            List<Expression> args = new ArrayList<>();
+            args.add (lhs); args.add (rhs);
+            return new Call(asmType(new BooleanType()), caller, args);
         }
         else {
             return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);
@@ -525,7 +533,11 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Expression visit(BinaryOpNode node) {
-        return null;
+        Expression right = transformExpression(node.getRhs());
+        Expression left = transformExpression(node.getLhs());
+        Op op = Op.internBinary(node.getOperator(), node.isSigned());
+        cat.footoredo.mx.type.Type type = node.getType();
+        return new Binary(asmType(type), op, left, right);
     }
 
     @Override
@@ -535,7 +547,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Expression visit(StringLiteralNode node) {
-        return new String(asmType(node.getType()), node.getValue());
+        return new String(asmType(node.getType()), node.getEntry());
     }
 
     @Override
@@ -549,7 +561,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Expression addressOf (Expression expression) {
-        return expression.addressNode(ptr_t());
+        return expression.getAddressNode(ptr_t());
     }
 
     private Type asmType (cat.footoredo.mx.type.Type type) {

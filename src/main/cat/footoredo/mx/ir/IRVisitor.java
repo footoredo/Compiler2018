@@ -7,8 +7,8 @@ public interface IRVisitor<S,E> {
     public S visit (Jump s);
     public S visit (LabelStatement s);
     public S visit (Return s);
-    public S visit (Null s);
 
+    public E visit (Null s);
     public E visit (Unary s);
     public E visit (Binary s);
     public E visit (Call s);

@@ -41,7 +41,7 @@ abstract public class Function extends Entity {
 
     public Label getLabel() {
         if (label != null) {
-            return label
+            return label;
         }
         else {
             return label = new Label(getCallingSymbol());
@@ -49,7 +49,6 @@ abstract public class Function extends Entity {
     }
 
     public Symbol getCallingSymbol() {
-
         return callingSymbol;
     }
 

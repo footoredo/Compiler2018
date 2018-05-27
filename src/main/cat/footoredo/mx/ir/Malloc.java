@@ -13,4 +13,9 @@ public class Malloc extends Expression {
     public Expression getSize() {
         return size;
     }
+
+    @Override
+    public <S, E> E accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

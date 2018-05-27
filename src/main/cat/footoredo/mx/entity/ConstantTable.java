@@ -21,7 +21,9 @@ public class ConstantTable implements Iterable<ConstantEntry> {
             return table.get(s);
         }
         else {
-            table.put (s, new ConstantEntry(s));
+            ConstantEntry entry = new ConstantEntry(s);
+            table.put (s, entry);
+            return entry;
         }
     }
 

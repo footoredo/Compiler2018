@@ -2,10 +2,10 @@ package cat.footoredo.mx.sysdep.x86_64;
 
 import cat.footoredo.mx.asm.*;
 import cat.footoredo.mx.entity.*;
-import cat.footoredo.mx.ir.IR;
-import cat.footoredo.mx.ir.IRVisitor;
+import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.ir.*;
 import cat.footoredo.mx.ir.Integer;
-import cat.footoredo.mx.ir.Statement;
+import cat.footoredo.mx.ir.String;
 import cat.footoredo.mx.utils.AsmUtils;
 import cat.footoredo.mx.utils.ListUtils;
 
@@ -26,8 +26,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         return generateAssemblyCode(ir);
     }
 
-    private static final String LABEL_SYMBOL_BASE = ".L";
-    private static final String CONST_SYMBOL_BASE = ".LC";
+    private static final java.lang.String LABEL_SYMBOL_BASE = ".L";
+    private static final java.lang.String CONST_SYMBOL_BASE = ".LC";
 
     private void locateSymbols (IR ir) {
         SymbolTable constSymbols = new SymbolTable(CONST_SYMBOL_BASE);
@@ -59,17 +59,22 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         locateVariable(function);
     }
 
-    private Symbol symbol(String sym) {
+    private Symbol symbol(java.lang.String sym) {
         return new NamedSymbol(sym);
     }
 
     private AssemblyCode generateAssemblyCode(IR ir) {
         AssemblyCode file = newAssemblyCode();
+        generateExterns (file);
         generateDataSection (file, ir.getGlobalVariables());
         generateTextSection (file, ir.getConstantTable());
         generateTextSection (file, ir.getDefinedFunctions());
         generateCommonSymbols (file, ir.getCommonSymbols());
         return file;
+    }
+
+    private void generateExterns (AssemblyCode file) {
+        file._extern("_malloc");
     }
 
     private AssemblyCode newAssemblyCode() {
@@ -117,6 +122,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         return AsmUtils.align(size, STACK_WORD_SIZE);
     }
 
+    private long stackSizeFromPosition (long position) {
+        return position * STACK_WORD_SIZE;
+    }
+
     class StackFrameInfo {
         List <Register> savedRegs;
         long lvarSize;
@@ -145,9 +154,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     class MemInfo {
         MemoryReference mem;
-        String name;
+        java.lang.String name;
 
-        MemInfo (MemoryReference mem, String name) {
+        MemInfo (MemoryReference mem, java.lang.String name) {
             this.mem = mem;
             this.name = name;
         }
@@ -156,7 +165,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private void printStackFrameLayout (AssemblyCode file, StackFrameInfo frame, List<Variable> lvars) {
         List<MemInfo> vars = new ArrayList<>();
         for (Variable var: lvars) {
-            vars.add (new MemInfo (var.getMemoryReference()), var.getName());
+            vars.add (new MemInfo (var.getMemoryReference(), var.getName()));
         }
         vars.add (new MemInfo(memory(0, bp()), "saved rbp"));
         vars.add (new MemInfo(memory(8, bp()), "return address"));
@@ -184,6 +193,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private AssemblyCode as;
     private Label epilogueLabel;
 
+    private void compileStatement (Statement statement) {
+        statement.accept(this);
+    }
+
     private AssemblyCode compileStatements (DefinedFunction function) {
         as = newAssemblyCode();
         epilogueLabel = new Label();
@@ -198,7 +211,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private List<Register> usedCalleeSaveRegisters (AssemblyCode body) {
         List<Register> result = new ArrayList<>();
         for (Register register: calleeSaveRegisters()) {
-            if (body.uses(register)) {
+            if (body.used(register)) {
                 result.add(register);
             }
         }
@@ -207,7 +220,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     }
 
     static final long[] CALLEE_SAVE_REGISTERS = {
-            RegisterClass.BP.ordinal(), RegisterClass.BX.ordinal(),
+            RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
             12, 13, 14, 15
     };
 
@@ -253,5 +266,447 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         file.mov (sp(), bp());
         file.pop (bp());
         file.ret ();
+    }
+
+    static final long[] PARAMETER_REGISTERS = {
+            RegisterClass.DI.getValue(), RegisterClass.SI.getValue(),
+            RegisterClass.DX.getValue(), RegisterClass.CX.getValue(), 8, 9
+    };
+
+    static final private long PARAMETER_START_POSITION = 2;
+
+    private void locateParameters (List<Parameter> parameters) {
+        for (int i = 0; i < PARAMETER_REGISTERS.length && i < parameters.size(); ++ i) {
+            Variable var = parameters.get(i);
+            var.setRegister(new Register(PARAMETER_REGISTERS[i], Type.get(var.size())));
+        }
+
+        long currentPoisition = PARAMETER_START_POSITION;
+        for (int i = PARAMETER_REGISTERS.length; i < parameters.size(); ++ i) {
+            Variable var = parameters.get(i);
+            var.setMemoryReference(memory(stackSizeFromPosition(currentPoisition), bp()));
+            currentPoisition ++;
+        }
+    }
+
+    private long locateLocalVariables (LocalScope scope) {
+        return locateLocalVariables(scope, 0);
+    }
+
+    private long locateLocalVariables (LocalScope scope, long parentStackLength) {
+        long length = parentStackLength;
+        for (Variable variable: scope.getLocalVariables()) {
+            length = alignStack(length + variable.size());
+            variable.setMemoryReference(relocatableMemory(-length, bp()));
+        }
+
+        long maxLength = length;
+        for (LocalScope s: scope.getChildren()) {
+            long childLength = locateLocalVariables(s, length);
+            if (childLength > maxLength)
+                maxLength = childLength;
+        }
+        return maxLength;
+    }
+
+    private void fixLocalVariableOffsets(LocalScope scope, long length) {
+        for (Variable variable: scope.getAllLocalVariables()) {
+            variable.getMemoryReference().fixOffset(-length);
+        }
+    }
+
+    private void fixTempVariableOffsets (AssemblyCode asm, long length) {
+        asm.virtualStack.fixOffset(-length);
+    }
+
+    private void extendStack(AssemblyCode file, long length) {
+        if (length > 0) {
+            file.sub (sp(), immediate(length));
+        }
+    }
+
+    private void rewindStack (AssemblyCode file, long length) {
+        if (length > 0) {
+            file.add (sp(), immediate(length));
+        }
+    }
+
+    private void compile (Expression expression) {
+        expression.accept (this);
+    }
+
+    @Override
+    public Void visit(ExpressionStatement s) {
+        compile(s.getExpression());
+        return null;
+    }
+
+    @Override
+    public Void visit(Assign s) {
+        if (s.getLhs().isAddress() && s.getLhs().getMemoryReference() != null) {
+            compile(s.getRhs());
+            store (s.getLhs().getMemoryReference(), ax(s.getLhs().getType()));
+        }
+        else if (s.getRhs().isConstant()) {
+            compile(s.getLhs());
+            as.mov (cx(), ax());
+            loadConstant(ax(), s.getRhs());
+            store (memory(cx()), ax(s.getLhs().getType()));
+        }
+        else {
+            compile(s.getRhs());
+            as.virtualPush(ax());
+            compile(s.getLhs());
+            as.mov (cx(), ax());
+            as.virtualPop(ax());
+            store (memory(cx()), ax(s.getLhs().getType()));
+        }
+        return null;
+    }
+
+    @Override
+    public Void visit(CJump s) {
+        compile(s.getCond());
+        Type type = s.getCond().getType();
+        as.test (ax(type), ax(type));
+        as.j("nz", s.getThenLabel());
+        as.jmp(s.getElseLabel());
+        return null;
+    }
+
+    @Override
+    public Void visit(Jump s) {
+        as.jmp(s.getTarget());
+        return null;
+    }
+
+    @Override
+    public Void visit(LabelStatement s) {
+        as.label(s.getLabel());
+        return null;
+    }
+
+    @Override
+    public Void visit(Return s) {
+        if (s.getExpression() != null) {
+            compile(s.getExpression());
+        }
+        as.jmp (epilogueLabel);
+        return null;
+    }
+
+    @Override
+    public Void visit(Null s) {
+        as.xor(ax(s.getType()), ax(s.getType()));
+        return null;
+    }
+
+    @Override
+    public Void visit(Unary s) {
+        Type src = s.getExpression().getType();
+        Type dest = s.getType();
+
+        compile(s.getExpression());
+        switch (s.getOp()) {
+            case UMINUS:
+                as.neg(ax(src));
+                break;
+            case BIT_NOT:
+                as.not (ax(src));
+                break;
+            case NOT:
+                as.test (ax(src), ax(src));
+                as.set ("e", al());
+                as.mov (ax(dest), al());
+        }
+        return null;
+    }
+
+    @Override
+    public Void visit(Binary s) {
+        Op op = s.getOp();
+        Type type = s.getType();
+        Type leftType = s.getLhs().getType();
+        Type rightType = s.getRhs().getType();
+        if (s.getRhs().isConstant() && !requireRegisterOperand(op)) {
+            compile(s.getLhs());
+            compileBinaryOp(type, op, ax(leftType), s.getRhs().getAsmValue());
+        }
+        else if (s.getRhs().isConstant()) {
+            compile(s.getLhs());
+            loadConstant(cx(), s.getRhs());
+            compileBinaryOp(type, op, ax(leftType), cx(rightType));
+        }
+        else if (s.getRhs().isAddress()) {
+            compile(s.getLhs());
+            loadAddress(cx(rightType), s.getRhs().getEntityForce());
+            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+        }
+        else if (s.getRhs().isVariable()) {
+            compile(s.getLhs());
+            loadVariable(cx(rightType), (cat.footoredo.mx.ir.Variable)s.getRhs());
+            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+        }
+        else if (s.getLhs().isConstant() || s.getLhs().isVariable() || s.getLhs().isAddress()) {
+            compile(s.getRhs());
+            as.mov(cx(), ax());
+            compile(s.getLhs());
+            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+        }
+        else {
+            compile(s.getRhs());
+            as.virtualPush(ax());
+            compile(s.getLhs());
+            as.virtualPop(cx());
+            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+        }
+        return null;
+    }
+
+    private boolean requireRegisterOperand (Op op) {
+        switch (op) {
+            case S_DIV:
+            case U_DIV:
+            case S_MOD:
+            case U_MOD:
+            case BIT_LSHIFT:
+            case BIT_RSHIFT:
+            case ARITH_RSHIFT:
+                return true;
+
+                default:
+                    return false;
+        }
+    }
+
+    private void compileBinaryOp (Type type, Op op, Register left, Operand right) {
+        switch (op) {
+            case ADD:
+                as.add(left, right);
+                break;
+            case SUB:
+                as.sub(left, right);
+                break;
+            case MUL:
+                as.imul(left, right);
+            case S_DIV:
+            case S_MOD:
+                as.cwd();
+                as.idiv(cx(left.getType()));
+                if (op == Op.S_MOD) {
+                    as.mov(left, dx());
+                }
+                break;
+            case U_DIV:
+            case U_MOD:
+                as.mov(dx(), immediate(0));
+                as.div(cx(left.getType()));
+                if (op == Op.U_MOD) {
+                    as.mov (left, dx());
+                }
+                break;
+            case BIT_AND:
+                as.and (left, right);
+            case BIT_OR:
+                as.or (left, right);
+            case BIT_XOR:
+                as.xor (left, right);
+            case BIT_LSHIFT:
+                as.shl (left, cl());
+            case BIT_RSHIFT:
+                as.shr (left, cl());
+            case ARITH_RSHIFT:
+                as.sar (left, cl());
+                default:
+                    as.cmp (ax(left.getType()), right);
+                    switch (op) {
+                        case EQ:    as.set ("e",  al()); break;
+                        case NEQ:   as.set ("ne", al()); break;
+                        case S_GT:  as.set ("g",  al()); break;
+                        case S_GTEQ:as.set ("ge", al()); break;
+                        case S_LT:  as.set ("l",  al()); break;
+                        case S_LTEQ:as.set ("le", al()); break;
+                        case U_GT:  as.set ("a",  al()); break;
+                        case U_GTEQ:as.set ("ae", al()); break;
+                        case U_LT:  as.set ("b",  al()); break;
+                        case U_LTEQ:as.set ("be", al()); break;
+                        default:
+                            throw new Error ("unknown binary operator: " + op);
+                    }
+                    as.mov (left, al());
+        }
+    }
+
+    @Override
+    public Void visit(Call s) {
+        for (int i = 0; i < s.getArgc() && i < PARAMETER_REGISTERS.length; ++ i) {
+            Expression arg = s.getArg(i);
+            compile(arg);
+            as.mov (new Register(PARAMETER_REGISTERS[i]), ax());
+        }
+        for (int i = (int)s.getArgc() - 1; i >= PARAMETER_REGISTERS.length; -- i) {
+            compile(s.getArg(i));
+            as.push (ax());
+        }
+        as.call(s.getFunction().getCallingSymbol());
+        return null;
+    }
+
+    @Override
+    public Void visit(Address s) {
+        loadAddress(ax(), s.getEntity());
+        return null;
+    }
+
+    @Override
+    public Void visit(Memory s) {
+        compile(s.getExpression());
+        load (ax(s.getType()), memory(ax()));
+        return null;
+    }
+
+    @Override
+    public Void visit(cat.footoredo.mx.ir.Variable s) {
+        loadVariable(ax(), s);
+        return null;
+    }
+
+    @Override
+    public Void visit(Integer s) {
+        as.mov (ax(), immediate(s.getValue()));
+        return null;
+    }
+
+    @Override
+    public Void visit(String s) {
+        loadConstant(ax(), s);
+        return null;
+    }
+
+    @Override
+    public Void visit(Malloc s) {
+        compile(s.getSize());
+        as.mov (new Register(PARAMETER_REGISTERS[0]), ax());
+        as.call(new NamedSymbol("_malloc"));
+        return null;
+    }
+
+    private IndirectMemoryReference relocatableMemory(long offset, Register base) {
+        return IndirectMemoryReference.relocatable(offset, base);
+    }
+
+    private void loadConstant (Register dest, Expression node) {
+        if (node.getAsmValue() != null) {
+            as.mov (dest, node.getAsmValue());
+        }
+        else if (node.getMemoryReference() != null) {
+            as.lea (dest, node.getMemoryReference());
+        }
+        else {
+            throw new Error("must not happen: constant has no asm value");
+        }
+    }
+
+    private void loadVariable (Register dest, cat.footoredo.mx.ir.Variable var) {
+        if (var.getAddress() != null) {
+            Register a = dest.forType(naturalType);
+            as.mov (a, var.getAddress());
+            load (dest.forType(var.getType()), memory(a));
+        }
+        else if (var.getMemoryReference() != null ) {
+            load (dest.forType(var.getType()), var.getMemoryReference());
+        }
+        else {
+            as.mov (dest, var.getRegister());
+        }
+    }
+
+    private void loadAddress (Register dest, Entity var) {
+        if (var.getAddress() != null) {
+            as.mov (dest, var.getAddress());
+        }
+        else {
+            as.lea (dest, var.getMemoryReference());
+        }
+    }
+
+    private Register ax () { return ax (naturalType); }
+    private Register al () { return ax (Type.INT8); }
+    private Register cx () { return cx (naturalType); }
+    private Register cl () { return cx (Type.INT8); }
+    private Register dx () { return dx (naturalType); }
+    private Register bx () { return bx (naturalType); }
+    private Register sp () { return sp (naturalType); }
+    private Register bp () { return bp (naturalType); }
+    private Register si () { return si (naturalType); }
+    private Register di () { return di (naturalType); }
+    private Register r (int index) { return r (index, naturalType); }
+
+    private Register ax (Type type) {
+        return new Register(RegisterClass.AX, type);
+    }
+
+    private Register cx (Type type) {
+        return new Register(RegisterClass.CX, type);
+    }
+
+    private Register dx (Type type) {
+        return new Register(RegisterClass.DX, type);
+    }
+
+    private Register bx (Type type) {
+        return new Register(RegisterClass.BX, type);
+    }
+
+    private Register sp (Type type) {
+        return new Register(RegisterClass.SP, type);
+    }
+
+    private Register bp (Type type) {
+        return new Register(RegisterClass.BP, type);
+    }
+
+    private Register si (Type type) {
+        return new Register(RegisterClass.SI, type);
+    }
+
+    private Register di (Type type) {
+        return new Register(RegisterClass.DI, type);
+    }
+
+    private Register r (int index, Type type) {
+        return new Register(index, type);
+    }
+
+    private DirectMemoryReference memory (Symbol symbol) {
+        return new DirectMemoryReference(symbol);
+    }
+
+    private IndirectMemoryReference memory (Register base) {
+        return new IndirectMemoryReference(0, base);
+    }
+
+    private IndirectMemoryReference memory (long offset, Register base) {
+        return new IndirectMemoryReference(offset, base);
+    }
+
+    private ImmediateValue immediate (long value) {
+        return new ImmediateValue(value);
+    }
+
+    private ImmediateValue immediate (Symbol symbol) {
+        return new ImmediateValue(symbol);
+    }
+
+    private ImmediateValue immediate (Literal literal) {
+        return new ImmediateValue(literal);
+    }
+
+    private void load (Register register, MemoryReference memory) {
+        as.mov (register, memory);
+    }
+
+    private void store (MemoryReference memory, Register register) {
+        as.mov (memory, register);
     }
 }

@@ -13,11 +13,23 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     public final VirtualStack virtualStack = new VirtualStack();
     private int commentIndentLevel = 0;
     private List<Assembly> assemblies = new ArrayList<>();
+    private Statistics statistics;
 
     public AssemblyCode(Type naturalType, long stackWordSize, SymbolTable symbolTable) {
         this.naturalType = naturalType;
         this.stackWordSize = stackWordSize;
         this.symbolTable = symbolTable;
+    }
+
+    private Statistics getStatistics() {
+        if (statistics == null) {
+            statistics = Statistics.collect(assemblies);
+        }
+        return statistics;
+    }
+
+    public boolean used (Register register) {
+        return getStatistics().isRegisterUsed(register);
     }
 
     public VirtualStack getVirtualStack() {
@@ -199,6 +211,10 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("cmp", a, b);
     }
 
+    public void cwd () {
+        instruction("c", "wd");
+    }
+
     public void set (String suffix, Register register) {
         instruction("set", suffix, register);
     }
@@ -295,5 +311,8 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("shr", base, bits);
     }
 
+    public void shl (Register base, Register bits) {
+        instruction("shl", base, bits);
+    }
 
 }

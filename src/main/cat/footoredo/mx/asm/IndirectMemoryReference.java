@@ -71,4 +71,9 @@ public class IndirectMemoryReference extends MemoryReference {
     public int compareTo(MemoryReference memoryReference) {
         return 0;
     }
+
+    @Override
+    public void collectStatistics(Statistics statistics) {
+        base.collectStatistics(statistics);
+    }
 }

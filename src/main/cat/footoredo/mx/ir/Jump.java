@@ -14,4 +14,9 @@ public class Jump extends Statement {
     public Label getTarget() {
         return target;
     }
+
+    @Override
+    public <S, E> S accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

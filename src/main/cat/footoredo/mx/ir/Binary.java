@@ -24,4 +24,9 @@ public class Binary extends Expression {
     public Expression getRhs() {
         return rhs;
     }
+
+    @Override
+    public <S, E> E accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

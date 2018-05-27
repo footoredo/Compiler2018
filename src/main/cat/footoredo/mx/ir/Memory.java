@@ -15,7 +15,12 @@ public class Memory extends Expression {
     }
 
     @Override
-    public Expression addressNode(Type type) {
+    public Expression getAddressNode(Type type) {
         return expression;
+    }
+
+    @Override
+    public <S, E> E accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
     }
 }

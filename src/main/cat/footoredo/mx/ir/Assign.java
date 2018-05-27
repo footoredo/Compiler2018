@@ -18,4 +18,9 @@ public class Assign extends Statement {
     public Expression getRhs() {
         return rhs;
     }
+
+    @Override
+    public <S, E> S accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

@@ -1,11 +1,8 @@
 package cat.footoredo.mx.compiler;
 
-import cat.footoredo.mx.OJ.Semantic;
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
-import cat.footoredo.mx.type.ClassType;
-import cat.footoredo.mx.type.MemberType;
 import cat.footoredo.mx.type.Type;
 import cat.footoredo.mx.type.TypeTable;
 

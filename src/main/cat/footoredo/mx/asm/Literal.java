@@ -8,4 +8,5 @@ public interface Literal extends Comparable<Literal> {
     public int cmp (IntegerLiteral i);
     public int cmp (NamedSymbol symbol);
     public int cmp (UnnamedSymbol symbol);
+    public void collectStatistics (Statistics statistics);
 }

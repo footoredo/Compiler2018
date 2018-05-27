@@ -12,8 +12,24 @@ public class Register extends cat.footoredo.mx.asm.Register {
         this.type = type;
     }
 
+    public Register(long number) {
+        this (number, Type.INT64);
+    }
+
+    public Register(RegisterClass registerClass, Type type) {
+        this (registerClass.getValue(), type);
+    }
+
+    public Register(RegisterClass registerClass) {
+        this (registerClass, Type.INT64);
+    }
+
+    public Register forType (Type type) {
+        return new Register(number, type);
+    }
+
     public boolean equals (Register register) {
-        return number.equals(register.registerClass);
+        return number == register.number;
     }
 
     public int hashCode () {
@@ -55,6 +71,8 @@ public class Register extends cat.footoredo.mx.asm.Register {
             case INT16: return name + "w";
             case INT32: return name + "d";
             case INT64: return name;
+            default:
+                throw new Error("unknown type " + type);
         }
     }
 

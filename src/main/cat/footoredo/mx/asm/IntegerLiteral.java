@@ -58,4 +58,9 @@ public class IntegerLiteral implements Literal {
     public int cmp(UnnamedSymbol symbol) {
         return -1;
     }
+
+    @Override
+    public void collectStatistics(Statistics statistics) {
+
+    }
 }

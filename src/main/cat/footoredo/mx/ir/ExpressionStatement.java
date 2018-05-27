@@ -13,4 +13,9 @@ public class ExpressionStatement extends Statement {
     public Expression getExpression() {
         return expression;
     }
+
+    @Override
+    public <S, E> S accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }

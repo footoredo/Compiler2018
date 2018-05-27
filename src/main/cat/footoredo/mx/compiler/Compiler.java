@@ -1,28 +1,39 @@
 package cat.footoredo.mx.compiler;
 
+import cat.footoredo.mx.asm.Assembly;
+import cat.footoredo.mx.asm.Type;
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.cst.MxLexer;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.BuiltinFunction;
 import cat.footoredo.mx.exception.SemanticException;
 import cat.footoredo.mx.ir.IR;
+import cat.footoredo.mx.sysdep.x86_64.AssemblyCode;
+import cat.footoredo.mx.sysdep.x86_64.CodeGenerator;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.DefaultErrorStrategy;
 
-import java.io.IOException;
+import javax.annotation.processing.FilerException;
+import java.io.*;
 import java.util.List;
 
 public class Compiler {
-    public void compile(String strPath) throws IOException, SemanticException {
+    public void compile(String strPath, String destPath) throws Exception {
         AST ast = parseFile(strPath);
         AST ast_builtin_functions = addBuiltinFunctions(ast);
         AST ast_builtin_types = addBuiltinTypes(ast);
         TypeTable types = new TypeTable();
         AST sem = semanticAnalyze(ast_builtin_types, types);
         IR ir = new IRGenerator(types).generate(sem);
+        AssemblyCode asm = generateAssembly(ir);
+        writeFile (destPath, asm.toSource());
+    }
+
+    public void compile (String strPath) throws Exception {
+        compile(strPath, "-");
     }
 
     AST parseFile(String path) throws IOException {
@@ -40,6 +51,26 @@ public class Compiler {
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
+        }
+    }
+
+    private void writeFile (String path, String content) throws Exception {
+        if (path.equals("-")) {
+            System.out.print(content);
+            return;
+        }
+        try {
+            BufferedWriter f = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(path)));
+            try {
+                f.write(content);
+            }
+            finally {
+                f.close();
+            }
+        }
+        catch (Exception ex) {
+            throw ex;
         }
     }
 
@@ -81,5 +112,9 @@ public class Compiler {
         ast.addTypeDefinition(new ProtoArrayTypeNode(getBuiltinDeclarations("builtin/array_builtin.m")));
         ast.addTypeDefinition(new StringTypeNode(getBuiltinDeclarations("builtin/string_builtin.m")));
         return ast;
+    }
+
+    AssemblyCode generateAssembly (IR ir) {
+        return new CodeGenerator(Type.INT64).generate(ir);
     }
 }

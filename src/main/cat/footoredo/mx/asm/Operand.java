@@ -10,4 +10,8 @@ abstract public class Operand implements OperandPattern {
     public boolean match(Operand operand) {
         return equals(operand);
     }
+
+    public void collectStatistics (Statistics statistics) {
+
+    }
 }

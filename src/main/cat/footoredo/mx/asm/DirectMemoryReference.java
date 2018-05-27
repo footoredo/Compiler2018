@@ -39,4 +39,9 @@ public class DirectMemoryReference extends MemoryReference {
     public int compareTo(MemoryReference memoryReference) {
         return -(memoryReference.compareTo(this));
     }
+
+    @Override
+    public void collectStatistics(Statistics statistics) {
+        value.collectStatistics (statistics);
+    }
 }

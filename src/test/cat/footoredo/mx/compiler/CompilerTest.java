@@ -16,7 +16,7 @@ public class CompilerTest {
     }
 
     @Test
-    public void testLocalResolver() throws IOException {
+    public void testLocalResolver() throws Exception {
         try {
             compiler.compile("example/test_local_resolver.m");
         } catch (SemanticException e) {
@@ -81,17 +81,17 @@ public class CompilerTest {
     }
 
     @Test(expected = SemanticException.class)
-    public void testClassLocalResolver() throws IOException, SemanticException {
+    public void testClassLocalResolver() throws Exception {
         compiler.compile("example/test_class_local_resolver.m");
     }
 
     @Test
-    public void testTypeResolver() throws IOException, SemanticException {
+    public void testTypeResolver() throws Exception {
         compiler.compile("example/test_type_resolver.m");
     }
 
     @Test
-    public void testTypeChecker() throws IOException, SemanticException {
+    public void testTypeChecker() throws Exception {
         compiler.compile("example/test_type_checker.m");
     }
 }

@@ -7,4 +7,8 @@ abstract public class Assembly {
     public boolean isLabel () { return false; }
 
     abstract public String toSource (SymbolTable symbolTable);
+
+    public void collectStatistics (Statistics statistics) {
+
+    }
 }

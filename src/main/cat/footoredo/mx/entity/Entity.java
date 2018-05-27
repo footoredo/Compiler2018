@@ -3,6 +3,7 @@ package cat.footoredo.mx.entity;
 import cat.footoredo.mx.asm.ImmediateValue;
 import cat.footoredo.mx.asm.MemoryReference;
 import cat.footoredo.mx.asm.Operand;
+import cat.footoredo.mx.asm.Register;
 import cat.footoredo.mx.ast.TypeNode;
 import cat.footoredo.mx.type.Type;
 
@@ -12,6 +13,7 @@ abstract public class Entity {
     private int referredCount;
     private MemoryReference memoryReference;
     private Operand address;
+    private Register register;
 
     public Entity (TypeNode typeNode, String name) {
         this.typeNode = typeNode;
@@ -47,6 +49,14 @@ abstract public class Entity {
 
     public int size () {
         return getType().size();
+    }
+
+    public Register getRegister() {
+        return register;
+    }
+
+    public void setRegister(Register register) {
+        this.register = register;
     }
 
     public MemoryReference getMemoryReference() {

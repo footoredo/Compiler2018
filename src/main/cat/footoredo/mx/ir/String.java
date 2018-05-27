@@ -1,17 +1,49 @@
 package cat.footoredo.mx.ir;
 
-import cat.footoredo.mx.asm.Type;
+import cat.footoredo.mx.asm.*;
 import cat.footoredo.mx.entity.ConstantEntry;
 
 public class String extends Expression {
-    private java.lang.String value;
+    private ConstantEntry entry;
 
-    public String(Type type, java.lang.String value) {
+    public String(Type type, ConstantEntry entry) {
         super(type);
-        this.value = value;
+        this.entry = entry;
+    }
+
+    public ConstantEntry getEntry() {
+        return entry;
+    }
+
+    @Override
+    public <S, E> E accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
+
+    @Override
+    public boolean isConstant() {
+        return true;
+    }
+
+    public Symbol getSymbol () {
+        return entry.getSymbol();
+    }
+
+    public ImmediateValue getAsmValue() {
+        return entry.getAddress();
+    }
+
+    @Override
+    public Operand getAddress() {
+        return entry.getAddress();
+    }
+
+    @Override
+    public MemoryReference getMemoryReference() {
+        return entry.getMemoryReference();
     }
 
     public java.lang.String getValue() {
-        return value;
+        return entry.getValue();
     }
 }

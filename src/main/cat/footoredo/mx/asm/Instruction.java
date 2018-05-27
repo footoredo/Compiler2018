@@ -63,6 +63,14 @@ public class Instruction extends Assembly {
     }
 
     @Override
+    public void collectStatistics(Statistics statistics) {
+        statistics.useInstruction(mnemonic + suffix);
+        for (int i = 0; i < operands.length; ++ i) {
+            operands[i].collectStatistics (statistics);
+        }
+    }
+
+    @Override
     public String toSource(SymbolTable symbolTable) {
         StringBuffer buf = new StringBuffer();
         buf.append("\t");

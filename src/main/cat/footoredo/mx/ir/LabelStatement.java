@@ -14,4 +14,9 @@ public class LabelStatement extends Statement {
     public Label getLabel() {
         return label;
     }
+
+    @Override
+    public <S, E> S accept(IRVisitor<S, E> visitor) {
+        return visitor.visit(this);
+    }
 }
