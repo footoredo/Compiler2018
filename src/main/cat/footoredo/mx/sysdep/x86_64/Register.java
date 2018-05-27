@@ -4,24 +4,24 @@ import cat.footoredo.mx.asm.SymbolTable;
 import cat.footoredo.mx.asm.Type;
 
 public class Register extends cat.footoredo.mx.asm.Register {
-    private RegisterClass registerClass;
+    private long number;
     private Type type;
 
-    public Register(RegisterClass registerClass, Type type) {
-        this.registerClass = registerClass;
+    public Register(long number, Type type) {
+        this.number = number;
         this.type = type;
     }
 
     public boolean equals (Register register) {
-        return registerClass.equals(register.registerClass);
+        return number.equals(register.registerClass);
     }
 
     public int hashCode () {
-        return registerClass.hashCode();
+        return Long.hashCode(number);
     }
 
-    public RegisterClass getRegisterClass() {
-        return registerClass;
+    public long getNumber() {
+        return number;
     }
 
     public Type getType() {
@@ -29,7 +29,7 @@ public class Register extends cat.footoredo.mx.asm.Register {
     }
 
     public String getBaseName () {
-        return registerClass.toString().toLowerCase();
+        return Long.toString(number).toLowerCase();
     }
 
     @Override
@@ -37,7 +37,7 @@ public class Register extends cat.footoredo.mx.asm.Register {
         return typedName ();
     }
 
-    private String typedName () {
+    /*private String typedName () {
         switch (type) {
             case INT8: return lowetByteRegister ();
             case INT16: return getBaseName();
@@ -46,8 +46,19 @@ public class Register extends cat.footoredo.mx.asm.Register {
             default:
                 throw new Error("unknown register Type: " + type);
         }
+    }*/
+
+    private String typedName () {
+        String name = "r" + number;
+        switch (type) {
+            case INT8: return name + "b";
+            case INT16: return name + "w";
+            case INT32: return name + "d";
+            case INT64: return name;
+        }
     }
 
+    /*
     private String lowetByteRegister () {
         switch (registerClass) {
             case AX:
@@ -57,5 +68,5 @@ public class Register extends cat.footoredo.mx.asm.Register {
             default:
                 throw new Error("does not have lower-byte register: " + _class);
         }
-    }
+    }*/
 }

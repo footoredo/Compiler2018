@@ -1,6 +1,7 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.ast.ExpressionNode;
+import cat.footoredo.mx.ast.LiteralNode;
 import cat.footoredo.mx.ast.TypeNode;
 import cat.footoredo.mx.ast.VariableDeclarationNode;
 import cat.footoredo.mx.ir.Expression;
@@ -26,8 +27,12 @@ public class Variable extends Entity {
         return new Variable(new TypeNode(type), "@tmp" + tmpCounter ++);
     }
 
-    public void setIr(Expression ir) {
+    public void setIR(Expression ir) {
         this.ir = ir;
+    }
+
+    public Expression getIR () {
+        return ir;
     }
 
     public ExpressionNode getInitializer() {
@@ -35,6 +40,10 @@ public class Variable extends Entity {
     }
 
     public boolean hasInitializer() { return initializer != null; }
+
+    public boolean isStatic () {
+        return hasInitializer() && initializer instanceof LiteralNode;
+    }
 
     @Override
     public <T> T accept(EntityVisitor<T> visitor) {

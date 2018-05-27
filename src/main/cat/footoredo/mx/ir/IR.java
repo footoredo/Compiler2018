@@ -13,17 +13,21 @@ public class IR {
     private List<BuiltinFunction> builtinFunctions;
     private ToplevelScope scope;
     private ConstantTable constantTable;
+    private List<Statement> globalStatements;
 
     private List<cat.footoredo.mx.entity.Variable> globalVariables;
     private List<cat.footoredo.mx.entity.Variable> commonSymbols;
 
-    public IR(Location location, List<Variable> variables, List<DefinedFunction> definedFunctions, List<BuiltinFunction> builtinFunctions, ToplevelScope scope, ConstantTable constantTable) {
+    public IR(Location location, List<Variable> variables,
+              List<DefinedFunction> definedFunctions, List<BuiltinFunction> builtinFunctions,
+              ToplevelScope scope, ConstantTable constantTable, List<Statement> globalStatements) {
         this.location = location;
         this.variables = variables;
         this.definedFunctions = definedFunctions;
         this.builtinFunctions = builtinFunctions;
         this.scope = scope;
         this.constantTable = constantTable;
+        this.globalStatements = globalStatements;
         initVariables();
     }
 
@@ -70,7 +74,7 @@ public class IR {
         globalVariables = new ArrayList<>();
         commonSymbols = new ArrayList<>();
         for (cat.footoredo.mx.entity.Variable variable: variables) {
-            (variable.hasInitializer() ? globalVariables : commonSymbols).add (variable);
+            (variable.isStatic() ? globalVariables : commonSymbols).add (variable);
         }
     }
 }

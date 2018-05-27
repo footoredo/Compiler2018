@@ -29,8 +29,11 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         thisPointer = ref(tmpVariable(new PointerType()));
         currentClass = null;
         for (cat.footoredo.mx.entity.Variable variable: ast.getVariables()) {
-            if (variable.hasInitializer())
-                variable.setIr(transformExpression(variable.getInitializer()));
+            if (variable.isStatic())
+                variable.setIR(transformExpression(variable.getInitializer()));
+            else {
+                ast.addStatement (new Assign(variable.getLocation(), addressOf(ref(variable)), transformExpression(variable.getInitializer())));
+            }
         }
         for (DefinedFunction f: ast.getFunctions()) {
             f.setIR(compileFunctionBody(f));

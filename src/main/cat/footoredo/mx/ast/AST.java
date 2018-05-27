@@ -2,6 +2,7 @@ package cat.footoredo.mx.ast;
 
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.ir.IR;
+import cat.footoredo.mx.ir.Statement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,13 @@ public class AST extends Node {
     private ToplevelScope scope;
     private ConstantTable constantTable;
 
+    private List<Statement> globalStatements;
+
     AST (Location location, Declarations declarations) {
         super ();
         this.location = location;
         this.declarations = declarations;
+        this.globalStatements = new ArrayList<>();
     }
 
     public Location getLocation() {
@@ -88,7 +92,11 @@ public class AST extends Node {
         return declarations.getBuiltinTypes();
     }
 
+    public void addStatement (Statement statement) {
+        globalStatements.add(statement)
+    }
+
     public IR getIR () {
-        return new IR (location, declarations.getVars(), declarations.getFuns(), declarations.getBuiltinFuns(), scope, constantTable);
+        return new IR (location, declarations.getVars(), declarations.getFuns(), declarations.getBuiltinFuns(), scope, constantTable, globalStatements);
     }
 }

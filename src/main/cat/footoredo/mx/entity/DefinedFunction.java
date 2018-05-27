@@ -24,6 +24,10 @@ public class DefinedFunction extends Function {
         return scope;
     }
 
+    public LocalScope getLvarScope () {
+        return block.getScope();
+    }
+
     public void setScope(LocalScope scope) {
         this.scope = scope;
     }

@@ -10,7 +10,7 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     private final Type naturalType;
     private final long stackWordSize;
     private final SymbolTable symbolTable;
-    private final VirtualStack virtualStack = new VirtualStack();
+    public final VirtualStack virtualStack = new VirtualStack();
     private int commentIndentLevel = 0;
     private List<Assembly> assemblies = new ArrayList<>();
 
@@ -18,6 +18,10 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         this.naturalType = naturalType;
         this.stackWordSize = stackWordSize;
         this.symbolTable = symbolTable;
+    }
+
+    public VirtualStack getVirtualStack() {
+        return virtualStack;
     }
 
     public List<Assembly> getAssemblies() {
@@ -140,7 +144,7 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         }
 
         private Register bp () {
-            return new Register(RegisterClass.BP, naturalType);
+            return new Register(5, naturalType);
         }
 
         public void fixOffset (long diff) {
@@ -158,6 +162,29 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     public void virtualPop (Register register) {
         mov (virtualStack.top(), register);
         virtualStack.rewind (stackWordSize);
+    }
+
+    private String getSuffix (long size) {
+        switch ((int)size) {
+            case 1: return "b";
+            case 2: return "w";
+            case 4: return "d";
+            case 8: return "q";
+            default:
+                throw new Error("unsupported size");
+        }
+    }
+
+    public void d (long size, long value) {
+        instruction("d", getSuffix(size), new ImmediateValue(value));
+    }
+
+    public void d (String value) {
+        instruction("db\t\"" + value + "\"", "");
+    }
+
+    public void res (long size) {
+        instruction("res", getSuffix(size), new ImmediateValue(1));
     }
 
     public void jmp (Label label) {
