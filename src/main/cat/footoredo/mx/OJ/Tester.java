@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 public class Tester {
     public static void main(String[] args) throws Exception {
         Compiler compiler = new Compiler();
-        compiler.compile("program.m", "program.asm");
+        compiler.compile("program.m");
     }
 
     private static int exec (String command, boolean error) throws Exception {
