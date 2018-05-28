@@ -430,7 +430,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             case NOT:
                 as.test (ax(src), ax(src));
                 as.set ("e", al());
-                as.movzx (ax(dest), al());
+                if (dest.size() > 1)
+                    as.movzx (ax(dest), al());
         }
         return null;
     }
@@ -546,7 +547,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                         default:
                             throw new Error ("unknown binary operator: " + op);
                     }
-                    as.movzx (left, al());
+                    if (left.getType().size() > 1)
+                        as.movzx (left, al());
+                    else
+                        as.mov (left, al());
         }
     }
 

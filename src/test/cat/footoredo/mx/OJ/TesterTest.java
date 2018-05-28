@@ -19,4 +19,9 @@ public class TesterTest {
     public void T580() throws Exception {
         Tester.compileAndRun("T580");
     }
+
+    @Test
+    public void T585() throws Exception {
+        Tester.compileAndRun("T585");
+    }
 }
