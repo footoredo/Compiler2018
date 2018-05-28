@@ -34,10 +34,13 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         for (ConstantEntry entry: ir.getConstantTable().entries()) {
             locateStringLiteral (entry, constSymbols);
         }
-        for (Variable variable: ir.getVariables()) {
+        /*for (Variable variable: ir.getVariables()) {
+            locateVariable (variable);
+        }*/
+        for (Variable variable: ir.getScope().getVariables()) {
             locateVariable (variable);
         }
-        for (Function function: ir.getAllFunctions()) {
+        for (Function function: ir.getScope().getAllFunctions()) {
             locateFunction (function);
         }
     }
@@ -67,15 +70,15 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         AssemblyCode file = newAssemblyCode();
         file._global("main");
         generateExterns (file);
-        generateDataSection (file, ir.getGlobalVariables());
+        generateDataSection (file, ir.getScope().getStaticVariables());
         generateTextSection (file, ir.getConstantTable());
-        generateTextSection (file, ir.getDefinedFunctions());
-        generateCommonSymbols (file, ir.getCommonSymbols());
+        generateTextSection (file, ir.getScope().getAllDefinedFunctions());
+        generateCommonSymbols (file, ir.getScope().getUnstaticVariables());
         return file;
     }
 
     private void generateExterns (AssemblyCode file) {
-        file._extern("_malloc");
+        file._extern("malloc");
     }
 
     private AssemblyCode newAssemblyCode() {
@@ -111,6 +114,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private void generateTextSection (AssemblyCode file, List<DefinedFunction> definedFunctions) {
         file._text();
         for (DefinedFunction function: definedFunctions) {
+            // System.out.println(function.getName());
             Symbol sym = symbol(function.getName());
             file.label(sym);
             compileFunctionBody (file, function);
@@ -141,6 +145,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private void compileFunctionBody (AssemblyCode file, DefinedFunction function) {
         StackFrameInfo frame = new StackFrameInfo();
         locateParameters (function.getParameters());
+        // System.out.println (function.getName());
         frame.lvarSize = locateLocalVariables(function.getLvarScope());
 
         AssemblyCode body = compileStatements(function);
@@ -297,6 +302,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private long locateLocalVariables (LocalScope scope, long parentStackLength) {
         long length = parentStackLength;
         for (Variable variable: scope.getLocalVariables()) {
+            // System.out.println(variable.getName());
             length = alignStack(length + variable.size());
             variable.setMemoryReference(relocatableMemory(-length, bp()));
         }
@@ -344,17 +350,21 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     @Override
     public Void visit(Assign s) {
+        // System.out.println (s.getLocation());
         if (s.getLhs().isAddress() && s.getLhs().getMemoryReference() != null) {
+            // System.out.println(s.getRhs() instanceof Malloc);
             compile(s.getRhs());
             store (s.getLhs().getMemoryReference(), ax(s.getLhs().getType()));
         }
         else if (s.getRhs().isConstant()) {
+            // System.out.println(2);
             compile(s.getLhs());
             as.mov (cx(), ax());
             loadConstant(ax(), s.getRhs());
             store (memory(cx()), ax(s.getLhs().getType()));
         }
         else {
+            // System.out.println(3);
             compile(s.getRhs());
             as.virtualPush(ax());
             compile(s.getLhs());
@@ -549,6 +559,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             compile(s.getArg(i));
             as.push (ax());
         }
+        // System.out.println (call.)
         as.call(s.getFunction().getCallingSymbol());
         return null;
     }
@@ -588,7 +599,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     public Void visit(Malloc s) {
         compile(s.getSize());
         as.mov (new Register(PARAMETER_REGISTERS[0]), ax());
-        as.call(new NamedSymbol("_malloc"));
+        as.call(new NamedSymbol("malloc"));
         return null;
     }
 

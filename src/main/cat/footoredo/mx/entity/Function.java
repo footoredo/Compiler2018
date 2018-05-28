@@ -14,19 +14,33 @@ import java.util.List;
 abstract public class Function extends Entity {
     private Symbol callingSymbol;
     private Label label;
-
+    private String parentClass;
     private Params params;
     private TypeNode returnType;
-    public Function (TypeNode typeNode, MethodDescriptionNode methodDescriptionNode) {
+
+    public Function (TypeNode typeNode, MethodDescriptionNode methodDescriptionNode, String parentClass) {
         super (typeNode, methodDescriptionNode.getName());
         this.returnType = methodDescriptionNode.getReturnType();
         this.params = methodDescriptionNode.getParams();
+        this.parentClass = parentClass;
+    }
 
+    public Function (TypeNode typeNode, MethodDescriptionNode methodDescriptionNode) {
+        this (typeNode, methodDescriptionNode, null);
+    }
+
+    public Function(TypeNode typeNode, String name, Params params, String parentClass) {
+        super(typeNode, name);
+        this.params = params;
+        this.parentClass = parentClass;
     }
 
     public Function(TypeNode typeNode, String name, Params params) {
-        super(typeNode, name);
-        this.params = params;
+        this (typeNode, name, params, null);
+    }
+
+    public void setParentClass(String parentClass) {
+        this.parentClass = parentClass;
     }
 
     public List<Parameter> getParameters() {
@@ -48,11 +62,23 @@ abstract public class Function extends Entity {
         }
     }
 
+    @Override
+    public String getSymbolString() {
+        if (parentClass == null) {
+            return name;
+        }
+        else {
+            return parentClass + "#" + name;
+        }
+    }
+
     public Symbol getCallingSymbol() {
         return callingSymbol;
     }
 
     public void setCallingSymbol(Symbol callingSymbol) {
+        if (callingSymbol == null)
+            throw new Error ("fffffuuuuucccckkkkk");
         this.callingSymbol = callingSymbol;
     }
 }

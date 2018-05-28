@@ -42,4 +42,9 @@ public class StringType extends MemberType {
     public boolean isScaler() {
         return false;
     }
+
+    @Override
+    public MemberType getMemberType() {
+        return this;
+    }
 }

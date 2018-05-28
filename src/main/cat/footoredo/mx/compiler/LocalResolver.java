@@ -31,6 +31,8 @@ public class LocalResolver extends Visitor {
         ToplevelScope toplevelScope = new ToplevelScope();
         scopeStack.add(toplevelScope);
 
+        resolveTypeDefinition(ast.getTypeDefinitions());
+
         for (Entity decl : ast.getDeclarations()) {
             // System.out.println(decl.getName());
             if (decl instanceof Variable) continue;
@@ -48,7 +50,6 @@ public class LocalResolver extends Visitor {
         }
 
         // resolveDefinedFunctions(ast.getFunctions());
-        resolveTypeDefinition(ast.getTypeDefinitions());
 
         try {
             Entity main = toplevelScope.get("main");
@@ -93,12 +94,16 @@ public class LocalResolver extends Visitor {
     private void resolveTypeDefinition(List<TypeDefinition> typeDefinitions) {
         for (TypeDefinition t: typeDefinitions) {
             if (t instanceof ClassNode) {
+                // System.out.println("asdas");
                 currentScope().declareEntity(((ClassNode)t).getConstructor());
             }
             pushScope(t.getMemberVariables());
             currentScope().declareEntity(new Variable(t.getTypeNode(), "this"));
-            for (Function function: t.getMemberMethods())
-                currentScope().declareEntity(function, reservedWords);
+            for (Function function: t.getMemberMethods()) {
+                // System.out.println (function.getName());
+                if (!function.getName().equals(t.getName()))
+                    currentScope().declareEntity(function, reservedWords);
+            }
             if (t instanceof ClassNode) {
                 ClassNode c = (ClassNode) t;
                 if (c.hasConstructor()) {

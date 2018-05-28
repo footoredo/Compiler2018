@@ -7,7 +7,7 @@ import java.util.*;
 
 abstract public class Scope {
     private List <LocalScope> children;
-    protected Map<String, Entity> entityMap;
+    Map<String, Entity> entityMap;
 
     public Scope () {
         children = new ArrayList <> ();
@@ -20,6 +20,7 @@ abstract public class Scope {
 
     public Variable allocateTmpVariable (Type type) {
         Variable tmp = Variable.tmp (type);
+        System.out.println (tmp.getName() + " in " + this);
         declareEntity(tmp);
         return tmp;
     }
@@ -32,12 +33,38 @@ abstract public class Scope {
     }
 
     public void declareEntity(Entity entity) throws SemanticException {
+        // System.out.println(entity.getName());
         if (entityMap.containsKey(entity.getName())) {
             throw new SemanticException(entity.getLocation(), "duplicated declaration of " + entity.getName());
         }
         entityMap.put(entity.name, entity);
     }
 
+    public List<Function> getAllFunctions () {
+        List<Function> result = new ArrayList<>();
+        for (Entity entity: entityMap.values()) {
+            if (entity instanceof Function) {
+                result.add ((Function)entity);
+            }
+        }
+        for (LocalScope scope: children) {
+            result.addAll (scope.getAllFunctions());
+        }
+        return result;
+    }
+
+    public List<DefinedFunction> getAllDefinedFunctions () {
+        List<DefinedFunction> result = new ArrayList<>();
+        for (Entity entity: entityMap.values()) {
+            if (entity instanceof DefinedFunction) {
+                result.add ((DefinedFunction)entity);
+            }
+        }
+        for (LocalScope scope: children) {
+            result.addAll (scope.getAllDefinedFunctions());
+        }
+        return result;
+    }
 
     public void addChild (LocalScope s) {
         children.add (s);

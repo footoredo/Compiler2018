@@ -65,7 +65,7 @@ public class ArrayType extends Type {
 
     @Override
     public MemberType getMemberType() {
-        return super.getMemberType();
+        return ProtoArrayType.protoArrayTypeInstance;
     }
 
     @Override

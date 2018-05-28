@@ -92,7 +92,7 @@ public class Compiler {
         return ast;
     }
 
-    List<BuiltinFunction> getBuiltinDeclarations(String filename) throws IOException {
+    List<BuiltinFunction> getBuiltinDeclarations(String filename, String parentClass) throws IOException {
         CharStream input = CharStreams.fromFileName(filename);
         MxLexer lexer = new MxLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -100,7 +100,15 @@ public class Compiler {
         // parser.setErrorHandler(new MxANTLRErrorStrategy());
         parser.setErrorHandler(new DefaultErrorStrategy());
         ASTBuilderVisitor astBuilderVisitor = new ASTBuilderVisitor();
-        return astBuilderVisitor.visitBuiltinDeclarations(parser.builtinDeclarations()).getFunctions();
+        List<BuiltinFunction> result = astBuilderVisitor.visitBuiltinDeclarations(parser.builtinDeclarations()).getFunctions();
+        for (BuiltinFunction function: result) {
+            function.setParentClass (parentClass);
+        }
+        return result;
+    }
+
+    List<BuiltinFunction> getBuiltinDeclarations(String filename) throws IOException {
+        return getBuiltinDeclarations(filename, null);
     }
 
 
@@ -109,8 +117,8 @@ public class Compiler {
         ast.addTypeDefinition(new BuiltinTypeNode(new BooleanTypeRef()));
         ast.addTypeDefinition(new BuiltinTypeNode(new VoidTypeRef()));
         ast.addTypeDefinition(new BuiltinTypeNode(new NullTypeRef()));
-        ast.addTypeDefinition(new ProtoArrayTypeNode(getBuiltinDeclarations("builtin/array_builtin.m")));
-        ast.addTypeDefinition(new StringTypeNode(getBuiltinDeclarations("builtin/string_builtin.m")));
+        ast.addTypeDefinition(new ProtoArrayTypeNode(getBuiltinDeclarations("builtin/array_builtin.m", "__array")));
+        ast.addTypeDefinition(new StringTypeNode(getBuiltinDeclarations("builtin/string_builtin.m", "string")));
         return ast;
     }
 

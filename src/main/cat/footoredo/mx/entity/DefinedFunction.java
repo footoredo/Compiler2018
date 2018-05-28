@@ -11,9 +11,13 @@ public class DefinedFunction extends Function {
     LocalScope scope;
     List<Statement> IR;
 
-    public DefinedFunction (MethodNode methodNode) {
-        super (methodNode.getTypeNode(), methodNode.getMethodDescription());
+    public DefinedFunction (MethodNode methodNode, String parentClass) {
+        super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
         this.block = methodNode.getBlock();
+    }
+
+    public DefinedFunction (MethodNode methodNode) {
+        this (methodNode, null);
     }
 
     public BlockNode getBlock() {

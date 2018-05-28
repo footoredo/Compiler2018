@@ -5,8 +5,12 @@ import cat.footoredo.mx.ast.MethodNode;
 import cat.footoredo.mx.ast.TypeNode;
 
 public class BuiltinFunction extends Function {
+    public BuiltinFunction(MethodNode methodNode, String parentClass) {
+        super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
+    }
+
     public BuiltinFunction(MethodNode methodNode) {
-        super (methodNode.getTypeNode(), methodNode.getMethodDescription());
+        this (methodNode, null);
     }
 
     @Override

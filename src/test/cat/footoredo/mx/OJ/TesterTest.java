@@ -14,4 +14,9 @@ public class TesterTest {
     public void basic() throws Exception {
         Tester.compileAndRun("basic");
     }
+
+    @Test
+    public void T580() throws Exception {
+        Tester.compileAndRun("T580");
+    }
 }

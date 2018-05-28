@@ -67,4 +67,8 @@ public class ClassType extends MemberType {
         return false;
     }
 
+    @Override
+    public MemberType getMemberType() {
+        return this;
+    }
 }

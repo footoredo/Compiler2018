@@ -49,4 +49,9 @@ public class Variable extends Entity {
     public <T> T accept(EntityVisitor<T> visitor) {
         return visitor.visit(this);
     }
+
+    @Override
+    public String getSymbolString() {
+        return name;
+    }
 }

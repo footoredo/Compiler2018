@@ -34,11 +34,12 @@ abstract public class MemberType extends Type {
         // System.out.println(memberMap.get(member).getTypeNode());
 
         try {
+            // System.out.println (member + getName());
             return memberMap.get(member).getType();
         }catch (NullPointerException e) {
-            for (String key: memberMap.keySet()) {
-                // System.out.println(" --- " + key);
-            }
+            /*for (String key: memberMap.keySet()) {
+                System.out.println(" --- " + key);
+            }*/
             throw e;
         }
     }
@@ -52,9 +53,4 @@ abstract public class MemberType extends Type {
         return getMember(name).getOffset();
     }
     public abstract String getName ();
-
-    @Override
-    public MemberType getMemberType() {
-        return ProtoArrayType.protoArrayTypeInstance;
-    }
 }

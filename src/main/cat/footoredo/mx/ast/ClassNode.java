@@ -36,11 +36,6 @@ public class ClassNode extends TypeDefinition {
                 members.add(new Slot(memberVariableDeclarationNode.getTypeNode(), memberVariableDeclarationNode.getName()));
                 memberVariableNames.add (memberVariableDeclarationNode.getName());
             }
-            else if (memberDeclarationNode instanceof MemberMethodDeclarationNode) {
-                MemberMethodDeclarationNode memberMethodDeclarationNode = (MemberMethodDeclarationNode) memberDeclarationNode;
-                memberMethods.add(new DefinedFunction(memberMethodDeclarationNode.getMethodNode()));
-                members.add(new Slot(memberMethodDeclarationNode.getMethodNode().getTypeNode(), memberMethodDeclarationNode.getMethodNode().getName()));
-            }
             else if (memberDeclarationNode instanceof ConstructorDeclarationNode) {
                 if (this.constructor != null) {
                     // System.out.println("sss");
@@ -49,6 +44,11 @@ public class ClassNode extends TypeDefinition {
                 ConstructorDeclarationNode constructorDeclarationNode = (ConstructorDeclarationNode) memberDeclarationNode;
                 this.constructor = new DefinedFunction(constructorDeclarationNode.getConstructorNode());
                 members.add(new Slot(constructorDeclarationNode.getConstructorNode().getTypeNode(), constructorDeclarationNode.getConstructorNode().getName()));
+            }
+            else if (memberDeclarationNode instanceof MemberMethodDeclarationNode) {
+                MemberMethodDeclarationNode memberMethodDeclarationNode = (MemberMethodDeclarationNode) memberDeclarationNode;
+                memberMethods.add(new DefinedFunction(memberMethodDeclarationNode.getMethodNode(), name));
+                members.add(new Slot(memberMethodDeclarationNode.getMethodNode().getTypeNode(), memberMethodDeclarationNode.getMethodNode().getName()));
             }
         }
 

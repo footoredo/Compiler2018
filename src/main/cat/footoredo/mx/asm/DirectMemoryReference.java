@@ -4,6 +4,8 @@ public class DirectMemoryReference extends MemoryReference {
     private Literal value;
 
     public DirectMemoryReference(Literal value) {
+        if (value == null)
+            throw new Error("fuck");
         this.value = value;
     }
 

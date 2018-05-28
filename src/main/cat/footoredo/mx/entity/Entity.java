@@ -25,7 +25,7 @@ abstract public class Entity {
         return name;
     }
 
-    public String getSymbolString () { return name; }
+    abstract public String getSymbolString ();
 
     public TypeNode getTypeNode() {
         return typeNode;
@@ -82,7 +82,7 @@ abstract public class Entity {
     }
 
     private void checkAddress () {
-        if (memoryReference == null && address == null) {
+        if (memoryReference == null && address == null && register == null) {
             throw new Error("address did not resolved: " + name);
         }
     }
