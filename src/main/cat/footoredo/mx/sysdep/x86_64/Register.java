@@ -12,6 +12,9 @@ public class Register extends cat.footoredo.mx.asm.Register {
         if (number < 8) {
             this.baseName = RegisterClass.values()[(int)number].name().toLowerCase();
         }
+        if (type == null) {
+            throw new Error ("wtf??");
+        }
         this.number = number;
         this.type = type;
     }

@@ -443,10 +443,13 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         Type leftType = s.getLhs().getType();
         Type rightType = s.getRhs().getType();
         if (s.getRhs().isConstant() && !requireRegisterOperand(op)) {
+            /*if (op == Op.MUL)
+                System.out.println (((Integer)s.getRhs()).getValue());*/
             compile(s.getLhs());
             compileBinaryOp(type, op, ax(leftType), s.getRhs().getAsmValue());
         }
         else if (s.getRhs().isConstant()) {
+            System.out.println (s.getRhs().getAsmValue());
             compile(s.getLhs());
             loadConstant(cx(), s.getRhs());
             compileBinaryOp(type, op, ax(leftType), cx(rightType));
@@ -503,6 +506,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                 break;
             case MUL:
                 as.imul(left, right);
+                break;
             case S_DIV:
             case S_MOD:
                 as.cwd();
@@ -521,16 +525,22 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                 break;
             case BIT_AND:
                 as.and (left, right);
+                break;
             case BIT_OR:
                 as.or (left, right);
+                break;
             case BIT_XOR:
                 as.xor (left, right);
+                break;
             case BIT_LSHIFT:
                 as.shl (left, cl());
+                break;
             case BIT_RSHIFT:
                 as.shr (left, cl());
+                break;
             case ARITH_RSHIFT:
                 as.sar (left, cl());
+                break;
                 default:
                     as.cmp (ax(left.getType()), right);
                     switch (op) {
@@ -633,6 +643,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             load (dest.forType(var.getType()), memory(a));
         }
         else*/ if (var.getMemoryReference() != null ) {
+            // System.out.println (var.getName() + var.getType());
             load (dest.forType(var.getType()), var.getMemoryReference());
         }
         else {

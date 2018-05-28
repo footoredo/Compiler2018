@@ -168,11 +168,11 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
 
     public void virtualPush (Register register) {
         virtualStack.extend(stackWordSize);
-        mov (register, virtualStack.top());
+        mov (virtualStack.top(), register);
     }
 
     public void virtualPop (Register register) {
-        mov (virtualStack.top(), register);
+        mov (register, virtualStack.top());
         virtualStack.rewind (stackWordSize);
     }
 

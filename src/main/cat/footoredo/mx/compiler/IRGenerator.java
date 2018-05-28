@@ -310,6 +310,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         if (isStatement()) {
             Expression rhs = transformExpression(node.getRhs());
             // System.out.println ("here");
+            // System.out.println (node.getLhs().getClass());
             assign (lhsLocation, transformExpression(node.getLhs()), rhs);
             return null;
         }
@@ -416,7 +417,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     public Expression visit(ArefNode node) {
         Expression expression = transformExpression(node.getExpression());
         Expression offset = new Binary(ptrdiff_t(), Op.MUL, size (node.elementSize()), transformIndex(node));
-        Binary address = new Binary(ptr_t(), Op.ADD, expression, offset);
+        Binary address = new Binary(ptr_t(), Op.ADD, expression, new Binary(ptr_t(), Op.ADD, offset, size(8)));
         return memory(address, node.getType());
     }
 
@@ -476,6 +477,10 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             throw new Error("array size not specified.");
         }
         Expression length = transformExpression(lengths.get(0));
+        /*if (length instanceof Integer) {
+            System.out.println (((Integer) length).getValue());
+        }*/
+        // System.out.println (arrayType.getBaseType().size());
         Expression entrySize = size(arrayType.getBaseType().size());
         Expression sizeSize = size(8);
         Expression totalSize = binary(Op.ADD, sizeSize, binary(Op.MUL, length, entrySize));
@@ -546,6 +551,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             // System.out.println("here");
             cat.footoredo.mx.ir.Variable variable = ref(node.getEntity());
             return node.isLoadable() ? variable : addressOf(variable);
+            // return variable;
         }
     }
 
@@ -587,9 +593,9 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Type varType (cat.footoredo.mx.type.Type type) {
-        if (!type.isScaler ()) {
+        /*if (!type.isScaler ()) {
             return null;
-        }
+        }*/
         return Type.get(type.size());
     }
 

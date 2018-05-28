@@ -9,6 +9,7 @@ abstract public class LHSNode extends ExpressionNode {
     @Override
     public boolean isLoadable() {
         Type type = getType();
-        return !type.isArray() && !type.isFunction() && !type.isString() && !type.isClass();
+        // return !type.isArray() && !type.isFunction() && !type.isString() && !type.isClass();
+        return true;
     }
 }
