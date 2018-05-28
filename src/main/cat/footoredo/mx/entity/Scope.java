@@ -1,6 +1,7 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.type.Type;
 
 import java.util.*;
 
@@ -16,6 +17,12 @@ abstract public class Scope {
     abstract public boolean isTopLevel ();
     abstract public ToplevelScope toplevel ();
     abstract public Scope parent ();
+
+    public Variable allocateTmpVariable (Type type) {
+        Variable tmp = Variable.tmp (type);
+        declareEntity(tmp);
+        return tmp;
+    }
 
     public void declareEntity(Entity entity, Set<String> reservedWords) throws SemanticException {
         if (reservedWords.contains(entity.getName())) {
@@ -43,11 +50,6 @@ abstract public class Scope {
     abstract public Entity get (String name) throws SemanticException;
 
     public Entity directGet (String name) {
-        if (entityMap.containsKey(name)) {
-            return entityMap.get (name);
-        }
-        else {
-            return null;
-        }
+        return entityMap.getOrDefault(name, null);
     }
 }

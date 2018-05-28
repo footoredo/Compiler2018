@@ -26,6 +26,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     private Expression thisPointer;
     private ClassType currentClass;
     public IR generate(AST ast) throws SemanticException {
+        scopeStack = new LinkedList<>();
+        scopeStack.add(ast.getScope());
         this.ast = ast;
         thisPointer = ref(tmpVariable(new PointerType()));
         currentClass = null;
@@ -50,6 +52,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             }
             currentClass = null;
         }
+        scopeStack.removeLast();
         return ast.getIR();
     }
 
@@ -75,17 +78,18 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private List<Statement> statements;
-    private LinkedList<LocalScope> scopeStack;
+    private LinkedList<Scope> scopeStack;
     private LinkedList<Label> breakStack;
     private LinkedList<Label> continueStack;
 
     private List<Statement> compileFunctionBody (DefinedFunction function) {
         statements = new ArrayList<>();
-        scopeStack = new LinkedList<>();
         breakStack = new LinkedList<>();
         continueStack = new LinkedList<>();
 
+        scopeStack.add(function.getScope());
         transformStatement(function.getBlock());
+        scopeStack.removeLast();
         return statements;
     }
 
@@ -167,6 +171,11 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Void visit(BlockNode node) {
+        scopeStack.add(node.getScope());
+        for (StatementNode statementNode: node.getStatements()) {
+            transformStatement(statementNode);
+        }
+        scopeStack.removeLast();
         return null;
     }
 

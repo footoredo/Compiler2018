@@ -30,10 +30,15 @@ public class BlockNode extends StatementNode {
     }
 
     public LocalScope getScope() {
+        //if (scope == null)
+        //    System.out.println("asdas3d" + location);
         return scope;
     }
 
     public void setScope(LocalScope scope) {
+        //System.out.println("sdasds" + location);
+        /*if (scope == null)
+            System.out.println("asdasd");*/
         this.scope = scope;
     }
 

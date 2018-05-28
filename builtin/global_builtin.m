@@ -3,4 +3,4 @@ void println(string str);
 string getString();
 int getInt();
 string toString(int i);
-bool strcmp(String a, String b);
+bool strcmp(string a, string b);

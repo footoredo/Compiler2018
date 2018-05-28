@@ -24,7 +24,7 @@ public class Statistics {
     }
 
     private <K> int fetchCount (Map<K, Integer> usage, K key) {
-        return usage.get(key);
+        return usage.getOrDefault(key, 0);
     }
 
     private <K> void incrementCount (Map<K, Integer> usage, K key) {

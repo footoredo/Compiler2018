@@ -16,6 +16,11 @@ public class CompilerTest {
     }
 
     @Test
+    public void basicTest() throws Exception {
+        compiler.compile("example/basic.m");
+    }
+
+    @Test
     public void testLocalResolver() throws Exception {
         try {
             compiler.compile("example/test_local_resolver.m");

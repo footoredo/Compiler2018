@@ -14,6 +14,6 @@ public class Directive extends Assembly {
 
     @Override
     public String toSource(SymbolTable symbolTable) {
-        return null;
+        return content;
     }
 }

@@ -72,7 +72,7 @@ public class LocalResolver extends Visitor {
 
     private void resolveFunction(DefinedFunction df) {
         pushScope(df.getParameters());
-        super.visit(df.getBlock());
+        this.visit(df.getBlock());
         df.setScope(popScope());
     }
 
@@ -118,6 +118,7 @@ public class LocalResolver extends Visitor {
     @Override
     public Void visit(BlockNode node) {
         pushScope();
+        // System.out.println("BlockNode " + node.getLocation());
         super.visit(node);
         node.setScope(popScope());
         return null;

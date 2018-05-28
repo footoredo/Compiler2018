@@ -17,12 +17,6 @@ public class LocalScope extends Scope {
         parent.addChild(this);
     }
 
-    public Variable allocateTmpVariable (Type type) {
-        Variable tmp = Variable.tmp (type);
-        declareEntity(tmp);
-        return tmp;
-    }
-
     @Override
     public boolean isTopLevel() {
         return false;
