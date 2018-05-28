@@ -4,4 +4,4 @@ export CCHK="java -classpath ./lib/antlr-4.7.1-complete.jar:./lib/junit-4.12.jar
 cat > program.m # save everything in stdin to program.txt
 $CCHK
 
-nasm -felf64 program.asm && gcc program.o && ./a.out
+# nasm -felf64 program.asm && gcc program.o && ./a.out
