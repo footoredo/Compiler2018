@@ -41,6 +41,16 @@ public class CompilerTest {
     }
 
     @Test
+    public void T584() throws Exception {
+        try {
+            compiler.compile("example/T584.m");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Test
     public void T690() throws Exception {
         try {
             compiler.compile("example/T690.m");

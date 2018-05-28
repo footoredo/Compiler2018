@@ -65,6 +65,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     private AssemblyCode generateAssemblyCode(IR ir) {
         AssemblyCode file = newAssemblyCode();
+        file._global("main");
         generateExterns (file);
         generateDataSection (file, ir.getGlobalVariables());
         generateTextSection (file, ir.getConstantTable());
@@ -417,7 +418,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             case NOT:
                 as.test (ax(src), ax(src));
                 as.set ("e", al());
-                as.mov (ax(dest), al());
+                as.movzx (ax(dest), al());
         }
         return null;
     }
@@ -440,25 +441,25 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         else if (s.getRhs().isAddress()) {
             compile(s.getLhs());
             loadAddress(cx(rightType), s.getRhs().getEntityForce());
-            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+            compileBinaryOp(type, op, ax(leftType), cx(rightType));
         }
         else if (s.getRhs().isVariable()) {
             compile(s.getLhs());
             loadVariable(cx(rightType), (cat.footoredo.mx.ir.Variable)s.getRhs());
-            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+            compileBinaryOp(type, op, ax(leftType), cx(rightType));
         }
         else if (s.getLhs().isConstant() || s.getLhs().isVariable() || s.getLhs().isAddress()) {
             compile(s.getRhs());
             as.mov(cx(), ax());
             compile(s.getLhs());
-            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+            compileBinaryOp(type, op, ax(leftType), cx(rightType));
         }
         else {
             compile(s.getRhs());
             as.virtualPush(ax());
             compile(s.getLhs());
             as.virtualPop(cx());
-            compileBinaryOp(type, op, ax(leftType), bx(rightType));
+            compileBinaryOp(type, op, ax(leftType), cx(rightType));
         }
         return null;
     }
@@ -533,7 +534,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                         default:
                             throw new Error ("unknown binary operator: " + op);
                     }
-                    as.mov (left, al());
+                    as.movzx (left, al());
         }
     }
 

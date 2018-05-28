@@ -255,6 +255,18 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("mov", destination, source);
     }
 
+    public void movzx (Register destination, Register source) {
+        instruction("movzx", destination, source);
+    }
+
+    public void movzx (Operand destination, Register source) {
+        instruction("movzx", destination, source);
+    }
+
+    public void movzx (Register destination, Operand source) {
+        instruction("movzx", destination, source);
+    }
+
     public void lea (Register destination, Operand source) {
         instruction("lea", destination, source);
     }

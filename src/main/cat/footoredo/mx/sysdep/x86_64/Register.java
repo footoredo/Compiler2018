@@ -5,9 +5,13 @@ import cat.footoredo.mx.asm.Type;
 
 public class Register extends cat.footoredo.mx.asm.Register {
     private long number;
+    private String baseName;
     private Type type;
 
     public Register(long number, Type type) {
+        if (number < 8) {
+            this.baseName = RegisterClass.values()[(int)number].name().toLowerCase();
+        }
         this.number = number;
         this.type = type;
     }
@@ -44,8 +48,8 @@ public class Register extends cat.footoredo.mx.asm.Register {
         return type;
     }
 
-    public String getBaseName () {
-        return Long.toString(number).toLowerCase();
+    private String getBaseName () {
+        return baseName;
     }
 
     @Override
@@ -53,38 +57,43 @@ public class Register extends cat.footoredo.mx.asm.Register {
         return typedName ();
     }
 
-    /*private String typedName () {
-        switch (type) {
-            case INT8: return lowetByteRegister ();
-            case INT16: return getBaseName();
-            case INT32: return "e" + getBaseName();
-            case INT64: return "r" + getBaseName();
-            default:
-                throw new Error("unknown register Type: " + type);
-        }
-    }*/
-
     private String typedName () {
-        String name = "r" + number;
-        switch (type) {
-            case INT8: return name + "b";
-            case INT16: return name + "w";
-            case INT32: return name + "d";
-            case INT64: return name;
-            default:
-                throw new Error("unknown type " + type);
+        if (number < 8) {
+            switch (type) {
+                case INT8:
+                    return lowerByteRegister();
+                case INT16:
+                    return getBaseName();
+                case INT32:
+                    return "e" + getBaseName();
+                case INT64:
+                    return "r" + getBaseName();
+                default:
+                    throw new Error("unknown register Type: " + type);
+            }
+        }
+        else {
+            String name = "r" + number;
+            switch (type) {
+                case INT8: return name + "b";
+                case INT16: return name + "w";
+                case INT32: return name + "d";
+                case INT64: return name;
+                default:
+                    throw new Error("unknown type " + type);
+            }
         }
     }
 
-    /*
-    private String lowetByteRegister () {
-        switch (registerClass) {
-            case AX:
-            case BX:
-            case CX:
-            case DX: return getBaseName().substring(0, 1) + "l";
+
+    private String lowerByteRegister () {
+        switch ((int)number) {
+            case 0:
+            case 1:
+            case 2:
+            case 3: return getBaseName().substring(0, 1) + "l";
             default:
-                throw new Error("does not have lower-byte register: " + _class);
+                throw new Error("does not have lower-byte register: " + getBaseName());
         }
-    }*/
+    }
 }
