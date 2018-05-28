@@ -200,11 +200,11 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     public void jmp (Label label) {
-        instruction("jmp", new DirectMemoryReference(label.getSymbol()));
+        instruction("jmp", new ImmediateValue(label.getSymbol()));
     }
 
     public void j (String suffix, Label label) {
-        instruction("j", suffix, new DirectMemoryReference(label.getSymbol()));
+        instruction("j", suffix, new ImmediateValue(label.getSymbol()));
     }
 
     public void cmp (Operand a, Operand b) {
@@ -232,7 +232,7 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     public void call (Symbol symbol) {
-        instruction("call", new DirectMemoryReference(symbol));
+        instruction("call", new ImmediateValue(symbol));
     }
 
     public void ret() {

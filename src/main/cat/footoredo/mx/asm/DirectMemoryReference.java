@@ -34,7 +34,7 @@ public class DirectMemoryReference extends MemoryReference {
 
     @Override
     public String toSource(SymbolTable table) {
-        return value.toSource(table);
+        return "[" + value.toSource(table) + "]";
     }
 
     @Override

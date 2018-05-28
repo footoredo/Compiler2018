@@ -20,7 +20,7 @@ abstract public class Scope {
 
     public Variable allocateTmpVariable (Type type) {
         Variable tmp = Variable.tmp (type);
-        System.out.println (tmp.getName() + " in " + this);
+        // System.out.println (tmp.getName() + " in " + this);
         declareEntity(tmp);
         return tmp;
     }

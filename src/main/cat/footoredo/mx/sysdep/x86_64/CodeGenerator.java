@@ -353,24 +353,26 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         // System.out.println (s.getLocation());
         if (s.getLhs().isAddress() && s.getLhs().getMemoryReference() != null) {
             // System.out.println(s.getRhs() instanceof Malloc);
+            //System.out.println("1 @" + s.getLocation());
             compile(s.getRhs());
-            store (s.getLhs().getMemoryReference(), ax(s.getLhs().getType()));
+            store (s.getLhs().getMemoryReference(), ax(s.getRhs().getType()));
         }
         else if (s.getRhs().isConstant()) {
-            // System.out.println(2);
+            //System.out.println("2 @" + s.getLocation());
             compile(s.getLhs());
             as.mov (cx(), ax());
             loadConstant(ax(), s.getRhs());
-            store (memory(cx()), ax(s.getLhs().getType()));
+            store (memory(cx()), ax(s.getRhs().getType()));
         }
         else {
             // System.out.println(3);
+            //System.out.println("3 @" + s.getLocation());
             compile(s.getRhs());
             as.virtualPush(ax());
             compile(s.getLhs());
             as.mov (cx(), ax());
             as.virtualPop(ax());
-            store (memory(cx()), ax(s.getLhs().getType()));
+            store (memory(cx()), ax(s.getRhs().getType()));
         }
         return null;
     }
@@ -620,12 +622,13 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     }
 
     private void loadVariable (Register dest, cat.footoredo.mx.ir.Variable var) {
-        if (var.getAddress() != null) {
+        /*if (var.getAddress() != null) {
+            // System.out.println (var.getName() + " is address" + var.getAddress().toSource(SymbolTable.dummy()));
             Register a = dest.forType(naturalType);
             as.mov (a, var.getAddress());
             load (dest.forType(var.getType()), memory(a));
         }
-        else if (var.getMemoryReference() != null ) {
+        else*/ if (var.getMemoryReference() != null ) {
             load (dest.forType(var.getType()), var.getMemoryReference());
         }
         else {

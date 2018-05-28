@@ -1,5 +1,9 @@
+class C {
+    int x;
+}
+
 int main() {
-    int a = 1;
-    int b = 2;
-    return a + b;
+    C c = new C;
+    c.x = 1;
+    return c.x;
 }

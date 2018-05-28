@@ -23,7 +23,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         this.typeTable = typeTable;
     }
 
-    private Expression thisPointer;
+    private Variable thisPointer;
     private ClassType currentClass;
     public IR generate(AST ast) throws SemanticException {
         scopeStack = new LinkedList<>();
@@ -158,21 +158,21 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         return transformExpression(node.getIndex());
     }
 
-    private Expression setThisPointer (Location location, Expression newThisPointer) {
-        Expression originalThisPointer = ref (tmpVariable(new PointerType()));
+    private Variable setThisPointer (Location location, Expression newThisPointer) {
+        Variable originalThisPointer = ref(tmpVariable(new PointerType()));
         assign(location, originalThisPointer, thisPointer);
         assign(location, thisPointer, newThisPointer);
         return originalThisPointer;
     }
 
-    private void recoverThisPointer (Location location, Expression originalThisPointer) {
+    private void recoverThisPointer (Location location, Variable originalThisPointer) {
         assign(location, thisPointer, originalThisPointer);
     }
 
     @Override
     public Void visit(BlockNode node) {
         scopeStack.add(node.getScope());
-        System.out.println ("BLOCK SCOPE: " + node.getScope());
+        //System.out.println ("BLOCK SCOPE: " + node.getScope());
         for (StatementNode statementNode: node.getStatements()) {
             transformStatement(statementNode);
         }
@@ -184,7 +184,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     public Void visit(ExpressionStatementNode node) {
         Expression e = node.getExpression().accept(this);
         if (e != null) {
-            System.out.println("useless statement @" + node.getLocation());
+            //System.out.println("useless statement @" + node.getLocation());
         }
         return null;
     }
@@ -445,7 +445,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         }
         Expression caller = transformExpression(node.getCaller());
         Expression call;
-        Expression originalThisPointer = null;
+        Variable originalThisPointer = null;
         if (node.getCaller() instanceof MemberNode) {
             originalThisPointer = setThisPointer( node.getLocation(),
                     addressOf(((MemberNode) node.getCaller()).getInstance()) );
@@ -519,8 +519,9 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             assign (node.getLocation(), address, malloc);
             java.lang.String typeName = creator.getTypeName ();
             Entity constructor = ast.getTypeDefinition(typeName).getScope().get(typeName);
-            Expression originalThisPointer = setThisPointer(node.getLocation(), address);
+            Variable originalThisPointer = setThisPointer(node.getLocation(), address);
             Expression call = new Call(nullType(), ref(constructor), args);
+            // System.out.println ("here");
             statements.add (new ExpressionStatement(node.getLocation(), call));
             recoverThisPointer(node.getLocation(), originalThisPointer);
             return address;
