@@ -410,11 +410,13 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Expression lhs = transformExpression(node.getLhs());
         cat.footoredo.mx.type.Type type = node.getType();
         if (node.getLhs().getType().isString()) {
-            Entity compareFunction = ast.getEntity("strcmp");
+            Entity compareFunction = ast.getEntity("_strcmp");
             Expression caller = ref(compareFunction);
             List<Expression> args = new ArrayList<>();
             args.add (lhs); args.add (rhs);
-            return new Call(asmType(new BooleanType()), caller, args);
+            Call cmp = new Call(asmType(new IntegerType(true)), caller, args);
+            Op op = Op.internBinary(node.getOperator(), true);
+            return isStatement() ? null : new Binary(asmType(type), op, cmp, new Integer(Type.INT64,0));
         }
         else {
             // System.err.print("asdas" + node.getLocation());

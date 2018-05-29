@@ -1,5 +1,4 @@
-int main()
-{
-string str="123";
-print(str);
+int main () {
+    int a = getInt ();
+    return a;
 }

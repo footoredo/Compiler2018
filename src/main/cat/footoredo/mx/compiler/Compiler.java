@@ -19,6 +19,7 @@ import org.antlr.v4.runtime.DefaultErrorStrategy;
 import javax.annotation.processing.FilerException;
 import java.io.*;
 import java.util.List;
+import java.util.Scanner;
 
 public class Compiler {
     public void compile(String strPath, String destPath) throws Exception {
@@ -29,11 +30,17 @@ public class Compiler {
         AST sem = semanticAnalyze(ast_builtin_types, types);
         IR ir = new IRGenerator(types).generate(sem);
         AssemblyCode asm = generateAssembly(ir);
-        writeFile (destPath, asm.toSource());
+        String code = asm.toSource();
+        code += readFile("builtin/global_builtin.asm");
+        writeFile(destPath, code);
     }
 
-    public void compile (String strPath) throws Exception {
+    public void compile(String strPath) throws Exception {
         compile(strPath, "-");
+    }
+
+    String readFile(String path) throws IOException {
+        return new Scanner(new File(path)).useDelimiter("\\Z").next();
     }
 
     AST parseFile(String path) throws IOException {

@@ -79,7 +79,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     }
 
     private void generateExterns (AssemblyCode file) {
-        file._extern("malloc");
+        file._extern("malloc, putchar, puts, _Znam, strcmp, gets, scanf");
     }
 
     private AssemblyCode newAssemblyCode() {
