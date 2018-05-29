@@ -29,7 +29,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         scopeStack = new LinkedList<>();
         scopeStack.add(ast.getScope());
         this.ast = ast;
-        thisPointer = ref(tmpVariable(new PointerType()));
+        ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "thisPointer"));
+        thisPointer = ref(ast.getScope().get("thisPointer"));
         currentClass = null;
         statements = ast.getStatements();
         for (cat.footoredo.mx.entity.Variable variable: ast.getVariables()) {
@@ -462,6 +463,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         if (node.getCaller() instanceof MemberNode) {
             originalThisPointer = setThisPointer( node.getLocation(),
                     addressOf(((MemberNode) node.getCaller()).getInstance()) );
+            // assign (node.getLocation(), ref(scopeStack.getLast().get("this")), thisPointer);
             call = new Call(asmType(node.getReturnType()), caller, args);
         }
         else {

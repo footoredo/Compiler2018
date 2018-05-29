@@ -26,8 +26,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         return generateAssemblyCode(ir);
     }
 
-    private static final java.lang.String LABEL_SYMBOL_BASE = ".L";
-    private static final java.lang.String CONST_SYMBOL_BASE = "___________LC";
+    private static final java.lang.String LABEL_SYMBOL_BASE = "_QAQ_L";
+    private static final java.lang.String CONST_SYMBOL_BASE = "_QAQ_LC";
 
     private void locateSymbols (IR ir) {
         SymbolTable constSymbols = new SymbolTable(CONST_SYMBOL_BASE);
@@ -81,7 +81,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     private void generateExterns (AssemblyCode file) {
         file._extern("malloc, _Znam");
         file._extern("putchar, puts, gets, scanf, sprintf");
-        file._extern("strcmp, strcpy, strlen");
+        file._extern("strcmp, strcpy, strlen, strncpy");
     }
 
     private AssemblyCode newAssemblyCode() {

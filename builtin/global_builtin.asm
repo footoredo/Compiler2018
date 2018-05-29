@@ -146,3 +146,98 @@ _strcat:
         leave
         ret
 
+__array#size:
+        push    rbp
+        mov     rbp, rsp
+        mov     rax, qword [rel @_@thisPointer]
+        mov     rax, qword [rax]
+        pop     rbp
+        ret
+
+string#length:
+        push    rbp
+        mov     rbp, rsp
+        mov     rax, qword [rel @_@thisPointer]
+        mov     rdi, rax
+        call    strlen
+        pop     rbp
+        ret
+
+string#substring:
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 32
+        mov     qword [rbp-18H], rdi
+        mov     qword [rbp-20H], rsi
+        mov     rax, qword [rbp-20H]
+        sub     rax, qword [rbp-18H]
+        add     rax, 2
+        mov     rdi, rax
+        call    _Znam
+        mov     qword [rbp-8H], rax
+        mov     rax, qword [rbp-20H]
+        sub     rax, qword [rbp-18H]
+        add     rax, 1
+        mov     rsi, rax
+        mov     rdx, qword [rel @_@thisPointer]
+        mov     rax, qword [rbp-18H]
+        lea     rcx, [rdx+rax]
+        mov     rax, qword [rbp-8H]
+        mov     rdx, rsi
+        mov     rsi, rcx
+        mov     rdi, rax
+        call    strncpy
+        mov     rax, qword [rbp-20H]
+        sub     rax, qword [rbp-18H]
+        lea     rdx, [rax+1H]
+        mov     rax, qword [rbp-8H]
+        add     rax, rdx
+        mov     byte [rax], 0
+        mov     rax, qword [rbp-8H]
+        leave
+        ret
+
+string#pareInt:
+        push    rbp
+        mov     rbp, rsp
+        mov     qword [rbp-10H], 0
+        mov     rax, qword [rel @_@thisPointer]
+        mov     qword [rbp-8H], rax
+string#pareInt#L_002:  mov     rax, qword [rbp-8H]
+        movzx   eax, byte [rax]
+        cmp     al, 47
+        jle     string#pareInt#L_003
+        mov     rax, qword [rbp-8H]
+        movzx   eax, byte [rax]
+        cmp     al, 57
+        jg      string#pareInt#L_003
+        mov     rdx, qword [rbp-10H]
+        mov     rax, rdx
+        shl     rax, 2
+        add     rax, rdx
+        add     rax, rax
+        mov     rdx, rax
+        mov     rax, qword [rbp-8H]
+        movzx   eax, byte [rax]
+        movsx   rax, al
+        add     rax, rdx
+        mov     qword [rbp-10H], rax
+        add     qword [rbp-8H], 1
+        jmp     string#pareInt#L_002
+
+string#pareInt#L_003:  mov     rax, qword [rbp-10H]
+        pop     rbp
+        ret
+
+string#ord:
+        push    rbp
+        mov     rbp, rsp
+        mov     dword [rbp-4H], edi
+        mov     rdx, qword [rel @_@thisPointer]
+        mov     eax, dword [rbp-4H]
+        cdqe
+        add     rax, rdx
+        movzx   eax, byte [rax]
+        movsx   rax, al
+        pop     rbp
+        ret
