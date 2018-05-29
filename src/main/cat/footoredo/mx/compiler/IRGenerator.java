@@ -32,7 +32,6 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "thisPointer"));
         thisPointer = ref(ast.getScope().get("thisPointer"));
         currentClass = null;
-        statements = ast.getStatements();
         for (TypeDefinition t: ast.getTypeDefinitions()) {
             if (t instanceof ClassNode) {
                 // System.out.println (((ClassNode) t).getType());
@@ -46,11 +45,14 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             }
             currentClass = null;
         }
+        statements = ast.getStatements();
         for (cat.footoredo.mx.entity.Variable variable: ast.getVariables()) {
             if (variable.isStatic())
                 variable.setIR(transformExpression(variable.getInitializer()));
             else if (variable.hasInitializer()) {
-                ast.addStatement (new Assign(variable.getLocation(), addressOf(ref(variable)), transformExpression(variable.getInitializer())));
+                // System.out.println (variable.getName());
+                statements.add (new Assign(variable.getLocation(), addressOf(ref(variable)), transformExpression(variable.getInitializer())));
+                // System.out.println(statements.get(1).getClass());
             }
         }
         for (DefinedFunction f: ast.getFunctions()) {
@@ -491,6 +493,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Expression allocateArray(Location location, ArrayType arrayType, List<ExpressionNode> lengths) {
+        // System.out.println (lengths.size());
         if (lengths.size() == 0) {
             throw new Error("array size not specified.");
         }
@@ -502,6 +505,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Expression entrySize = size(arrayType.getBaseType().size());
         Expression sizeSize = size(8);
         Expression totalSize = binary(Op.ADD, sizeSize, binary(Op.MUL, length, entrySize));
+        // System.out.println ("here");
         Malloc malloc = new Malloc(ptr_t(), totalSize);
         Expression address = ref(tmpVariable(new PointerType()));
         assign (location, address, malloc);
@@ -529,6 +533,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Expression visit(NewNode node) {
+        // System.out.println(node.getLocation());
         CreatorNode creator = node.getCreator();
         if (creator.hasArgs()) {
             // System.out.println(node.getLocation());

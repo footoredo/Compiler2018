@@ -34,6 +34,7 @@ public class IR {
         this.thisPointer = thisPointer;
         for (DefinedFunction definedFunction: definedFunctions) {
             if (definedFunction.getName().equals("main")) {
+                // System.out.println (globalStatements.size());
                 definedFunction.appendFront (globalStatements);
             }
         }
