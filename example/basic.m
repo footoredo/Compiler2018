@@ -4,7 +4,8 @@ int gcd(int x, int y) {
 }
 
 int main() {
-    println(toString(gcd(10,1)));
+    println(toString(gcd(10,6)));
+    println("a" + "b");
     /*println(toString(gcd(34986,3087)));
     println(toString(gcd(2907,1539)));*/
 

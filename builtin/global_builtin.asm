@@ -108,3 +108,41 @@ toString:
       SECTION .rodata
 toString#L_002:
         db 25H, 6CH, 64H, 00H
+
+
+_strcat:
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 32
+        mov     qword [rbp-18H], rdi
+        mov     qword [rbp-20H], rsi
+        mov     rax, qword [rbp-18H]
+        mov     rdi, rax
+        call    strlen
+        mov     qword [rbp-10H], rax
+        mov     rax, qword [rbp-20H]
+        mov     rdi, rax
+        call    strlen
+        mov     rdx, rax
+        mov     rax, qword [rbp-10H]
+        add     rax, rdx
+        add     rax, 1
+        mov     rdi, rax
+        call    _Znam
+        mov     qword [rbp-8H], rax
+        mov     rdx, qword [rbp-18H]
+        mov     rax, qword [rbp-8H]
+        mov     rsi, rdx
+        mov     rdi, rax
+        call    strcpy
+        mov     rdx, qword [rbp-10H]
+        mov     rax, qword [rbp-8H]
+        add     rdx, rax
+        mov     rax, qword [rbp-20H]
+        mov     rsi, rax
+        mov     rdi, rdx
+        call    strcpy
+        mov     rax, qword [rbp-8H]
+        leave
+        ret
+

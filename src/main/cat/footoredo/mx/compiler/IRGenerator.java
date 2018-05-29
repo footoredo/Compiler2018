@@ -355,7 +355,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Expression rhs = transformExpression(node.getRhs());
         Expression lhs = transformExpression(node.getLhs());
         if (node.getLhs().getType().isString()) {
-            Entity compareFunction = ast.getEntity("strcat");
+            Entity compareFunction = ast.getEntity("_strcat");
             Expression caller = ref(compareFunction);
             List<Expression> args = new ArrayList<>();
             args.add (lhs); args.add (rhs);
