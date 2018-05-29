@@ -27,7 +27,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     }
 
     private static final java.lang.String LABEL_SYMBOL_BASE = ".L";
-    private static final java.lang.String CONST_SYMBOL_BASE = ".LC";
+    private static final java.lang.String CONST_SYMBOL_BASE = "___________LC";
 
     private void locateSymbols (IR ir) {
         SymbolTable constSymbols = new SymbolTable(CONST_SYMBOL_BASE);
