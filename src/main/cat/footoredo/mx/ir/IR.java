@@ -13,7 +13,7 @@ public class IR {
     private List<BuiltinFunction> builtinFunctions;
     private ToplevelScope scope;
     private ConstantTable constantTable;
-    private List<Statement> globalStatements;
+    // private List<Statement> globalStatements;
 
     private cat.footoredo.mx.ir.Variable thisPointer;
 
@@ -30,8 +30,13 @@ public class IR {
         this.builtinFunctions = builtinFunctions;
         this.scope = scope;
         this.constantTable = constantTable;
-        this.globalStatements = globalStatements;
+        // this.globalStatements = globalStatements;
         this.thisPointer = thisPointer;
+        for (DefinedFunction definedFunction: definedFunctions) {
+            if (definedFunction.getName().equals("main")) {
+                definedFunction.appendFront (globalStatements);
+            }
+        }
         initVariables();
     }
 

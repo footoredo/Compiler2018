@@ -8,6 +8,7 @@ import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
 import cat.footoredo.mx.utils.AsmUtils;
 import cat.footoredo.mx.utils.ListUtils;
+import cat.footoredo.mx.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +102,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         file._text();
         for (ConstantEntry constant: constants) {
             file.label (constant.getSymbol());
-            file.d (constant.getValue());
+            file.d (StringUtils.escape(constant.getValue()));
         }
     }
 

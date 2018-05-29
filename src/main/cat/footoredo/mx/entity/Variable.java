@@ -1,10 +1,7 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.asm.Operand;
-import cat.footoredo.mx.ast.ExpressionNode;
-import cat.footoredo.mx.ast.LiteralNode;
-import cat.footoredo.mx.ast.TypeNode;
-import cat.footoredo.mx.ast.VariableDeclarationNode;
+import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.ir.Expression;
 import cat.footoredo.mx.type.Type;
 
@@ -43,7 +40,7 @@ public class Variable extends Entity {
     public boolean hasInitializer() { return initializer != null; }
 
     public boolean isStatic () {
-        return hasInitializer() && initializer instanceof LiteralNode;
+        return hasInitializer() && initializer instanceof IntegerLiteralNode;
     }
 
     @Override

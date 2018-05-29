@@ -40,7 +40,7 @@ public class Tester {
         return ret;
     }
 
-    public static void compileAndRun (String src) throws Exception {
+    public static void compileAndRun (String src, boolean input) throws Exception {
         String srcPath = "./example/" + src;
         Compiler compiler = new Compiler();
         compiler.compile(srcPath + ".m", srcPath + ".asm");
@@ -48,6 +48,11 @@ public class Tester {
 
         exec("nasm -felf64 " + srcPath + ".asm -o " + srcPath + ".o", true);
         exec("g++ " + srcPath + ".o -o " + srcPath, true);
-        System.out.println("Return value: " + exec(srcPath, false));
+        String run = !input ? srcPath : "cat " + "./example/" + src + ".input | " + srcPath;
+        System.out.println("Return value: " + exec(run + " | tee -a ./example/" + src + ".output", false));
+    }
+
+    public static void compileAndRun (String src) throws Exception {
+        compileAndRun(src, false);
     }
 }

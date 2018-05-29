@@ -3,6 +3,7 @@ package cat.footoredo.mx.ast;
 import cat.footoredo.mx.entity.ConstantEntry;
 import cat.footoredo.mx.entity.Location;
 import cat.footoredo.mx.type.StringTypeRef;
+import cat.footoredo.mx.utils.StringUtils;
 
 public class StringLiteralNode extends LiteralNode {
     private String value;
@@ -10,7 +11,9 @@ public class StringLiteralNode extends LiteralNode {
 
     public StringLiteralNode (Location location, String value) {
         super (location, new StringTypeRef());
-        this.value = value;
+        // System.out.println (value + value.length());
+        this.value = StringUtils.unescape(value);
+        // System.out.println (this.value.length() + " " + this.value);
     }
 
     public ConstantEntry getEntry() {

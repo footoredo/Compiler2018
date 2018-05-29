@@ -2,6 +2,7 @@ package cat.footoredo.mx.ir;
 
 import cat.footoredo.mx.asm.*;
 import cat.footoredo.mx.entity.ConstantEntry;
+import cat.footoredo.mx.utils.StringUtils;
 
 public class String extends Expression {
     private ConstantEntry entry;

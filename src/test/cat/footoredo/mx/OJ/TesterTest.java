@@ -34,4 +34,9 @@ public class TesterTest {
     public void T582() throws Exception {
         Tester.compileAndRun("T582");
     }
+
+    @Test
+    public void T527() throws Exception {
+        Tester.compileAndRun("T527", true);
+    }
 }

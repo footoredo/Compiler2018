@@ -16,6 +16,11 @@ public class DefinedFunction extends Function {
         this.block = methodNode.getBlock();
     }
 
+    public void appendFront (List<Statement> statements) {
+        statements.addAll(IR);
+        IR = statements;
+    }
+
     public DefinedFunction (MethodNode methodNode) {
         this (methodNode, null);
     }

@@ -192,7 +192,7 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     public void d (String value) {
-        instruction("db\t" + value + ", 0", "");
+        instruction("db\t" + value, "");
     }
 
     public void res (long size) {
