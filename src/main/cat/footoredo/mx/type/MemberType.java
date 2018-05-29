@@ -34,7 +34,7 @@ abstract public class MemberType extends Type {
         // System.out.println(memberMap.get(member).getTypeNode());
 
         try {
-            // System.out.println (member + getName());
+            //System.out.println (member + getName());
             return memberMap.get(member).getType();
         }catch (NullPointerException e) {
             /*for (String key: memberMap.keySet()) {

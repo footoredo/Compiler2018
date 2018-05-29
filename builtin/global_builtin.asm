@@ -151,6 +151,7 @@ __array#size:
         mov     rbp, rsp
         mov     rax, qword [rel @_@thisPointer]
         mov     rax, qword [rax]
+        mov     rax, qword [rax]
         pop     rbp
         ret
 
@@ -158,6 +159,7 @@ string#length:
         push    rbp
         mov     rbp, rsp
         mov     rax, qword [rel @_@thisPointer]
+        mov     rax, qword [rax]
         mov     rdi, rax
         call    strlen
         pop     rbp
@@ -179,7 +181,8 @@ string#substring:
         sub     rax, qword [rbp-18H]
         add     rax, 1
         mov     rsi, rax
-        mov     rdx, qword [rel @_@thisPointer]
+        mov     rax, qword [rel @_@thisPointer]
+        mov     rdx, qword [rax]
         mov     rax, qword [rbp-18H]
         lea     rcx, [rdx+rax]
         mov     rax, qword [rbp-8H]
@@ -197,20 +200,21 @@ string#substring:
         leave
         ret
 
-string#pareInt:
+string#parseInt:
         push    rbp
         mov     rbp, rsp
         mov     qword [rbp-10H], 0
         mov     rax, qword [rel @_@thisPointer]
+        mov     rax, qword [rax]
         mov     qword [rbp-8H], rax
-string#pareInt#L_002:  mov     rax, qword [rbp-8H]
+string#parseInt#L_002:  mov     rax, qword [rbp-8H]
         movzx   eax, byte [rax]
         cmp     al, 47
-        jle     string#pareInt#L_003
+        jle     string#parseInt#L_003
         mov     rax, qword [rbp-8H]
         movzx   eax, byte [rax]
         cmp     al, 57
-        jg      string#pareInt#L_003
+        jg      string#parseInt#L_003
         mov     rdx, qword [rbp-10H]
         mov     rax, rdx
         shl     rax, 2
@@ -223,9 +227,9 @@ string#pareInt#L_002:  mov     rax, qword [rbp-8H]
         add     rax, rdx
         mov     qword [rbp-10H], rax
         add     qword [rbp-8H], 1
-        jmp     string#pareInt#L_002
+        jmp     string#parseInt#L_002
 
-string#pareInt#L_003:  mov     rax, qword [rbp-10H]
+string#parseInt#L_003:  mov     rax, qword [rbp-10H]
         pop     rbp
         ret
 
@@ -233,7 +237,8 @@ string#ord:
         push    rbp
         mov     rbp, rsp
         mov     dword [rbp-4H], edi
-        mov     rdx, qword [rel @_@thisPointer]
+        mov     rax, qword [rel @_@thisPointer]
+        mov     rdx, qword [rax]
         mov     eax, dword [rbp-4H]
         cdqe
         add     rax, rdx
