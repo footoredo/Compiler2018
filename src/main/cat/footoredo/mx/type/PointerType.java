@@ -10,6 +10,11 @@ public class PointerType extends Type {
         return size;
     }
 
+    @Override
+    public boolean isSigned() {
+        return false;
+    }
+
     public String toString() {
         return "@ptr";
     }

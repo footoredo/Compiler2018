@@ -35,6 +35,10 @@ abstract public class Type {
         return this instanceof NullType;
     }
 
+    public Type getCmpType () {
+        return this;
+    }
+
     public boolean isSigned() { throw new Error("#isSigned for non-integer type"); }
 
     public boolean isScaler () {

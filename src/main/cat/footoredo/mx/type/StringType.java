@@ -42,4 +42,9 @@ public class StringType extends MemberType {
     public MemberType getMemberType() {
         return this;
     }
+
+    @Override
+    public Type getCmpType () {
+        return new PointerType();
+    }
 }

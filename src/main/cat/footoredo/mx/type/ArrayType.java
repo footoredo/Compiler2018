@@ -67,4 +67,9 @@ public class ArrayType extends Type {
     public MemberType getMemberType() {
         return ProtoArrayType.protoArrayTypeInstance;
     }
+
+    @Override
+    public Type getCmpType () {
+        return new PointerType();
+    }
 }

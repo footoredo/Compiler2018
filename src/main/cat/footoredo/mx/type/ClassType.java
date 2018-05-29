@@ -66,4 +66,9 @@ public class ClassType extends MemberType {
     public MemberType getMemberType() {
         return this;
     }
+
+    @Override
+    public Type getCmpType () {
+        return new PointerType();
+    }
 }

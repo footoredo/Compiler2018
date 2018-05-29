@@ -51,6 +51,11 @@ public class FunctionType extends Type {
     }
 
     @Override
+    public Type getCmpType() {
+        throw new Error ("FunctionType#getCmpType called");
+    }
+
+    @Override
     public boolean isScaler() {
         return false;
     }

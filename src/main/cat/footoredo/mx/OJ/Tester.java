@@ -47,7 +47,7 @@ public class Tester {
         Runtime runtime = Runtime.getRuntime();
 
         exec("nasm -felf64 " + srcPath + ".asm -o " + srcPath + ".o", true);
-        exec("gcc " + srcPath + ".o -o " + srcPath, true);
+        exec("g++ " + srcPath + ".o -o " + srcPath, true);
         System.out.println("Return value: " + exec(srcPath, false));
     }
 }
