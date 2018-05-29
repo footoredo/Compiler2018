@@ -376,6 +376,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     @Override
     public Void visit(Assign s) {
+        /*if (s.getLhs() instanceof Memory) {
+            System.out.println("fasdas");
+        }*/
         // System.out.println (s.getLocation() + " " +  s.getLhs().getClass());
         if (s.getLhs().getMemoryReference() != null) {
             // System.out.println(s.getRhs() instanceof Malloc);
@@ -385,17 +388,30 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
         else if (s.getRhs().isConstant()) {
             //System.out.println("2 @" + s.getLocation());
-            compile(s.getLhs());
+            if (s.getLhs() instanceof Memory) {
+                compile(((Memory) s.getLhs()).getExpression());
+            }
+            else {
+                throw new Error("wtf??");
+                //compile(s.getRhs());
+            }
             as.mov (cx(), ax());
             loadConstant(ax(), s.getRhs());
             store (memory(cx()), ax(s.getRhs().getType()));
         }
-        else {  // Memory
+        else {
             // System.out.println(3);
-            //System.out.println("3 @" + s.getLocation());
+            // System.out.println("3 @" + s.getLocation());
+
             compile(s.getRhs());
             as.virtualPush(ax());
-            compile(s.getLhs());
+            if (s.getLhs() instanceof Memory) {
+                compile(((Memory) s.getLhs()).getExpression());
+            }
+            else {
+                throw new Error("wtf??");
+                //compile(s.getRhs());
+            }
             as.mov (cx(), ax());
             as.virtualPop(ax());
             store (memory(cx()), ax(s.getRhs().getType()));
@@ -628,7 +644,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     @Override
     public Void visit(Memory s) {
         compile(s.getExpression());
-        // load (ax(s.getType()), memory(ax()));
+        load (ax(s.getType()), memory(ax()));
         return null;
     }
 

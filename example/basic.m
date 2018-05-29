@@ -1,6 +1,5 @@
 int main() {
-    string s1 = "aaa";
-    string s2 = "bbbbb";
-    string s3 = s1 + s2;
-    return s3.length() + s3.ord(5);
+    int[] a = new int[1];
+    a[0] = 10;
+    return a[0] + 20;
 }
