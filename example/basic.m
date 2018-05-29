@@ -1,51 +1,36 @@
-int hashsize = 100;
-class node {
-	int key;
-    int data;
-	node next;
-}
-node[] table;
-int getHash(int n) {
-	return (n * 237) % hashsize;
-}
-void put(int key, int data) {
-	int p;
-	node ptr = null;
-	p = getHash(key);
-	if (table[p] == null) {
-		table[p] = new node;
-		table[p].key = key;
-		table[p].data = data;
-		table[p].next = null;
-		return;
+string A;
+string B;
+string C;
+int N;
+
+string calc(string A)
+{
+	int len = A.length();
+	if (1 == len) return A;
+	int mid = len/2;
+	string L = calc(A.substring(0,mid-1));
+	string R = calc(A.substring(mid,len-1));
+	if (L < R) return L + R;
+	else if (L == R) {
+		int l = L.ord(0);
+		int r = R.ord(0);
+		if (l < r) return L + R;
+		return R + L;
 	}
-	ptr = table[p];
-	while (ptr.key != key) {
-		if (ptr.next == null) {
-			ptr.next = new node;
-			ptr.next.key = key;
-			ptr.next.next = null;
-		}
-		ptr = ptr.next;
-	}
-	ptr.data = data;
+	else if (L > R) return R + L;
+	println("Never Ever!");
 }
-int get(int key) {
-	node ptr = null;
-	ptr = table[getHash(key)];
-	while (ptr.key != key) {
-		ptr = ptr.next;
+
+int main()
+{
+	A = getString();
+	B = getString();
+	N = B.parseInt();
+	if (A.length() < N) {
+		println("length error!");
+		return 0;
 	}
-	return ptr.data;
-}
-int main() {
-	int i;
-	table = new node[100];
-	for (i = 0;i < hashsize;i++)
-		table[i] = null;
-	for (i = 0;i < 1000;i++)
-		put(i, i);
-	for (i = 0;i < 1000;i++)
-		println(toString(i) + " " + toString(get(i)));
+	C = calc(A.substring(0,N-1));
+	println(C);
 	return 0;
 }

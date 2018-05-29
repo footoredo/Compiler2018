@@ -225,6 +225,7 @@ string#parseInt#L_002:  mov     rax, qword [rbp-8H]
         movzx   eax, byte [rax]
         movsx   rax, al
         add     rax, rdx
+        sub     rax, 48
         mov     qword [rbp-10H], rax
         add     qword [rbp-8H], 1
         jmp     string#parseInt#L_002
