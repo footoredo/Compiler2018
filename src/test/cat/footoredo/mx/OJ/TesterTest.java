@@ -29,4 +29,9 @@ public class TesterTest {
     public void T592() throws Exception {
         Tester.compileAndRun("T592");
     }
+
+    @Test
+    public void T582() throws Exception {
+        Tester.compileAndRun("T582");
+    }
 }

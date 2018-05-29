@@ -31,9 +31,4 @@ public class ProtoArrayType extends MemberType {
     public String getName() {
         return "__array";
     }
-
-    @Override
-    public boolean isScaler() {
-        return false;
-    }
 }

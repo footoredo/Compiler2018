@@ -235,6 +235,10 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("call", new ImmediateValue(symbol));
     }
 
+    public void leave () {
+        instruction("leave", "");
+    }
+
     public void ret() {
         instruction("ret", "");
     }

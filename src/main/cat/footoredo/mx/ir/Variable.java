@@ -13,8 +13,8 @@ public class Variable extends Expression {
 
     public Variable(Type type, Entity entity) {
         super(type);
-        if (type == null)
-            throw new Error ("wtf??ASDASDSAD");
+        /*if (type == null)
+            throw new Error ("wtf??ASDASDSAD");*/
         this.entity = entity;
     }
 

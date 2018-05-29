@@ -63,11 +63,6 @@ public class ClassType extends MemberType {
     }
 
     @Override
-    public boolean isScaler() {
-        return false;
-    }
-
-    @Override
     public MemberType getMemberType() {
         return this;
     }

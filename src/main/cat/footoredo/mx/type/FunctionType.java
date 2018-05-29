@@ -46,6 +46,7 @@ public class FunctionType extends Type {
 
     @Override
     public int size() {
+        // System.out.println ();
         throw new Error("FunctionType#size called");
     }
 

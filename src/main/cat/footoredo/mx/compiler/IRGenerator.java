@@ -549,6 +549,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         }
         else {
             // System.out.println("here");
+            // System.out.println (node.getLocation());
             cat.footoredo.mx.ir.Variable variable = ref(node.getEntity());
             return node.isLoadable() ? variable : addressOf(variable);
             // return variable;
@@ -593,9 +594,9 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Type varType (cat.footoredo.mx.type.Type type) {
-        /*if (!type.isScaler ()) {
+        if (!type.isScaler ()) {
             return null;
-        }*/
+        }
         return Type.get(type.size());
     }
 
@@ -604,6 +605,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private cat.footoredo.mx.ir.Variable ref (Entity entity) {
+        /*if (varType(entity.getType()) == null)
+            System.out.println (entity.getLocation());*/
         return new cat.footoredo.mx.ir.Variable(varType(entity.getType()), entity);
     }
 

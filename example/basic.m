@@ -1,10 +1,10 @@
+int f (int i) {
+    if (i == 0)
+        return 1;
+    else
+        return i * f(i - 1);
+}
+
 int main() {
-    int [] a = new int [2];
-    int i;
-    int [][] c = new int [1][];
-    c[0] = a;
-    for (i = 0; i < 2; ++ i) {
-        c[0][i] = 1;
-    }
-    return a[1];
+    return f(10);
 }

@@ -1,5 +1,6 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.asm.Operand;
 import cat.footoredo.mx.ast.ExpressionNode;
 import cat.footoredo.mx.ast.LiteralNode;
 import cat.footoredo.mx.ast.TypeNode;

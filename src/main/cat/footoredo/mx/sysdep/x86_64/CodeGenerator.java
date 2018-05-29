@@ -146,16 +146,16 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         StackFrameInfo frame = new StackFrameInfo();
         locateParameters (function.getParameters());
         // System.out.println (function.getName());
-        frame.lvarSize = locateLocalVariables(function.getLvarScope());
+        frame.lvarSize = locateLocalVariables(function.getScope());
 
         AssemblyCode body = compileStatements(function);
         frame.savedRegs = usedCalleeSaveRegisters(body);
         frame.tempSize = body.getVirtualStack().getMaxSize();
 
-        fixLocalVariableOffsets (function.getLvarScope(), frame.lvarOffset());
+        fixLocalVariableOffsets (function.getScope(), frame.lvarOffset());
         fixTempVariableOffsets (body, frame.tempOffset());
 
-        generateFunctionBody (file, body, frame);
+        generateFunctionBody (file, body, frame, function.getParameters());
     }
 
     class MemInfo {
@@ -215,8 +215,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     // does NOT include BP
     private List<Register> usedCalleeSaveRegisters (AssemblyCode body) {
+        System.out.println("jere");
         List<Register> result = new ArrayList<>();
         for (Register register: calleeSaveRegisters()) {
+            System.out.println(register.getNumber());
+            if (register.getNumber() == 7)
+                System.out.println (body.used(register));
             if (body.used(register)) {
                 result.add(register);
             }
@@ -245,9 +249,19 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     private void generateFunctionBody(AssemblyCode file,
                                       AssemblyCode body,
-                                      StackFrameInfo frame) {
+                                      StackFrameInfo frame,
+                                      List<Parameter> parameters) {
         file.virtualStack.reset();
         prologue (file, frame.savedRegs, frame.frameSize());
+        for (Parameter par: parameters) {
+            if (par.getParameterSpace().isMemoryReference()) {
+                file.mov (ax(), par.getParameterSpace());
+                file.mov (par.getMemoryReference(), ax());
+            }
+            else {
+                file.mov (par.getMemoryReference(), (Register)par.getParameterSpace());
+            }
+        }
         file.addAll(body.getAssemblies());
         epilogue (file, frame.savedRegs);
         file.virtualStack.fixOffset(0);
@@ -269,8 +283,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         for (Register register: ListUtils.reverse(savedRegisters)) {
             file.virtualPop(register);
         }
-        file.mov (sp(), bp());
-        file.pop (bp());
+        file.leave ();
         file.ret ();
     }
 
@@ -279,19 +292,21 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             RegisterClass.DX.getValue(), RegisterClass.CX.getValue(), 8, 9
     };
 
+    // static final long [] PARAMETER_REGISTERS = {};
+
     static final private long PARAMETER_START_POSITION = 2;
 
     private void locateParameters (List<Parameter> parameters) {
         for (int i = 0; i < PARAMETER_REGISTERS.length && i < parameters.size(); ++ i) {
-            Variable var = parameters.get(i);
-            var.setRegister(new Register(PARAMETER_REGISTERS[i], Type.get(var.size())));
+            Parameter var = parameters.get(i);
+            var.setParameterSpace(new Register(PARAMETER_REGISTERS[i], Type.get(var.size())));
         }
 
-        long currentPoisition = PARAMETER_START_POSITION;
+        long currentPosition = PARAMETER_START_POSITION;
         for (int i = PARAMETER_REGISTERS.length; i < parameters.size(); ++ i) {
-            Variable var = parameters.get(i);
-            var.setMemoryReference(memory(stackSizeFromPosition(currentPoisition), bp()));
-            currentPoisition ++;
+            Parameter var = parameters.get(i);
+            var.setParameterSpace(memory(stackSizeFromPosition(currentPosition), bp()));
+            currentPosition ++;
         }
     }
 
@@ -574,6 +589,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         for (int i = (int)s.getArgc() - 1; i >= PARAMETER_REGISTERS.length; -- i) {
             compile(s.getArg(i));
             as.push (ax());
+            // as.mov (s.getFunction().getParameter(i).getMemoryReference(), ax());
         }
         // System.out.println (call.)
         as.call(s.getFunction().getCallingSymbol());

@@ -67,9 +67,4 @@ public class ArrayType extends Type {
     public MemberType getMemberType() {
         return ProtoArrayType.protoArrayTypeInstance;
     }
-
-    @Override
-    public boolean isScaler() {
-        return false;
-    }
 }

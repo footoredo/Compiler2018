@@ -43,6 +43,10 @@ abstract public class Function extends Entity {
         this.parentClass = parentClass;
     }
 
+    public Parameter getParameter (int i) {
+        return params.getParams().get(i);
+    }
+
     public List<Parameter> getParameters() {
         return params.getParamDescriptors();
     }
