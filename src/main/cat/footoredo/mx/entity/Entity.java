@@ -60,7 +60,7 @@ abstract public class Entity {
     }
 
     public MemoryReference getMemoryReference() {
-        // checkAddress ();
+        checkAddress ();
         return memoryReference;
     }
 
@@ -69,7 +69,7 @@ abstract public class Entity {
     }
 
     public Operand getAddress() {
-        // checkAddress ();
+        checkAddress ();
         return address;
     }
 

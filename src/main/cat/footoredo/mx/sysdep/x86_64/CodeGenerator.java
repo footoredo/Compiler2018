@@ -1,7 +1,6 @@
 package cat.footoredo.mx.sysdep.x86_64;
 
 import cat.footoredo.mx.asm.*;
-import cat.footoredo.mx.ast.TypeDefinition;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.ir.*;
