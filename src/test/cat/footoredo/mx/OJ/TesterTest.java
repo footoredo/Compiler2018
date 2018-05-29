@@ -12,7 +12,7 @@ public class TesterTest {
 
     @Test
     public void basic() throws Exception {
-        Tester.compileAndRun("basic");
+        Tester.compileAndRun("basic", true);
     }
 
     @Test
@@ -38,5 +38,10 @@ public class TesterTest {
     @Test
     public void T527() throws Exception {
         Tester.compileAndRun("T527", true);
+    }
+
+    @Test
+    public void T556() throws Exception {
+        Tester.compileAndRun("T556", true);
     }
 }

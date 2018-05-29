@@ -33,6 +33,19 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         thisPointer = ref(ast.getScope().get("thisPointer"));
         currentClass = null;
         statements = ast.getStatements();
+        for (TypeDefinition t: ast.getTypeDefinitions()) {
+            if (t instanceof ClassNode) {
+                // System.out.println (((ClassNode) t).getType());
+                ((ClassNode) t).getClassType().computeOffsets();
+                currentClass = ((ClassNode) t).getClassType();
+            }
+            for (Function f: t.getMemberMethods()) {
+                if (f instanceof DefinedFunction) {
+                    ((DefinedFunction) f).setIR(compileFunctionBody((DefinedFunction) f));
+                }
+            }
+            currentClass = null;
+        }
         for (cat.footoredo.mx.entity.Variable variable: ast.getVariables()) {
             if (variable.isStatic())
                 variable.setIR(transformExpression(variable.getInitializer()));
@@ -43,17 +56,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         for (DefinedFunction f: ast.getFunctions()) {
             f.setIR(compileFunctionBody(f));
         }
-        for (TypeDefinition t: ast.getTypeDefinitions()) {
-            if (t instanceof ClassNode) {
-                currentClass = ((ClassNode) t).getClassType();
-            }
-            for (Function f: t.getMemberMethods()) {
-                if (f instanceof DefinedFunction) {
-                    ((DefinedFunction) f).setIR(compileFunctionBody((DefinedFunction) f));
-                }
-            }
-            currentClass = null;
-        }
+
         scopeStack.removeLast();
         return ast.getIR(thisPointer);
     }

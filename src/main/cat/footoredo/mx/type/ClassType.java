@@ -20,6 +20,7 @@ public class ClassType extends MemberType {
         this.location = location;
         this.name = name;
         this.cachedSize = Type.sizeUnknown;
+        // computeOffsets();
     }
 
     public String toString() {
@@ -34,7 +35,7 @@ public class ClassType extends MemberType {
         return location;
     }
 
-    private void computeOffsets() {
+    public void computeOffsets() {
         int offset = 0;
         int maxSize = 1;
         for (Slot slot : getMembers()) {
@@ -42,6 +43,7 @@ public class ClassType extends MemberType {
                 int size = slot.getType().size();
                 if (size > maxSize) maxSize = size;
                 offset = AsmUtils.align(offset, size);
+                // System.out.println(name + "." + slot.getName() + ": " + offset);
                 slot.setOffset(offset);
                 offset += size;
             }

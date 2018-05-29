@@ -106,6 +106,8 @@ public class ClassNode extends TypeDefinition {
     }
 
     public ClassType getClassType () {
+        // System.out.println("asdasd" + getT);
+        if (getType() == null) super.getTypeNode().setType(definingType());
         return (ClassType) getType();
     }
 

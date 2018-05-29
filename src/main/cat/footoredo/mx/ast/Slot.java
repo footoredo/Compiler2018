@@ -25,6 +25,7 @@ public class Slot extends Node {
     }
 
     public int getOffset() {
+        // System.out.println ("querying offset of " + name + " and got " + offset);
         return offset;
     }
 

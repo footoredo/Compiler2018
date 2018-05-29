@@ -40,10 +40,14 @@ getString:
         call    _Znam
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp-8H]
-        mov     rdi, rax
-        call    gets
+        mov     rsi, rax
+        mov     edi, getString#L_005
+        mov     eax, 0
+        call    scanf
+        mov     rax, qword [rbp-8H]
         leave
         ret
+
 
 
 getInt:
@@ -72,6 +76,9 @@ SECTION .rodata
 
 getInt#L_002:
         db 25H, 6CH, 64H, 00H
+
+getString#L_005:
+        db 25H, 73H, 00H
 
 _strcmp:
         push    rbp
