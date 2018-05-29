@@ -81,7 +81,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     private void generateExterns (AssemblyCode file) {
         file._extern("malloc, _Znam");
-        file._extern("putchar, puts, gets, scanf, sprintf");
+        file._extern("putchar, puts, scanf, sprintf");
         file._extern("strcmp, strcpy, strlen, strncpy");
     }
 
@@ -119,7 +119,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         file._text();
         for (DefinedFunction function: definedFunctions) {
             // System.out.println(function.getName());
-            Symbol sym = symbol(function.getName());
+            Symbol sym = symbol(function.getSymbolString());
             file.label(sym);
             compileFunctionBody (file, function);
         }
@@ -677,6 +677,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
         else {
             as.lea (dest, var.getMemoryReference());
+            throw new Error ("???");
         }
     }
 

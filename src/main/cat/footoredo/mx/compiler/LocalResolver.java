@@ -31,13 +31,13 @@ public class LocalResolver extends Visitor {
         ToplevelScope toplevelScope = new ToplevelScope();
         scopeStack.add(toplevelScope);
 
-        resolveTypeDefinition(ast.getTypeDefinitions());
-
         for (Entity decl : ast.getDeclarations()) {
             // System.out.println(decl.getName());
             if (decl instanceof Variable) continue;
             toplevelScope.declareEntity(decl, reservedWords);
         }
+
+        resolveTypeDefinition(ast.getTypeDefinitions());
 
         for (Entity decl : ast.getDeclarations()) {
             if (decl instanceof Variable) {

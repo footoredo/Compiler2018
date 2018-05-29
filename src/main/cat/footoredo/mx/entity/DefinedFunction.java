@@ -13,6 +13,7 @@ public class DefinedFunction extends Function {
 
     public DefinedFunction (MethodNode methodNode, String parentClass) {
         super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
+        // System.out.println (parentClass + "#" + methodNode.getName());
         this.block = methodNode.getBlock();
     }
 

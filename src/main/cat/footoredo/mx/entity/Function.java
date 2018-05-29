@@ -22,6 +22,7 @@ abstract public class Function extends Entity {
         super (typeNode, methodDescriptionNode.getName());
         this.returnType = methodDescriptionNode.getReturnType();
         this.params = methodDescriptionNode.getParams();
+        // System.out.println (parentClass + "#" + methodDescriptionNode.getName());
         this.parentClass = parentClass;
     }
 
@@ -68,6 +69,7 @@ abstract public class Function extends Entity {
 
     @Override
     public String getSymbolString() {
+        // System.out.println (parentClass + "#" + getName());
         if (parentClass == null) {
             return name;
         }
