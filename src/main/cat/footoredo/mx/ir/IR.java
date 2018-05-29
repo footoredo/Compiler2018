@@ -15,12 +15,15 @@ public class IR {
     private ConstantTable constantTable;
     private List<Statement> globalStatements;
 
+    private cat.footoredo.mx.ir.Variable thisPointer;
+
     private List<cat.footoredo.mx.entity.Variable> globalVariables;
     private List<cat.footoredo.mx.entity.Variable> commonSymbols;
 
     public IR(Location location, List<Variable> variables,
               List<DefinedFunction> definedFunctions, List<BuiltinFunction> builtinFunctions,
-              ToplevelScope scope, ConstantTable constantTable, List<Statement> globalStatements) {
+              ToplevelScope scope, ConstantTable constantTable, List<Statement> globalStatements,
+              cat.footoredo.mx.ir.Variable thisPointer) {
         this.location = location;
         this.variables = variables;
         this.definedFunctions = definedFunctions;
@@ -28,7 +31,12 @@ public class IR {
         this.scope = scope;
         this.constantTable = constantTable;
         this.globalStatements = globalStatements;
+        this.thisPointer = thisPointer;
         initVariables();
+    }
+
+    public cat.footoredo.mx.ir.Variable getThisPointer() {
+        return thisPointer;
     }
 
     public Location getLocation() {

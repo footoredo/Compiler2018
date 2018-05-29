@@ -54,7 +54,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             currentClass = null;
         }
         scopeStack.removeLast();
-        return ast.getIR();
+        return ast.getIR(thisPointer);
     }
 
     private void transformStatement(StatementNode statementNode) {
