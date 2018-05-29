@@ -215,12 +215,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     // does NOT include BP
     private List<Register> usedCalleeSaveRegisters (AssemblyCode body) {
-        System.out.println("jere");
+        //System.out.println("jere");
         List<Register> result = new ArrayList<>();
         for (Register register: calleeSaveRegisters()) {
-            System.out.println(register.getNumber());
-            if (register.getNumber() == 7)
-                System.out.println (body.used(register));
+            //System.out.println(register.getNumber());
+            //if (register.getNumber() == 7)
+            //    System.out.println (body.used(register));
             if (body.used(register)) {
                 result.add(register);
             }
@@ -464,7 +464,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             compileBinaryOp(type, op, ax(leftType), s.getRhs().getAsmValue());
         }
         else if (s.getRhs().isConstant()) {
-            System.out.println (s.getRhs().getAsmValue());
+            //System.out.println (s.getRhs().getAsmValue());
             compile(s.getLhs());
             loadConstant(cx(), s.getRhs());
             compileBinaryOp(type, op, ax(leftType), cx(rightType));
