@@ -574,6 +574,9 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             assign (node.getLocation(), tmp, address);
             return memory(tmp, new PointerType());
         }
+        else if (node.getName().equals("this")) {
+            return thisPointer;
+        }
         else {
             // System.out.println("here");
             // System.out.println (node.getLocation());

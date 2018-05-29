@@ -1,6 +1,7 @@
 package cat.footoredo.mx.sysdep.x86_64;
 
 import cat.footoredo.mx.asm.*;
+import cat.footoredo.mx.ast.TypeDefinition;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.ir.*;
@@ -697,11 +698,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             as.mov (a, var.getAddress());
             load (dest.forType(var.getType()), memory(a));
         }
-        else*/ if (var.getMemoryReference() != null ) {
+        else */if (var.getMemoryReference() != null ) {
             // System.out.println (var.getName() + var.getType());
             load (dest.forType(var.getType()), var.getMemoryReference());
         }
         else {
+            // System.out.println (var.getName());
             as.mov (dest, var.getRegister());
         }
     }

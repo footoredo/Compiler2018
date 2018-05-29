@@ -11,6 +11,10 @@ public class Instruction extends Assembly {
         this.suffix = suffix;
         this.operands = operands;
         this.needRelocation = needRelocation;
+        for (int i = 0; i < operands.length; ++ i) {
+            if (operands[i] == null)
+                throw new Error("fasd");
+        }
     }
 
     public Instruction(String mnemonic, String suffix, Operand a1, Operand a2, boolean needRelocation) {
@@ -66,6 +70,7 @@ public class Instruction extends Assembly {
     public void collectStatistics(Statistics statistics) {
         statistics.useInstruction(mnemonic + suffix);
         for (int i = 0; i < operands.length; ++ i) {
+            // System.out.println(operands[i]);
             operands[i].collectStatistics (statistics);
         }
     }
