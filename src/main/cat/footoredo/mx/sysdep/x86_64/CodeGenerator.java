@@ -71,8 +71,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         file._global("main");
         generateExterns (file);
         generateDataSection (file, ir.getScope().getStaticVariables());
-        generateTextSection (file, ir.getConstantTable());
         generateTextSection (file, ir.getScope().getAllDefinedFunctions());
+        generateTextSection (file, ir.getConstantTable());
         generateCommonSymbols (file, ir.getScope().getUnstaticVariables());
         return file;
     }

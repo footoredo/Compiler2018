@@ -100,6 +100,10 @@ public class AST extends Node {
         globalStatements.add(statement);
     }
 
+    public List<Statement> getStatements() {
+        return globalStatements;
+    }
+
     public IR getIR () {
         return new IR (location, declarations.getVars(), declarations.getFuns(), declarations.getBuiltinFuns(), scope, constantTable, globalStatements);
     }

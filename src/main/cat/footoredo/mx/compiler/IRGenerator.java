@@ -31,10 +31,11 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         this.ast = ast;
         thisPointer = ref(tmpVariable(new PointerType()));
         currentClass = null;
+        statements = ast.getStatements();
         for (cat.footoredo.mx.entity.Variable variable: ast.getVariables()) {
             if (variable.isStatic())
                 variable.setIR(transformExpression(variable.getInitializer()));
-            else {
+            else if (variable.hasInitializer()) {
                 ast.addStatement (new Assign(variable.getLocation(), addressOf(ref(variable)), transformExpression(variable.getInitializer())));
             }
         }
@@ -353,9 +354,18 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     public Expression visit(ArithmeticOpNode node) {
         Expression rhs = transformExpression(node.getRhs());
         Expression lhs = transformExpression(node.getLhs());
-        Op op = Op.internBinary(node.getOperator(), node.getType().isSigned());
-        cat.footoredo.mx.type.Type type = node.getType();
-        return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);
+        if (node.getLhs().getType().isString()) {
+            Entity compareFunction = ast.getEntity("strcat");
+            Expression caller = ref(compareFunction);
+            List<Expression> args = new ArrayList<>();
+            args.add (lhs); args.add (rhs);
+            return new Call(asmType(new PointerType()), caller, args);
+        }
+        else {
+            Op op = Op.internBinary(node.getOperator(), node.getLhs().getType().isSigned());
+            cat.footoredo.mx.type.Type type = node.getType();
+            return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);
+        }
     }
 
     @Override

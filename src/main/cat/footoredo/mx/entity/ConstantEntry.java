@@ -34,9 +34,9 @@ public class ConstantEntry {
     }
 
     public void setMemoryReference(MemoryReference memoryReference) {
-        if (this.memoryReference == null) {
+        /*if (this.memoryReference == null) {
             throw new Error("must not happen: memoryReference == null");
-        }
+        }*/
         this.memoryReference = memoryReference;
     }
 
