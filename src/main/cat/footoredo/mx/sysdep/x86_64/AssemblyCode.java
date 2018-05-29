@@ -211,8 +211,16 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("cmp", a, b);
     }
 
-    public void cwd () {
-        instruction("c", "wd");
+    public void c (Type t) {
+        String suffix;
+        switch (t) {
+            case INT16: suffix = "wd"; break;
+            case INT32: suffix = "dq"; break;
+            case INT64: suffix = "qo"; break;
+            default:
+                throw new Error ("unsupported c");
+        }
+        instruction("c", suffix);
     }
 
     public void set (String suffix, Register register) {

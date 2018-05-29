@@ -1,4 +1,12 @@
-int main () {
-    int a = getInt ();
-    return a;
+int gcd(int x, int y) {
+  if (x%y == 0) return y;
+  else return gcd(y, x%y);
+}
+
+int main() {
+    println(toString(gcd(10,1)));
+    /*println(toString(gcd(34986,3087)));
+    println(toString(gcd(2907,1539)));*/
+
+    return 0;
 }

@@ -79,7 +79,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     }
 
     private void generateExterns (AssemblyCode file) {
-        file._extern("malloc, putchar, puts, _Znam, strcmp, gets, scanf");
+        file._extern("malloc, putchar, puts, _Znam, strcmp, gets, scanf, sprintf");
     }
 
     private AssemblyCode newAssemblyCode() {
@@ -525,7 +525,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                 break;
             case S_DIV:
             case S_MOD:
-                as.cwd();
+                as.c(left.getType());
                 as.idiv(cx(left.getType()));
                 if (op == Op.S_MOD) {
                     as.mov(left, dx());

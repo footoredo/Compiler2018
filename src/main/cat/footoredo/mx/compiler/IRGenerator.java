@@ -419,7 +419,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             return isStatement() ? null : new Binary(asmType(type), op, cmp, new Integer(Type.INT64,0));
         }
         else {
-            // System.err.print("asdas" + node.getLocation());
+            System.err.print("asdas" + node.getLocation());
             Op op = Op.internBinary(node.getOperator(), node.getLhs().getType().isSigned());
             return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);
         }

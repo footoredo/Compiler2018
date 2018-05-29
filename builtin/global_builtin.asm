@@ -87,3 +87,24 @@ _strcmp:
         cdqe
         leave
         ret
+
+toString:
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 32
+        mov     qword [rbp-18H], rdi
+        mov     edi, 20
+        call    _Znam
+        mov     qword [rbp-8H], rax
+        mov     rdx, qword [rbp-18H]
+        mov     rax, qword [rbp-8H]
+        mov     esi, toString#L_002
+        mov     rdi, rax
+        mov     eax, 0
+        call    sprintf
+        mov     rax, qword [rbp-8H]
+        leave
+        ret
+      SECTION .rodata
+toString#L_002:
+        db 25H, 6CH, 64H, 00H
