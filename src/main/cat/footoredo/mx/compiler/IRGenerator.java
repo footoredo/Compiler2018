@@ -467,6 +467,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Expression call;
         Variable originalThisPointer = null;
         if (node.getCaller() instanceof MemberNode) {
+            System.out.println(((MemberNode) node.getCaller()).getInstance().getClass());
             originalThisPointer = setThisPointer( node.getLocation(),
                     ((MemberNode) node.getCaller()).getInstance() );
             // assign (node.getLocation(), ref(scopeStack.getLast().get("this")), thisPointer);
@@ -612,7 +613,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Expression addressOf (Expression expression) {
-        return expression.getAddressNode(ptr_t());
+        if (expression instanceof Address) return expression;
+        else return expression.getAddressNode(ptr_t());
     }
 
     private Type asmType (cat.footoredo.mx.type.Type type) {

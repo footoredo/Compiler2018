@@ -677,7 +677,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
         else {
             as.lea (dest, var.getMemoryReference());
-            throw new Error ("???");
+            // throw new Error ("???");
         }
     }
 
