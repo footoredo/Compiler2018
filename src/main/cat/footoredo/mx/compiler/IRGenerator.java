@@ -467,7 +467,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Expression call;
         Variable originalThisPointer = null;
         if (node.getCaller() instanceof MemberNode) {
-            System.out.println(((MemberNode) node.getCaller()).getInstance().getClass());
+            // System.out.println(((MemberNode) node.getCaller()).getInstance().getClass());
             originalThisPointer = setThisPointer( node.getLocation(),
                     ((MemberNode) node.getCaller()).getInstance() );
             // assign (node.getLocation(), ref(scopeStack.getLast().get("this")), thisPointer);

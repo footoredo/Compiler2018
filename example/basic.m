@@ -1,4 +1,6 @@
 int main() {
-    string a = "123";
-    return a.ord(0);
+    string s1 = "aaa";
+    string s2 = "bbbbb";
+    string s3 = s1 + s2;
+    return s3.length() + s3.ord(5);
 }
