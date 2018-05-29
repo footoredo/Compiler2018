@@ -188,7 +188,7 @@ string#substring:
         sub     rax, qword [rbp-18H]
         add     rax, 1
         mov     rsi, rax
-        mov     rax, qword [rel @_@thisPointer]
+        mov     rdx, qword [rel @_@thisPointer]
         ;mov     rdx, qword [rax]
         mov     rax, qword [rbp-18H]
         lea     rcx, [rdx+rax]

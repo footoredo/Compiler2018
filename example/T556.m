@@ -59,7 +59,8 @@ int main()
 		rt1 = merge(rt1,i);
 	print(toString(w[rt0]));
 	print(" ");
-	print(ch.substring(rt1-N-1,rt1-N-1));
+	// print (ch);
+	return ch.substring(rt1-N-1,rt1-N-1).length();
 	print("\n");
 	println(toString(merge(rt0,rt1)));
 	return 0;
