@@ -245,7 +245,7 @@ string#ord:
         push    rbp
         mov     rbp, rsp
         mov     dword [rbp-4H], edi
-        mov     rax, qword [rel @_@thisPointer]
+        mov     rdx, qword [rel @_@thisPointer]
         ;mov     rdx, qword [rax]
         mov     eax, dword [rbp-4H]
         cdqe

@@ -1,5 +1,6 @@
 package cat.footoredo.mx.ir;
 
+import cat.footoredo.mx.asm.MemoryReference;
 import cat.footoredo.mx.asm.Type;
 
 public class Memory extends Expression {

@@ -612,9 +612,10 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         return new Null(asmType(node.getType()));
     }
 
-    private Expression addressOf (Expression expression) {
+    private Expression addressOf (Expression expression) {/*
         if (expression instanceof Address) return expression;
-        else return expression.getAddressNode(ptr_t());
+        else return expression.getAddressNode(ptr_t());*/
+        return expression;
     }
 
     private Type asmType (cat.footoredo.mx.type.Type type) {

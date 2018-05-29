@@ -28,7 +28,8 @@ abstract public class Expression {
     }
 
     public MemoryReference getMemoryReference () {
-        throw new Error("Expression#getMemoryReference called");
+        return null;
+        // throw new Error("Expression#getMemoryReference called");
     }
 
     public Expression getAddressNode (Type type) {

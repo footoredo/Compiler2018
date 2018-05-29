@@ -367,10 +367,17 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         return null;
     }
 
+    /*
+        1. register
+        2. symbol (DirectMemoryReference)
+        3. IndirectMemoryReference
+        4. *address ()
+     */
+
     @Override
     public Void visit(Assign s) {
-        // System.out.println (s.getLocation());
-        if (s.getLhs().isAddress() && s.getLhs().getMemoryReference() != null) {
+        // System.out.println (s.getLocation() + " " +  s.getLhs().getClass());
+        if (s.getLhs().getMemoryReference() != null) {
             // System.out.println(s.getRhs() instanceof Malloc);
             //System.out.println("1 @" + s.getLocation());
             compile(s.getRhs());
@@ -383,7 +390,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             loadConstant(ax(), s.getRhs());
             store (memory(cx()), ax(s.getRhs().getType()));
         }
-        else {
+        else {  // Memory
             // System.out.println(3);
             //System.out.println("3 @" + s.getLocation());
             compile(s.getRhs());
@@ -393,6 +400,18 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             as.virtualPop(ax());
             store (memory(cx()), ax(s.getRhs().getType()));
         }
+        /*Expression left = s.getLhs();
+        Expression right = s.getRhs();
+
+        compile(right);
+        as.virtualPush(ax());
+
+        if (left instanceof Memory) {
+            compile(((Memory) left).getExpression());
+            as.mov (cx(), ax());
+            store (memory(cx()))
+        }*/
+        // compile(s.getRhs());
         return null;
     }
 
@@ -609,7 +628,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     @Override
     public Void visit(Memory s) {
         compile(s.getExpression());
-        load (ax(s.getType()), memory(ax()));
+        // load (ax(s.getType()), memory(ax()));
         return null;
     }
 
