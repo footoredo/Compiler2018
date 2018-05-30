@@ -11,9 +11,6 @@ abstract public class Entity {
     protected TypeNode typeNode;
     protected String name;
     private int referredCount;
-    private MemoryReference memoryReference;
-    private Operand address;
-    private Register register;
 
     public Entity (TypeNode typeNode, String name) {
         this.typeNode = typeNode;
@@ -51,7 +48,7 @@ abstract public class Entity {
         return getType().size();
     }
 
-    public Register getRegister() {
+    /*public Register getRegister() {
         return register;
     }
 
@@ -85,7 +82,7 @@ abstract public class Entity {
         if (memoryReference == null && address == null && register == null) {
             throw new Error("address did not resolved: " + name);
         }
-    }
+    }*/
 
     abstract public <T> T accept(EntityVisitor<T> visitor);
 }

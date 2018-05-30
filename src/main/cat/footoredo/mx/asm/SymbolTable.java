@@ -17,7 +17,7 @@ public class SymbolTable {
 
     public SymbolTable(String base) {
         this.base = base;
-        this.map = new HashMap<UnnamedSymbol, String>();
+        this.map = new HashMap<>();
     }
 
     public Symbol newSymbol () {

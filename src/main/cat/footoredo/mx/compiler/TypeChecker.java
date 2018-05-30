@@ -180,7 +180,7 @@ public class TypeChecker extends Visitor {
             if (!areSameType(node.getLhs().getType(), node.getRhs().getType()))
                 throw new SemanticException(node.getLhs().getLocation(), "incompatible operands");
             if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString()) {
-                throw new SemanticException(node.getLhs().getLocation(), "wrong operand type for \"+\"");
+                throw new SemanticException(node.getLhs().getLocation(), "wrong Operand type for \"+\"");
             }
         }
         else {
@@ -203,7 +203,7 @@ public class TypeChecker extends Visitor {
         if (!areSameType(node.getLhs().getType(), node.getRhs().getType()))
             throw new SemanticException(node.getLhs().getLocation(), "incompatible operands");
         if (!node.getLhs().getType().isInteger() && !node.getLhs().getType().isString()) {
-            throw new SemanticException(node.getLhs().getLocation(), "wrong operand type for \"+\"");
+            throw new SemanticException(node.getLhs().getLocation(), "wrong Operand type for \"+\"");
         }
         return null;
     }

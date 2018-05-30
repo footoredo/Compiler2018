@@ -4,6 +4,8 @@ public class ImmediateValue extends Operand {
     private Literal value;
 
     public ImmediateValue(Literal value) {
+        if (value == null)
+            throw new Error ("sada");
         this.value = value;
     }
 
@@ -18,6 +20,11 @@ public class ImmediateValue extends Operand {
 
     public Literal getValue() {
         return value;
+    }
+
+    @Override
+    public boolean isConstant() {
+        return true;
     }
 
     @Override

@@ -104,8 +104,7 @@ public class AST extends Node {
         return globalStatements;
     }
 
-    public IR getIR (cat.footoredo.mx.ir.Variable thisPointer) {
-        return new IR (location, declarations.getVars(), declarations.getFuns(),
-                declarations.getBuiltinFuns(), scope, constantTable, globalStatements, thisPointer);
+    public IR getIR () {
+        return new IR (location, scope, constantTable, globalStatements);
     }
 }

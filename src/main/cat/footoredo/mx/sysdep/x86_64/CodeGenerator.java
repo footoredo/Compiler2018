@@ -1,6 +1,9 @@
 package cat.footoredo.mx.sysdep.x86_64;
 
 import cat.footoredo.mx.asm.*;
+import cat.footoredo.mx.cfg.*;
+import cat.footoredo.mx.cfg.Instruction;
+import cat.footoredo.mx.cfg.Operand;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.ir.*;
@@ -10,19 +13,20 @@ import cat.footoredo.mx.utils.AsmUtils;
 import cat.footoredo.mx.utils.ListUtils;
 import cat.footoredo.mx.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
-public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRVisitor<Void, Void> {
+public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFGVisitor {
     private final Type naturalType;
 
     public CodeGenerator (Type naturalType) {
         this.naturalType = naturalType;
     }
 
-    public AssemblyCode generate (IR ir) {
+    private Set<Label> compiledLabels;
+    private CFG cfg;
+    public AssemblyCode generate (IR ir, CFG cfg) {
+        this.cfg = cfg;
+        compiledLabels = new HashSet<>();
         locateSymbols(ir);
         return generateAssemblyCode(ir);
     }
@@ -39,7 +43,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             locateVariable (variable);
         }*/
         for (Variable variable: ir.getScope().getVariables()) {
-            locateVariable (variable);
+            locateGlobalVariable (variable);
         }
         for (Function function: ir.getScope().getAllFunctions()) {
             locateFunction (function);
@@ -48,19 +52,22 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     private void locateStringLiteral(ConstantEntry entry, SymbolTable symbolTable) {
         entry.setSymbol(symbolTable.newSymbol());
-        entry.setMemoryReference(memory(entry.getSymbol()));
+        entry.setMemoryReference(memory(Type.INT64, entry.getSymbol()));
         entry.setAddress(immediate(entry.getSymbol()));
     }
 
-    private void locateVariable (Entity entity) {
-        Symbol sym = symbol (entity.getSymbolString());
-        entity.setMemoryReference(memory(sym));
-        entity.setAddress(immediate(sym));
+    private void locateGlobalVariable (Variable variable) {
+        Symbol sym = symbol (variable.getSymbolString());
+        variable.setMemory(memory(Type.get(variable.size()), sym));
     }
 
     private void locateFunction (Function function) {
-        function.setCallingSymbol(symbol (function.getSymbolString()));
-        locateVariable(function);
+        if (function.getCallingSymbol() == null) {
+            /*if (function instanceof DefinedFunction)
+                throw new Error ("wtf");*/
+            function.setCallingSymbol(symbol (function.getSymbolString()));
+        }
+        // locateVariable(function);
     }
 
     private Symbol symbol(java.lang.String sym) {
@@ -74,8 +81,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         generateDataSection (file, ir.getScope().getStaticVariables());
         generateTextSection (file, ir.getScope().getAllDefinedFunctions());
         // generateGlobalBuiltinFunctions (file, ir.getBuiltinFunctions());
-        generateTextSection (file, ir.getConstantTable());
-        generateCommonSymbols (file, ir.getScope().getUnstaticVariables());
+        generateRodataSection (file, ir.getConstantTable());
+        generateCommonSymbols (file, ir.getScope().getNonstaticVariables());
         return file;
     }
 
@@ -98,8 +105,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
     }
 
-    private void generateTextSection(AssemblyCode file, ConstantTable constants) {
-        file._text();
+    private void generateRodataSection(AssemblyCode file, ConstantTable constants) {
+        file._rodata();
         for (ConstantEntry constant: constants) {
             file.label (constant.getSymbol());
             file.d (StringUtils.escape(constant.getValue()));
@@ -172,7 +179,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
     }
 
-    private void printStackFrameLayout (AssemblyCode file, StackFrameInfo frame, List<Variable> lvars) {
+    /*private void printStackFrameLayout (AssemblyCode file, StackFrameInfo frame, List<Variable> lvars) {
         List<MemInfo> vars = new ArrayList<>();
         for (Variable var: lvars) {
             vars.add (new MemInfo (var.getMemoryReference(), var.getName()));
@@ -198,21 +205,44 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
             file.comment(info.mem.toString() + ": " + info.name);
         }
         file.comment("-----------------------------------");
-    }
+    }*/
 
     private AssemblyCode as;
     private Label epilogueLabel;
 
-    private void compileStatement (Statement statement) {
-        statement.accept(this);
+    private void compileBasicBlock (BasicBlock block) {
+        if (block == null)
+            throw new Error("fasas");
+        as.label(block.getLabel());
+        compiledLabels.add (block.getLabel());
+        for (Instruction instruction: block.getInstructions()) {
+            compileInstruction (instruction);
+        }
+        compileJump(block.getJumpInst());
+    }
+
+    private void compileInstruction (Instruction instruction) {
+        instruction.accept (this);
+    }
+
+    private void compileJump (JumpInst jumpInst) {
+        if (jumpInst != null) {
+            jumpInst.accept(this);
+            for (Label label : jumpInst.getOutputs()) {
+                // System.err.println(label.hashCode());
+                if (!compiledLabels.contains(label)) {
+                    compileBasicBlock(cfg.get(label));
+                }
+            }
+        }
     }
 
     private AssemblyCode compileStatements (DefinedFunction function) {
         as = newAssemblyCode();
         epilogueLabel = new Label();
-        for (Statement statement: function.getIR()) {
-            compileStatement (statement);
-        }
+        // System.out.println (function.getSymbolString());
+        // System.out.println ("qurying " + (new Label(function.getCallingSymbol())).hashCode());
+        compileBasicBlock(cfg.get(new Label(function.getCFGSymbol())));
         as.label(epilogueLabel);
         return as;
     }
@@ -251,6 +281,38 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         return calleeSaveRegistersCache;
     }
 
+    private void compileAssign (AssemblyCode as, Type leftType, Type rightType, cat.footoredo.mx.asm.Operand a, cat.footoredo.mx.asm.Operand b) {
+        if (b.isMemoryReference()) {
+            as.mov (ax(rightType), b);
+            b = ax(rightType);
+        }
+        if (b.isConstant() || leftType == rightType) {
+            as.mov (a, b);
+        }
+        else {
+            if (leftType.size() < rightType.size()) {
+                as.mov(a, ((Register) b).forType(leftType));
+            }
+            else {
+                if (a.isMemoryReference()) {
+                    as.movzx (ax(leftType), b);
+                    as.mov (a, ax(leftType));
+                }
+                else {
+                    as.movzx((Register) a, b);
+                }
+            }
+        }
+    }
+
+    private void compileAssign (AssemblyCode as, Operand a, Operand b) {
+        compileAssign(as, a.getType(), b.getType(), a.toASMOperand(), b.toASMOperand());
+    }
+
+    private void compileAssign (Operand a, Operand b) {
+        compileAssign(as, a, b);
+    }
+
     private void generateFunctionBody(AssemblyCode file,
                                       AssemblyCode body,
                                       StackFrameInfo frame,
@@ -258,13 +320,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         file.virtualStack.reset();
         prologue (file, frame.savedRegs, frame.frameSize());
         for (Parameter par: parameters) {
-            if (par.getParameterSpace().isMemoryReference()) {
-                file.mov (ax(), par.getParameterSpace());
-                file.mov (par.getMemoryReference(), ax());
-            }
-            else {
-                file.mov (par.getMemoryReference(), (Register)par.getParameterSpace());
-            }
+            compileAssign (file, Type.get(par.size()), Type.get(par.size()), par.getSpace(), par.getParameterSpace());
         }
         file.addAll(body.getAssemblies());
         epilogue (file, frame.savedRegs);
@@ -309,7 +365,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         long currentPosition = PARAMETER_START_POSITION;
         for (int i = PARAMETER_REGISTERS.length; i < parameters.size(); ++ i) {
             Parameter var = parameters.get(i);
-            var.setParameterSpace(memory(stackSizeFromPosition(currentPosition), bp()));
+            var.setParameterSpace(memory(naturalType, stackSizeFromPosition(currentPosition), bp()));
             currentPosition ++;
         }
     }
@@ -320,10 +376,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
 
     private long locateLocalVariables (LocalScope scope, long parentStackLength) {
         long length = parentStackLength;
-        for (Variable variable: scope.getLocalVariables()) {
+        for (Variable variable: scope.getVariables()) if (!variable.isRegister()) {
             // System.out.println(variable.getName());
             length = alignStack(length + variable.size());
-            variable.setMemoryReference(relocatableMemory(-length, bp()));
+            variable.setMemory(relocatableMemory(Type.get(variable.size()), -length, bp()));
         }
 
         long maxLength = length;
@@ -336,8 +392,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
     }
 
     private void fixLocalVariableOffsets(LocalScope scope, long length) {
-        for (Variable variable: scope.getAllLocalVariables()) {
-            variable.getMemoryReference().fixOffset(-length);
+        for (Variable variable: scope.getAllVariables()) if (!variable.isRegister()) {
+            variable.getMemory().fixOffset(-length);
         }
     }
 
@@ -357,182 +413,70 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
     }
 
-    private void compile (Expression expression) {
-        expression.accept (this);
+    @Override
+    public void visit(AssignInst s) {
+        // System.err.println (s.getLeft().getClass() + " " + s.getRight().getClass());
+        compileAssign(s.getLeft(), s.getRight());
     }
 
     @Override
-    public Void visit(ExpressionStatement s) {
-        compile(s.getExpression());
-        return null;
-    }
-
-    /*
-        1. register
-        2. symbol (DirectMemoryReference)
-        3. IndirectMemoryReference
-        4. *address ()
-     */
-
-    @Override
-    public Void visit(Assign s) {
-        /*if (s.getLhs() instanceof Memory) {
-            System.out.println("fasdas");
-        }*/
-        // System.out.println (s.getLocation() + " " +  s.getLhs().getClass());
-        if (s.getLhs().getMemoryReference() != null) {
-            // System.out.println(s.getRhs() instanceof Malloc);
-            //System.out.println("1 @" + s.getLocation());
-            compile(s.getRhs());
-            store (s.getLhs().getMemoryReference(), ax(s.getRhs().getType()));
-        }
-        else if (s.getRhs().isConstant()) {
-            //System.out.println("2 @" + s.getLocation());
-            if (s.getLhs() instanceof Memory) {
-                compile(((Memory) s.getLhs()).getExpression());
-            }
-            else {
-                throw new Error("wtf??");
-                //compile(s.getRhs());
-            }
-            as.mov (cx(), ax());
-            loadConstant(ax(), s.getRhs());
-            store (memory(cx()), ax(s.getRhs().getType()));
-        }
-        else {
-            // System.out.println(3);
-            // System.out.println("3 @" + s.getLocation());
-
-            compile(s.getRhs());
-            as.virtualPush(ax());
-            if (s.getLhs() instanceof Memory) {
-                compile(((Memory) s.getLhs()).getExpression());
-            }
-            else {
-                System.out.println (s.getLhs().getClass());
-                throw new Error("wtf??");
-                //compile(s.getRhs());
-            }
-            as.mov (cx(), ax());
-            as.virtualPop(ax());
-            store (memory(cx()), ax(s.getRhs().getType()));
-        }
-        /*Expression left = s.getLhs();
-        Expression right = s.getRhs();
-
-        compile(right);
-        as.virtualPush(ax());
-
-        if (left instanceof Memory) {
-            compile(((Memory) left).getExpression());
-            as.mov (cx(), ax());
-            store (memory(cx()))
-        }*/
-        // compile(s.getRhs());
-        return null;
+    public void visit(ConditionalJumpInst s) {
+        Type t = s.getCondition().getType();
+        as.mov(ax(t), s.getCondition().toASMOperand());
+        as.test (ax(t), ax(t));
+        as.j("nz", s.getTrueTarget());
+        as.jmp(s.getFalseTarget());
     }
 
     @Override
-    public Void visit(CJump s) {
-        compile(s.getCond());
-        Type type = s.getCond().getType();
-        as.test (ax(type), ax(type));
-        as.j("nz", s.getThenLabel());
-        as.jmp(s.getElseLabel());
-        return null;
-    }
-
-    @Override
-    public Void visit(Jump s) {
+    public void visit(UnconditionalJumpInst s) {
         as.jmp(s.getTarget());
-        return null;
     }
 
     @Override
-    public Void visit(LabelStatement s) {
-        as.label(s.getLabel());
-        return null;
-    }
-
-    @Override
-    public Void visit(Return s) {
-        if (s.getExpression() != null) {
-            compile(s.getExpression());
+    public void visit(ReturnInst s) {
+        if (s.hasValue()) {
+            as.mov (ax(), s.getValue().toASMOperand());
         }
-        as.jmp (epilogueLabel);
-        return null;
     }
 
     @Override
-    public Void visit(Null s) {
-        as.xor(ax(s.getType()), ax(s.getType()));
-        return null;
-    }
+    public void visit(UnaryInst s) {
+        cat.footoredo.mx.asm.Operand result = s.getResult().toASMOperand();
+        compileAssign(s.getResult(), s.getOperand());
 
-    @Override
-    public Void visit(Unary s) {
-        Type src = s.getExpression().getType();
-        Type dest = s.getType();
-
-        compile(s.getExpression());
         switch (s.getOp()) {
             case UMINUS:
-                as.neg(ax(src));
+                as.neg(result);
                 break;
             case BIT_NOT:
-                as.not (ax(src));
+                as.not(result);
                 break;
             case NOT:
-                as.test (ax(src), ax(src));
+                Type t = s.getResult().getType();
+                as.mov (ax(t), result);
+                as.test (ax(t), ax(t));
                 as.set ("e", al());
-                if (dest.size() > 1)
-                    as.movzx (ax(dest), al());
+                if (t.size() > 1) {
+                    as.movzx(ax(t), al());
+                }
+                as.mov (result, ax(t));
         }
-        return null;
     }
 
     @Override
-    public Void visit(Binary s) {
+    public void visit(BinaryInst s) {
         Op op = s.getOp();
-        Type type = s.getType();
-        Type leftType = s.getLhs().getType();
-        Type rightType = s.getRhs().getType();
-        if (s.getRhs().isConstant() && !requireRegisterOperand(op)) {
-            /*if (op == Op.MUL)
-                System.out.println (((Integer)s.getRhs()).getValue());*/
-            compile(s.getLhs());
-            compileBinaryOp(type, op, ax(leftType), s.getRhs().getAsmValue());
+        Type t = s.getResult().getType();
+        cat.footoredo.mx.asm.Operand resultOperand = s.getResult().toASMOperand();
+        cat.footoredo.mx.asm.Operand leftOperand = s.getLeft().toASMOperand();
+        cat.footoredo.mx.asm.Operand rightOperand = s.getRight().toASMOperand();
+        compileAssign(s.getResult(), s.getLeft());
+        if (s.getResult().isMemory() && s.getRight().isMemory()) {
+            as.mov (cx(t), s.getRight().toASMOperand());
+            rightOperand = cx(t);
         }
-        else if (s.getRhs().isConstant()) {
-            //System.out.println (s.getRhs().getAsmValue());
-            compile(s.getLhs());
-            loadConstant(cx(), s.getRhs());
-            compileBinaryOp(type, op, ax(leftType), cx(rightType));
-        }
-        else if (s.getRhs().isAddress()) {
-            compile(s.getLhs());
-            loadAddress(cx(rightType), s.getRhs().getEntityForce());
-            compileBinaryOp(type, op, ax(leftType), cx(rightType));
-        }
-        else if (s.getRhs().isVariable()) {
-            compile(s.getLhs());
-            loadVariable(cx(rightType), (cat.footoredo.mx.ir.Variable)s.getRhs());
-            compileBinaryOp(type, op, ax(leftType), cx(rightType));
-        }
-        else if (s.getLhs().isConstant() || s.getLhs().isVariable() || s.getLhs().isAddress()) {
-            compile(s.getRhs());
-            as.mov(cx(), ax());
-            compile(s.getLhs());
-            compileBinaryOp(type, op, ax(leftType), cx(rightType));
-        }
-        else {
-            compile(s.getRhs());
-            as.virtualPush(ax());
-            compile(s.getLhs());
-            as.virtualPop(cx());
-            compileBinaryOp(type, op, ax(leftType), cx(rightType));
-        }
-        return null;
+        compileBinaryOp(t, s.getLeft().getType(), op, resultOperand, rightOperand);
     }
 
     private boolean requireRegisterOperand (Op op) {
@@ -551,31 +495,42 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         }
     }
 
-    private void compileBinaryOp (Type type, Op op, Register left, Operand right) {
+    private void compileBinaryOp (Type resultType, Type operandType, Op op, cat.footoredo.mx.asm.Operand left, cat.footoredo.mx.asm.Operand right) {
+        Type t = operandType;
         switch (op) {
             case ADD:
+                if (left.isConstant()) {
+                    throw new Error ("asdas");
+                }
                 as.add(left, right);
                 break;
             case SUB:
                 as.sub(left, right);
                 break;
             case MUL:
-                as.imul(left, right);
+                if (!left.isRegister()) {
+                    as.mov (ax(resultType), left);
+                    as.imul(ax(resultType), right);
+                    as.mov (left, ax(resultType));
+                }
+                else {
+                    as.imul(left, right);
+                }
                 break;
             case S_DIV:
             case S_MOD:
-                as.c(left.getType());
-                as.idiv(cx(left.getType()));
+                as.c(t);
+                as.idiv(cx(t));
                 if (op == Op.S_MOD) {
-                    as.mov(left, dx());
+                    as.mov(left, dx(t));
                 }
                 break;
             case U_DIV:
             case U_MOD:
-                as.mov(dx(), immediate(0));
-                as.div(cx(left.getType()));
+                as.mov(dx(t), immediate(0));
+                as.div(cx(t));
                 if (op == Op.U_MOD) {
-                    as.mov (left, dx());
+                    as.mov (left, dx(t));
                 }
                 break;
             case BIT_AND:
@@ -588,16 +543,19 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                 as.xor (left, right);
                 break;
             case BIT_LSHIFT:
+                as.mov (cl(), right);
                 as.shl (left, cl());
                 break;
             case BIT_RSHIFT:
+                as.mov (cl(), right);
                 as.shr (left, cl());
                 break;
             case ARITH_RSHIFT:
+                as.mov (cl(), right);
                 as.sar (left, cl());
                 break;
                 default:
-                    as.cmp (ax(left.getType()), right);
+                    as.cmp (left, right);
                     switch (op) {
                         case EQ:    as.set ("e",  al()); break;
                         case NEQ:   as.set ("ne", al()); break;
@@ -612,110 +570,52 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                         default:
                             throw new Error ("unknown binary operator: " + op);
                     }
-                    if (left.getType().size() > 1)
-                        as.movzx (left, al());
-                    else
-                        as.mov (left, al());
+                    if (t.size() > 1)
+                        as.movzx (ax(t), al());
+                    as.mov (left, ax(t));
         }
     }
 
     @Override
-    public Void visit(Call s) {
+    public void visit(CallInst s) {
         for (int i = 0; i < s.getArgc() && i < PARAMETER_REGISTERS.length; ++ i) {
-            Expression arg = s.getArg(i);
-            compile(arg);
-            as.mov (new Register(PARAMETER_REGISTERS[i]), ax());
+            Operand operand = s.getArg(i);
+            Type t = operand.getType();
+            as.mov (new Register(PARAMETER_REGISTERS[i], t), operand.toASMOperand());
         }
-        for (int i = (int)s.getArgc() - 1; i >= PARAMETER_REGISTERS.length; -- i) {
-            compile(s.getArg(i));
-            as.push (ax());
+        for (int i = s.getArgc() - 1; i >= PARAMETER_REGISTERS.length; -- i) {
+            Operand operand = s.getArg(i);
+            Type t = operand.getType();
+            as.mov (ax(t), operand.toASMOperand());
+            as.push (ax(t));
             // as.mov (s.getFunction().getParameter(i).getMemoryReference(), ax());
         }
         // System.out.println (call.)
+        //System.out.println (s.getFunction().getName());
         as.call(s.getFunction().getCallingSymbol());
-        return null;
     }
 
-    @Override
+    /*@Override
     public Void visit(Address s) {
         loadAddress(ax(), s.getEntity());
         return null;
+    }*/
+
+    @Override
+    public void visit(DereferenceInst s) {
+        as.mov(ax(), s.getAddress().toASMOperand());
+        load(ax(s.getResult().getType()), memory(Type.INT64, ax()));
+        as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
 
     @Override
-    public Void visit(Memory s) {
-        compile(s.getExpression());
-        load (ax(s.getType()), memory(ax()));
-        return null;
-    }
-
-    @Override
-    public Void visit(cat.footoredo.mx.ir.Variable s) {
-        loadVariable(ax(), s);
-        return null;
-    }
-
-    @Override
-    public Void visit(Integer s) {
-        as.mov (ax(), immediate(s.getValue()));
-        return null;
-    }
-
-    @Override
-    public Void visit(String s) {
-        loadConstant(ax(), s);
-        return null;
-    }
-
-    @Override
-    public Void visit(Malloc s) {
-        compile(s.getSize());
-        as.mov (new Register(PARAMETER_REGISTERS[0]), ax());
+    public void visit(MallocInst s) {
+        as.mov (new Register(PARAMETER_REGISTERS[0], s.getLength().getType()), s.getLength().toASMOperand());
         as.call(new NamedSymbol("malloc"));
-        return null;
     }
 
-    private IndirectMemoryReference relocatableMemory(long offset, Register base) {
-        return IndirectMemoryReference.relocatable(offset, base);
-    }
-
-    private void loadConstant (Register dest, Expression node) {
-        if (node.getAsmValue() != null) {
-            as.mov (dest, node.getAsmValue());
-        }
-        else if (node.getMemoryReference() != null) {
-            as.lea (dest, node.getMemoryReference());
-        }
-        else {
-            throw new Error("must not happen: constant has no asm value");
-        }
-    }
-
-    private void loadVariable (Register dest, cat.footoredo.mx.ir.Variable var) {
-        /*if (var.getAddress() != null) {
-            // System.out.println (var.getName() + " is address" + var.getAddress().toSource(SymbolTable.dummy()));
-            Register a = dest.forType(naturalType);
-            as.mov (a, var.getAddress());
-            load (dest.forType(var.getType()), memory(a));
-        }
-        else */if (var.getMemoryReference() != null ) {
-            // System.out.println (var.getName() + var.getType());
-            load (dest.forType(var.getType()), var.getMemoryReference());
-        }
-        else {
-            // System.out.println (var.getName());
-            as.mov (dest, var.getRegister());
-        }
-    }
-
-    private void loadAddress (Register dest, Entity var) {
-        if (var.getAddress() != null) {
-            as.mov (dest, var.getAddress());
-        }
-        else {
-            as.lea (dest, var.getMemoryReference());
-            // throw new Error ("???");
-        }
+    private IndirectMemoryReference relocatableMemory(Type type, long offset, Register base) {
+        return IndirectMemoryReference.relocatable(type, offset, base);
     }
 
     private Register ax () { return ax (naturalType); }
@@ -766,16 +666,16 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
         return new Register(index, type);
     }
 
-    private DirectMemoryReference memory (Symbol symbol) {
-        return new DirectMemoryReference(symbol);
+    private DirectMemoryReference memory (Type type, Symbol symbol) {
+        return new DirectMemoryReference(type, symbol);
     }
 
-    private IndirectMemoryReference memory (Register base) {
-        return new IndirectMemoryReference(0, base);
+    private IndirectMemoryReference memory (Type type, Register base) {
+        return new IndirectMemoryReference(type, 0, base);
     }
 
-    private IndirectMemoryReference memory (long offset, Register base) {
-        return new IndirectMemoryReference(offset, base);
+    private IndirectMemoryReference memory (Type type, long offset, Register base) {
+        return new IndirectMemoryReference(type, offset, base);
     }
 
     private ImmediateValue immediate (long value) {

@@ -1,5 +1,6 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.ast.BlockNode;
 import cat.footoredo.mx.ast.MethodNode;
 import cat.footoredo.mx.ir.Statement;
@@ -10,6 +11,7 @@ public class DefinedFunction extends Function {
     BlockNode block;
     LocalScope scope;
     List<Statement> IR;
+    Symbol CFGSymbol;
 
     public DefinedFunction (MethodNode methodNode, String parentClass) {
         super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
@@ -20,6 +22,14 @@ public class DefinedFunction extends Function {
     public void appendFront (List<Statement> statements) {
         statements.addAll(IR);
         IR = statements;
+    }
+
+    public Symbol getCFGSymbol() {
+        return CFGSymbol;
+    }
+
+    public void setCFGSymbol(Symbol CFGSymbol) {
+        this.CFGSymbol = CFGSymbol;
     }
 
     public DefinedFunction (MethodNode methodNode) {

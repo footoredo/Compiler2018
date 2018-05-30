@@ -32,9 +32,9 @@ abstract public class Expression {
         // throw new Error("Expression#getMemoryReference called");
     }
 
-    public Expression getAddressNode (Type type) {
+    /*public Expression getAddressNode (Type type) {
         throw new Error("unexpected node for LHS: " + getClass());
-    }
+    }*/
 
     public ImmediateValue getAsmValue () {
         throw new Error ("#Expression#getAsmValue called");

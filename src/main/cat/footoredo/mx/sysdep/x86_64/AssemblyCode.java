@@ -113,6 +113,10 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         _section(".data");
     }
 
+    public void _rodata () {
+        _section(".rodata");
+    }
+
     public void _extern (String name) {
         directive("\textern\t" + name);
     }
@@ -146,13 +150,13 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         }
 
         public IndirectMemoryReference top () {
-            IndirectMemoryReference memoryReference = relocatableMemoryReference(-offset, bp ());
+            IndirectMemoryReference memoryReference = relocatableMemoryReference(naturalType, -offset, bp ());
             memoryReferences.add(memoryReference);
             return memoryReference;
         }
 
-        private IndirectMemoryReference relocatableMemoryReference (long offset, Register base) {
-            return IndirectMemoryReference.relocatable(offset, base);
+        private IndirectMemoryReference relocatableMemoryReference (Type type, long offset, Register base) {
+            return IndirectMemoryReference.relocatable(type, offset, base);
         }
 
         private Register bp () {
@@ -255,11 +259,19 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         assemblies.add(new Instruction("mov", "", dest, src, true));
     }
 
-    public void mov (Register destination, Register source) {
+    public void mov (Operand destination, Operand source) {
         instruction("mov", destination, source);
     }
 
-    public void mov(Operand destination, Register source) {
+    public void movzx (Register destination, Operand source) {
+        instruction("movzx", destination, source);
+    }
+
+    /*public void mov(Operand destination, Register source) {
+        instruction("mov", destination, source);
+    }
+
+    public void mov (Operand destination, ImmediateValue source) {
         instruction("mov", destination, source);
     }
 
@@ -277,65 +289,65 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
 
     public void movzx (Register destination, Operand source) {
         instruction("movzx", destination, source);
-    }
+    }*/
 
     public void lea (Register destination, Operand source) {
         instruction("lea", destination, source);
     }
 
-    public void neg (Register register) {
-        instruction("neg", register);
+    public void neg (Operand operand) {
+        instruction("neg", operand);
     }
 
-    public void add (Register base, Operand diff) {
+    public void add (Operand base, Operand diff) {
         instruction("add", base, diff);
     }
 
-    public void sub (Register base, Operand diff) {
+    public void sub (Operand base, Operand diff) {
         instruction("sub", base, diff);
     }
 
-    public void imul (Register base, Operand diff) {
+    public void imul (Operand base, Operand diff) {
         instruction("imul", base, diff);
     }
 
-    public void div (Register base) {
+    public void div (Operand base) {
         instruction("div", base);
     }
 
-    public void idiv (Register base) {
+    public void idiv (Operand base) {
         instruction("idiv", base);
     }
 
-    public void not (Register register) {
-        instruction("not", register);
+    public void not (Operand operand) {
+        instruction("not", operand);
     }
 
-    public void and (Register base, Operand bits) {
+    public void and (Operand base, Operand bits) {
         instruction("and", base, bits);
     }
 
-    public void or (Register base, Operand bits) {
+    public void or (Operand base, Operand bits) {
         instruction("or", base, bits);
     }
 
-    public void xor (Register base, Operand bits) {
+    public void xor (Operand base, Operand bits) {
         instruction("xor", base, bits);
     }
 
-    public void sar (Register base, Register bits) {
+    public void sar (Operand base, Register bits) {
         instruction("sar", base, bits);
     }
 
-    public void sal (Register base, Register bits) {
+    public void sal (Operand base, Register bits) {
         instruction("sal", base, bits);
     }
 
-    public void shr (Register base, Register bits) {
+    public void shr (Operand base, Register bits) {
         instruction("shr", base, bits);
     }
 
-    public void shl (Register base, Register bits) {
+    public void shl (Operand base, Register bits) {
         instruction("shl", base, bits);
     }
 

@@ -40,9 +40,9 @@ public class ToplevelScope extends Scope {
 
     private List<Variable> variables;
     private List<Variable> staticVariables;
-    private List<Variable> unstaticVariables;
+    private List<Variable> nonstaticVariables;
 
-    public List<Variable> getVariables () {
+    /*public List<Variable> getVariables () {
         if (variables == null) {
             variables = new ArrayList<>();
             for (Entity entity : super.entityMap.values()) {
@@ -52,7 +52,7 @@ public class ToplevelScope extends Scope {
             }
         }
         return variables;
-    }
+    }*/
 
     public List<Variable> getStaticVariables () {
         if (staticVariables == null) {
@@ -61,20 +61,18 @@ public class ToplevelScope extends Scope {
         return staticVariables;
     }
 
-    public List<Variable> getUnstaticVariables () {
-        if (unstaticVariables == null) {
+    public List<Variable> getNonstaticVariables () {
+        if (nonstaticVariables == null) {
             cacheVariables ();
         }
-        return unstaticVariables;
+        return nonstaticVariables;
     }
 
     private void cacheVariables () {
-        if (variables == null)
-            getVariables();
         staticVariables = new ArrayList<>();
-        unstaticVariables = new ArrayList<>();
-        for (Variable variable: variables) {
-            (variable.isStatic() ? staticVariables : unstaticVariables).add (variable);
+        nonstaticVariables = new ArrayList<>();
+        for (Variable variable: getVariables()) {
+            (variable.isStatic() ? staticVariables : nonstaticVariables).add (variable);
         }
     }
 }

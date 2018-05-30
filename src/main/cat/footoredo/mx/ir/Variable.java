@@ -27,23 +27,18 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Operand getAddress () {
-        return entity.getAddress();
-    }
-
-    @Override
     public MemoryReference getMemoryReference () {
-        return entity.getMemoryReference();
+        return ((cat.footoredo.mx.entity.Variable)entity).getMemory();
     }
 
-    @Override
+    /*@Override
     public Address getAddressNode (Type type) {
         // System.out.println ("asdasd");
         return new Address(type, entity);
-    }
+    }*/
 
     public Register getRegister () {
-        return entity.getRegister();
+        return ((cat.footoredo.mx.entity.Variable)entity).getRegister();
     }
 
     @Override

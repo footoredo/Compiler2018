@@ -42,7 +42,7 @@ public class LocalScope extends Scope {
         }
     }
 
-    public List<Variable> getLocalVariables () {
+    /*public List<Variable> getLocalVariables () {
         List<Variable> result = new ArrayList<>();
         for (Entity entity: super.entityMap.values()) {
             if (entity instanceof Variable) {
@@ -58,6 +58,6 @@ public class LocalScope extends Scope {
             result.addAll (scope.getAllLocalVariables());
         }
         return result;
-    }
+    }*/
 
 }

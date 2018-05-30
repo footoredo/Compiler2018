@@ -60,7 +60,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         }
 
         scopeStack.removeLast();
-        return ast.getIR(thisPointer);
+        return ast.getIR();
     }
 
     private void transformStatement(StatementNode statementNode) {
@@ -88,14 +88,17 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     private LinkedList<Scope> scopeStack;
     private LinkedList<Label> breakStack;
     private LinkedList<Label> continueStack;
+    private Label functionEndLabel;
 
     private List<Statement> compileFunctionBody (DefinedFunction function) {
         statements = new ArrayList<>();
         breakStack = new LinkedList<>();
         continueStack = new LinkedList<>();
+        functionEndLabel = new Label();
 
         scopeStack.add(function.getScope());
         transformStatement(function.getBlock());
+        label(functionEndLabel);
         scopeStack.removeLast();
         return statements;
     }
@@ -291,7 +294,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
 
     @Override
     public Void visit(ReturnNode node) {
-        statements.add(new Return(node.getLocation(), node.hasExpression() ? transformExpression(node.getExpression()) : null));
+        statements.add(new Return(node.getLocation(), node.hasExpression() ? transformExpression(node.getExpression()) : null, functionEndLabel));
         return null;
     }
 

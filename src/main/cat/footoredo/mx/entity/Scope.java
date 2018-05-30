@@ -53,15 +53,56 @@ abstract public class Scope {
         return result;
     }
 
-    public List<DefinedFunction> getAllDefinedFunctions () {
+    public List<DefinedFunction> getDefinedFunctions () {
         List<DefinedFunction> result = new ArrayList<>();
         for (Entity entity: entityMap.values()) {
             if (entity instanceof DefinedFunction) {
                 result.add ((DefinedFunction)entity);
             }
         }
+        return result;
+    }
+
+    public List<DefinedFunction> getAllDefinedFunctions () {
+        List<DefinedFunction> result = getDefinedFunctions();
         for (LocalScope scope: children) {
             result.addAll (scope.getAllDefinedFunctions());
+        }
+        return result;
+    }
+
+    public List<BuiltinFunction> getBuiltinFunctions () {
+        List<BuiltinFunction> result = new ArrayList<>();
+        for (Entity entity: entityMap.values()) {
+            if (entity instanceof BuiltinFunction) {
+                result.add ((BuiltinFunction)entity);
+            }
+        }
+        return result;
+    }
+
+    public List<BuiltinFunction> getAllBuiltinFunctions () {
+        List<BuiltinFunction> result = getBuiltinFunctions();
+        for (LocalScope scope: children) {
+            result.addAll (scope.getAllBuiltinFunctions());
+        }
+        return result;
+    }
+
+    public List<Variable> getVariables () {
+        List<Variable> result = new ArrayList<>();
+        for (Entity entity: entityMap.values()) {
+            if (entity instanceof Variable) {
+                result.add ((Variable)entity);
+            }
+        }
+        return result;
+    }
+
+    public List<Variable> getAllVariables () {
+        List<Variable> result = getVariables();
+        for (LocalScope scope: children) {
+            result.addAll(scope.getAllVariables());
         }
         return result;
     }

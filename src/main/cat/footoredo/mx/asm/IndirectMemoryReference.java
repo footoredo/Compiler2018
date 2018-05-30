@@ -5,22 +5,23 @@ public class IndirectMemoryReference extends MemoryReference {
     Register base;
     boolean fixed;
 
-    public IndirectMemoryReference(Literal offset, Register base, boolean fixed) {
+    public IndirectMemoryReference(Type type, Literal offset, Register base, boolean fixed) {
+        super (type);
         this.offset = offset;
         this.base = base;
         this.fixed = fixed;
     }
 
-    public IndirectMemoryReference (long offset, Register base) {
-        this (new IntegerLiteral(offset), base, true);
+    public IndirectMemoryReference (Type type, long offset, Register base) {
+        this (type, new IntegerLiteral(offset), base, true);
     }
 
-    public IndirectMemoryReference (Symbol offset, Register base) {
-        this (offset, base, true);
+    public IndirectMemoryReference (Type type, Symbol offset, Register base) {
+        this (type, offset, base, true);
     }
 
-    static public IndirectMemoryReference relocatable(long offset, Register base) {
-        return new IndirectMemoryReference(new IntegerLiteral(offset), base, false);
+    static public IndirectMemoryReference relocatable(Type type, long offset, Register base) {
+        return new IndirectMemoryReference(type, new IntegerLiteral(offset), base, false);
     }
 
     public Literal getOffset() {
@@ -64,7 +65,7 @@ public class IndirectMemoryReference extends MemoryReference {
         if (! fixed) {
             throw new Error("must not happen: writing unfixed variable");
         }
-        return "[" + base.toSource(table) + (offset.isZero() ? "" : " + " + offset.toSource(table)) + "]";
+        return getTypeString() + " [" + base.toSource(table) + (offset.isZero() ? "" : " + " + offset.toSource(table)) + "]";
     }
 
     @Override

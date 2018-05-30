@@ -48,8 +48,8 @@ public class Tester {
 
         exec("nasm -felf64 " + srcPath + ".asm -o " + srcPath + ".o", true);
         exec("g++ " + srcPath + ".o -o " + srcPath, true);
-        String run = !input ? srcPath : "cat " + "./example/" + src + ".input | " + srcPath;
-        System.out.println (run);
+        String run = (!input ? "" : "cat " + "./example/" + src + ".input | ") + "time " + srcPath;
+        // System.out.println (run);
         exec(run + ";echo Return value: $? | tee -a ./example/" + src + ".output", false);
     }
 

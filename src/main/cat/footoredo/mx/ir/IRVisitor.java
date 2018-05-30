@@ -12,7 +12,7 @@ public interface IRVisitor<S,E> {
     public E visit (Unary s);
     public E visit (Binary s);
     public E visit (Call s);
-    public E visit (Address s);
+    //public E visit (Address s);
     public E visit (Memory s);
     public E visit (Variable s);
     public E visit (Integer s);

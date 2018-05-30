@@ -3,6 +3,7 @@ package cat.footoredo.mx.compiler;
 import cat.footoredo.mx.asm.Assembly;
 import cat.footoredo.mx.asm.Type;
 import cat.footoredo.mx.ast.*;
+import cat.footoredo.mx.cfg.CFG;
 import cat.footoredo.mx.cst.MxLexer;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.BuiltinFunction;
@@ -29,7 +30,8 @@ public class Compiler {
         TypeTable types = new TypeTable();
         AST sem = semanticAnalyze(ast_builtin_types, types);
         IR ir = new IRGenerator(types).generate(sem);
-        AssemblyCode asm = generateAssembly(ir);
+        CFG cfg = new CFGBuilder().generateCFG(ir);
+        AssemblyCode asm = generateAssembly(ir, cfg);
         String code = asm.toSource();
         code += readFile("builtin/global_builtin.asm");
         writeFile(destPath, code);
@@ -129,7 +131,7 @@ public class Compiler {
         return ast;
     }
 
-    AssemblyCode generateAssembly (IR ir) {
-        return new CodeGenerator(Type.INT64).generate(ir);
+    AssemblyCode generateAssembly (IR ir, CFG cfg) {
+        return new CodeGenerator(Type.INT64).generate(ir, cfg);
     }
 }

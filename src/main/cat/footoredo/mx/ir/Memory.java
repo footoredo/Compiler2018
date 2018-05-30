@@ -15,10 +15,10 @@ public class Memory extends Expression {
         return expression;
     }
 
-    @Override
+    /*@Override
     public Expression getAddressNode(Type type) {
         return expression;
-    }
+    }*/
 
     @Override
     public <S, E> E accept(IRVisitor<S, E> visitor) {
