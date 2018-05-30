@@ -7,7 +7,7 @@ public class Return extends Statement {
     Expression expression;
     Label functionEndLabel;
 
-    public Return(Location location, Expression expressionm, Label functionEndLabel) {
+    public Return(Location location, Expression expression, Label functionEndLabel) {
         super(location);
         this.expression = expression;
         this.functionEndLabel = functionEndLabel;

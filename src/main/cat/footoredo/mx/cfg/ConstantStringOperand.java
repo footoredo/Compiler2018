@@ -1,21 +1,28 @@
 package cat.footoredo.mx.cfg;
 
+import cat.footoredo.mx.asm.MemoryReference;
 import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.asm.Type;
+import cat.footoredo.mx.entity.ConstantEntry;
 
 public class ConstantStringOperand extends Operand {
-    Symbol symbol;
+    ConstantEntry entry;
 
-    public ConstantStringOperand(Symbol symbol) {
+    public ConstantStringOperand(ConstantEntry entry) {
         super (Type.INT64);
-        this.symbol = symbol;
+        this.entry = entry;
     }
 
     public Symbol getEntry() {
-        return symbol;
+        return entry.getSymbol();
     }
 
     public boolean isMemory () {
         return true;
+    }
+
+    @Override
+    public MemoryReference getMemoryReference() {
+        return entry.getMemoryReference();
     }
 }

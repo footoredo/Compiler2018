@@ -5,8 +5,14 @@ import cat.footoredo.mx.ir.Op;
 import java.util.Arrays;
 
 public class AssignInst extends Instruction {
-    public AssignInst(Operand a, Operand b) {
+    private boolean isDeref;
+    public AssignInst(Operand a, Operand b, boolean isDeref) {
         super(Arrays.asList(a, b));
+        this.isDeref = isDeref;
+    }
+
+    public boolean isDeref() {
+        return isDeref;
     }
 
     public Operand getLeft () {

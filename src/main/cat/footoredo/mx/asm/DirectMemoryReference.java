@@ -35,7 +35,7 @@ public class DirectMemoryReference extends MemoryReference {
 
     @Override
     public String toSource(SymbolTable table) {
-        return getTypeString() + " [" + value.toSource(table) + "]";
+        return /*getTypeString() + " [" +*/ value.toSource(table)/* + "]"*/;
     }
 
     @Override

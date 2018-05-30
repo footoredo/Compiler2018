@@ -210,7 +210,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     private AssemblyCode as;
     private Label epilogueLabel;
 
-    private void compileBasicBlock (BasicBlock block) {
+    private void compileBasicBlock (BasicBlock block, boolean isEpilogue) {
         if (block == null)
             throw new Error("fasas");
         as.label(block.getLabel());
@@ -218,20 +218,27 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         for (Instruction instruction: block.getInstructions()) {
             compileInstruction (instruction);
         }
-        compileJump(block.getJumpInst());
+        if (isEpilogue) {
+            as.jmp (epilogueLabel);
+        }
+        compileJump(block.getJumpInst(), block.getInstructions().size() > 0 && block.getInstructions().get(block.getInstructions().size() - 1) instanceof ReturnInst);
+    }
+
+    private void compileBasicBlock (BasicBlock block) {
+        compileBasicBlock(block, false);
     }
 
     private void compileInstruction (Instruction instruction) {
         instruction.accept (this);
     }
 
-    private void compileJump (JumpInst jumpInst) {
+    private void compileJump (JumpInst jumpInst, boolean isEpilogue) {
         if (jumpInst != null) {
             jumpInst.accept(this);
             for (Label label : jumpInst.getOutputs()) {
                 // System.err.println(label.hashCode());
                 if (!compiledLabels.contains(label)) {
-                    compileBasicBlock(cfg.get(label));
+                    compileBasicBlock(cfg.get(label), isEpilogue);
                 }
             }
         }
@@ -416,7 +423,13 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     @Override
     public void visit(AssignInst s) {
         // System.err.println (s.getLeft().getClass() + " " + s.getRight().getClass());
-        compileAssign(s.getLeft(), s.getRight());
+        if (s.isDeref()) {
+            // System.out.print("asd");
+            compileAssign(as, s.getLeft().getType(), s.getRight().getType(), new IndirectMemoryReference(s.getLeft().getType(), 0, cx()), s.getRight().toASMOperand());
+        }
+        else {
+            compileAssign(s.getLeft(), s.getRight());
+        }
     }
 
     @Override
@@ -436,6 +449,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     @Override
     public void visit(ReturnInst s) {
         if (s.hasValue()) {
+            // System.out.println ("asd");
             as.mov (ax(), s.getValue().toASMOperand());
         }
     }
@@ -520,17 +534,25 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             case S_DIV:
             case S_MOD:
                 as.c(t);
+                as.mov (cx(t), right);
                 as.idiv(cx(t));
                 if (op == Op.S_MOD) {
                     as.mov(left, dx(t));
+                }
+                else {
+                    as.mov (left, ax(t));
                 }
                 break;
             case U_DIV:
             case U_MOD:
                 as.mov(dx(t), immediate(0));
+                as.mov (cx(t), right);
                 as.div(cx(t));
                 if (op == Op.U_MOD) {
                     as.mov (left, dx(t));
+                }
+                else {
+                    as.mov (left, ax(t));
                 }
                 break;
             case BIT_AND:
@@ -593,6 +615,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         // System.out.println (call.)
         //System.out.println (s.getFunction().getName());
         as.call(s.getFunction().getCallingSymbol());
+        as.mov (s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
 
     /*@Override
@@ -603,8 +626,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(DereferenceInst s) {
-        as.mov(ax(), s.getAddress().toASMOperand());
-        load(ax(s.getResult().getType()), memory(Type.INT64, ax()));
+        as.mov(cx(), s.getAddress().toASMOperand());
+        load(ax(s.getResult().getType()), memory(Type.INT64, cx()));
         as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
 
@@ -612,6 +635,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     public void visit(MallocInst s) {
         as.mov (new Register(PARAMETER_REGISTERS[0], s.getLength().getType()), s.getLength().toASMOperand());
         as.call(new NamedSymbol("malloc"));
+        as.mov (s.getResult().toASMOperand(), ax());
     }
 
     private IndirectMemoryReference relocatableMemory(Type type, long offset, Register base) {

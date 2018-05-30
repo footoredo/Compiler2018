@@ -75,7 +75,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     }
 
     private Operand operand (String stringLiteral) {
-        return new ConstantStringOperand(stringLiteral.getSymbol());
+        return new ConstantStringOperand(stringLiteral.getEntry());
     }
 
     @Override
@@ -86,7 +86,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     @Override
     public Void visit(Assign s) {
-        insert (new AssignInst(processExpression(s.getLhs()), processExpression(s.getRhs())));
+        Operand right = processExpression(s.getRhs());
+        insert (new AssignInst(processExpression(s.getLhs()), right, s.getLhs() instanceof Memory));
         return null;
     }
 
@@ -114,6 +115,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     @Override
     public Void visit(Return s) {
         if (s.hasExpression()) {
+            // System.out.println ("asd");
             insert (new ReturnInst(processExpression(s.getExpression())));
         }
         else {
@@ -172,7 +174,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     @Override
     public Operand visit(String s) {
-        return new ConstantStringOperand(s.getSymbol());
+        return new ConstantStringOperand(s.getEntry());
     }
 
     @Override
