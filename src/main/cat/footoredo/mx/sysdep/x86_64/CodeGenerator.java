@@ -409,6 +409,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, IRV
                 compile(((Memory) s.getLhs()).getExpression());
             }
             else {
+                System.out.println (s.getLhs().getClass());
                 throw new Error("wtf??");
                 //compile(s.getRhs());
             }

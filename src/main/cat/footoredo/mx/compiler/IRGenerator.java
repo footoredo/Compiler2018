@@ -513,8 +513,11 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         assign (location, memory(address, new IntegerType(false)), length);
         lengths.remove(0);
         if (lengths.size() > 0) {
-            Expression currentAddress = binary(Op.ADD, address, size(8));
-            Expression cond = binary(Op.NEQ, length, size(0));
+            Expression currentAddress = ref(tmpVariable(new PointerType()));
+            assign(location, currentAddress, binary(Op.ADD, address, size(8)));
+            Expression countDown = ref (tmpVariable(new IntegerType(false)));
+            assign (location, countDown, length);
+            Expression cond = binary(Op.NEQ, countDown, size(0));
 
             Label begLabel = new Label ();
             Label bodyLabel = new Label ();
@@ -524,8 +527,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             cjump (location, cond, bodyLabel, endLabel);
             label (bodyLabel);
             assign (location, memory(currentAddress, new PointerType()), allocateArray(location, (ArrayType) arrayType.getBaseType(), lengths));
-            binary(Op.ADD, currentAddress, size(8));
-            binary(Op.SUB, length, size(1));
+            transformOpAssign(location, Op.ADD, currentAddress, size(8));
+            transformOpAssign(location, Op.SUB, countDown, size(1));
             jump (begLabel);
             label (endLabel);
         }

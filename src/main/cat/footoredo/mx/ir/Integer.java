@@ -22,11 +22,6 @@ public class Integer extends Expression {
     }
 
     @Override
-    public MemoryReference getMemoryReference() {
-        throw new Error("must not happen: IntValue#memref");
-    }
-
-    @Override
     public boolean isConstant() {
         return true;
     }
