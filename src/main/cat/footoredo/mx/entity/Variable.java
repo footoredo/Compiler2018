@@ -147,6 +147,7 @@ public class Variable extends Entity {
     }
 
     public void setRegister(long index) {
+        // System.out.println ("set " + name + " to r" + index);
         this.register = new Register(index, cat.footoredo.mx.asm.Type.get(size()));
     }
 

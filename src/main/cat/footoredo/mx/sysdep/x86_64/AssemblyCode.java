@@ -45,9 +45,7 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     private Statistics getStatistics() {
-        if (statistics == null) {
-            statistics = Statistics.collect(assemblies);
-        }
+        statistics = Statistics.collect(assemblies);
         return statistics;
     }
 

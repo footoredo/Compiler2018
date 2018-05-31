@@ -10,9 +10,9 @@ public class RegisterAllocator {
     private static final long [] AVAILABLE_REGISTERS = {
             12, 13, 14, 15, RegisterClass.BX.getValue(),
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue(),
-            8, 9, 10, 11
+            10, 11, 8, 9
     };
-    private static final int NUMBER_REGISTERS = /*AVAILABLE_REGISTERS.length*/ 2;
+    private static final int NUMBER_REGISTERS = /*AVAILABLE_REGISTERS.length*/ 4;
 
     private LinkedList<Variable> coloringStack;
     private Set<Variable> remainingVariables;

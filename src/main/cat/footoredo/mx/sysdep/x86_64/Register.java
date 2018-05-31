@@ -1,5 +1,6 @@
 package cat.footoredo.mx.sysdep.x86_64;
 
+import cat.footoredo.mx.asm.Statistics;
 import cat.footoredo.mx.asm.SymbolTable;
 import cat.footoredo.mx.asm.Type;
 import jdk.nashorn.internal.ir.annotations.Ignore;
@@ -36,11 +37,14 @@ public class Register extends cat.footoredo.mx.asm.Register {
         return new Register(number, type);
     }
 
-    public boolean equals (Register register) {
-        return number == register.number;
+    @Override
+    public boolean equals (Object o) {
+        return o instanceof Register && number == ((Register) o).number;
     }
 
+    @Override
     public int hashCode () {
+        // System.out.println ("ASDASDASDSA " + number + " " + Long.hashCode(number));
         return Long.hashCode(number);
     }
 
@@ -98,5 +102,10 @@ public class Register extends cat.footoredo.mx.asm.Register {
             case 3: return getBaseName().substring(0, 1) + "l";
             default: return getBaseName() + 'l';
         }
+    }
+
+    @Override
+    public void collectStatistics(Statistics statistics) {
+        statistics.useRegister(this);
     }
 }

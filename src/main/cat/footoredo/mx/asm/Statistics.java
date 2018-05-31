@@ -3,6 +3,7 @@ package cat.footoredo.mx.asm;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import cat.footoredo.mx.sysdep.x86_64.Register;
 
 public class Statistics {
     private Map<Register, Integer> registerUsage;
@@ -24,14 +25,19 @@ public class Statistics {
     }
 
     private <K> int fetchCount (Map<K, Integer> usage, K key) {
+        /*if (key instanceof Register);
+            System.out.println ("getting " + key.hashCode() + " " + usage.containsKey(key));*/
         return usage.getOrDefault(key, 0);
     }
 
     private <K> void incrementCount (Map<K, Integer> usage, K key) {
+        /*if (key instanceof Register);
+            System.out.println ("putting " + key.hashCode() + " " + (fetchCount(usage, key) + 1));*/
         usage.put (key, fetchCount(usage, key) + 1);
     }
 
     public boolean isRegisterUsed (Register register) {
+        //System.out.println ("querying " + (register).getNumber() + " " + numRegisterUsed(register) + " " + register.hashCode());
         return numRegisterUsed(register) > 0;
     }
 
@@ -40,6 +46,7 @@ public class Statistics {
     }
 
     public void useRegister (Register register) {
+        //System.out.println ("adding " + (register).getNumber() + " " + register.hashCode());
         incrementCount (registerUsage, register);
     }
 

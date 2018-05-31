@@ -266,6 +266,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             //if (register.getNumber() == 7)
             //    System.out.println (body.used(register));
             if (body.used(register)) {
+                // System.out.println (register.getNumber());
                 result.add(register);
             }
         }
