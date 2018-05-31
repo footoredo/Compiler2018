@@ -9,7 +9,7 @@ public class BinaryInst extends Instruction {
     public BinaryInst (Operand result, Operand left, Op op, Operand right) {
         super (result, Arrays.asList(left, right));
         this.op = op;
-        // System.out.println ("Binary: " + result.getVariable().getName() + " = " );
+        // System.err.println ("Binary: " + result.getVariable().getName() + " = " + (left.isVariable() ? left.getVariable().getName() : left.getClass()) + " " + op +  " " + (right.isVariable() ? right.getVariable().getName() : right.getClass()) );
     }
 
     public Op getOp() {

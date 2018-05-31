@@ -145,7 +145,6 @@ public class BasicBlock {
         }
         for (Instruction instruction: ListUtils.reverse(instructions)) {
             result = instruction.backPropagate (result);
-            RegisterAllocator.solveRivalry(result);
         }
         ListUtils.reverse(instructions);
         return result;

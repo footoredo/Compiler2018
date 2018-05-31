@@ -11,6 +11,7 @@ import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
 import cat.footoredo.mx.type.BooleanType;
 import cat.footoredo.mx.type.PointerType;
+import cat.footoredo.mx.type.VoidType;
 
 import java.util.*;
 
@@ -274,9 +275,15 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (int i = 0; i < s.getArgc(); ++ i) {
             parameters.add (processExpression(s.getArg(i)));
         }
-        VariableOperand tmp = tmpVariable (s.getType());
-        insert (new CallInst(tmp, s.getFunction(), parameters));
-        return tmp;
+        if (s.getFunction().getReturnType() instanceof VoidType) {
+            insert (new CallInst(null, s.getFunction(), parameters));
+            return new ConstantIntegerOperand(Type.INT8, 0);
+        }
+        else {
+            VariableOperand tmp = tmpVariable(s.getType());
+            insert(new CallInst(tmp, s.getFunction(), parameters));
+            return tmp;
+        }
     }
 
     @Override

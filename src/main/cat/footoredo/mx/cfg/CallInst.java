@@ -13,6 +13,11 @@ public class CallInst extends Instruction {
     public CallInst (Operand result, Function function, List<Operand> operands) {
         super (result, operands);
         this.function = function;
+        // System.err.println ("Call " + result + " " + function.getName());
+    }
+
+    public boolean hasResult () {
+        return getResult() != null;
     }
 
     public Function getFunction() {
@@ -30,16 +35,20 @@ public class CallInst extends Instruction {
     @Override
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
-        if (getResult() != null && getResult().isVariable()) {
-            Variable result = getResult().getVariable();
-            if (resultLiveVariables.contains(result))
-                resultLiveVariables.remove(result);
-        }
         for (Operand arg: getOperands()) {
             if (arg.isVariable()) {
                 // arg.getVariable().setUsed(true);
                 resultLiveVariables.add(arg.getVariable());
             }
+        }
+        if (getResult() != null) {
+            resultLiveVariables.add(getResult().getVariable());
+        }
+        RegisterAllocator.solveRivalry(resultLiveVariables);
+        if (getResult() != null && getResult().isVariable()) {
+            Variable result = getResult().getVariable();
+            if (resultLiveVariables.contains(result))
+                resultLiveVariables.remove(result);
         }
         setLive(true);
         return resultLiveVariables;

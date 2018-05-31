@@ -13,7 +13,7 @@ public class AssignInst extends Instruction {
         super(a, Arrays.asList(b));
         this.isDeref = isDeref;
         /*if (a.isVariable()) {
-            System.err.println ("assign " + a.getVariable().getName() + " = " + " @ " + isDeref);
+            System.err.println ("assign " + a.getVariable().getName() + " = " + (b.isVariable() ? b.getVariable().getName() : b.getClass()) + " @ " + isDeref);
         }*/
     }
 
@@ -43,10 +43,7 @@ public class AssignInst extends Instruction {
         if (liveCheck(liveVariables) || isDeref) {
             // System.out.println ("here");
             setLive(true);
-            if (!isDeref) {
-                resultLiveVariables.remove(getResult().getVariable());
-            }
-            else {
+            if (isDeref) {
                 resultLiveVariables.add (getResult().getVariable());
             }
             for (Operand operand: getOperands())
@@ -55,6 +52,10 @@ public class AssignInst extends Instruction {
                     // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
+            RegisterAllocator.solveRivalry(resultLiveVariables);
+            if (!isDeref) {
+                resultLiveVariables.remove (getResult().getVariable());
+            }
         }
         /*System.err.println (getClass() + " : after");
         for (Variable variable: resultLiveVariables)

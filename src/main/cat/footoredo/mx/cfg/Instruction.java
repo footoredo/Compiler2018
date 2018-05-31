@@ -31,19 +31,20 @@ abstract public class Instruction {
 
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
-        //System.err.println (getClass() + " : before");
-        /*for (Variable variable: resultLiveVariables)
+        /*System.err.println (getClass() + " : before");
+        for (Variable variable: resultLiveVariables)
             System.err.println (variable.getName());*/
         if (liveCheck (liveVariables)) {
             // System.out.println ("here");
             setLive(true);
-            resultLiveVariables.remove(result.getVariable());
             for (Operand operand: operands)
                 if (operand.isVariable()) {
                     Variable variable = operand.getVariable();
                     // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
+            RegisterAllocator.solveRivalry(resultLiveVariables);
+            resultLiveVariables.remove(result.getVariable());
         }
         /*System.err.println (getClass() + " : after");
         for (Variable variable: resultLiveVariables)

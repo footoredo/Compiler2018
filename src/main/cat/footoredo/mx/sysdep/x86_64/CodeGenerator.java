@@ -298,6 +298,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             b = ax(rightType);
         }
         if (b.isConstant() || leftType == rightType) {
+            // System.out.println (a.getClass() + " " + b.getClass());
+            // System.out.println (a + " " + b);
             as.mov (a, b);
         }
         else {
@@ -330,7 +332,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
                                       List<Parameter> parameters) {
         file.virtualStack.reset();
         prologue (file, frame.savedRegs, frame.frameSize());
-        for (Parameter par: parameters) {
+        for (Parameter par: parameters) if (par.isUsed()) {
+            // System.out.println (par.getName() + " " + par.getSpace() + " " + par.getParameterSpace());
             compileAssign (file, Type.get(par.size()), Type.get(par.size()), par.getSpace(), par.getParameterSpace());
         }
         file.addAll(body.getAssemblies());
@@ -626,10 +629,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         // System.out.println (call.)
         //System.out.println (s.getFunction().getName());
         as.call(s.getFunction().getCallingSymbol());
-        if (s.getResult().toASMOperand() == null) {
+        /*if (s.getResult().toASMOperand() == null) {
             System.out.println (s.getResult().getVariable().getName() + s.getResult().getVariable().isUsed());
+        }*/
+        if (s.hasResult()) {
+            as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
         }
-        as.mov (s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
 
     /*@Override

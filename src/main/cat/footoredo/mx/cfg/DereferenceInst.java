@@ -9,7 +9,7 @@ import java.util.Set;
 public class DereferenceInst extends Instruction {
     public DereferenceInst (Operand result, Operand address) {
         super (result, Arrays.asList(address));
-        // System.out.println ("Dereference: " + result.getVariable().getName() + " = *" + address.getVariable().getName());
+        // System.err.println ("Dereference: " + result.getVariable().getName() + " = *" + address.getVariable().getName());
     }
 
     public Operand getAddress () {

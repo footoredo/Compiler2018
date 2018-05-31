@@ -52,7 +52,9 @@ public class Variable extends Entity {
     }
 
     public void addRivalry (Variable rivalry) {
-        if (rivalry != this) {
+        if (isGlobal()) return;
+        if (rivalry != this && !rivalry.isGlobal()) {
+            // System.out.println (name + " <-> " + rivalry.getName());
             rivalries.add(rivalry);
             orignalRivalries.add(rivalry);
         }
@@ -71,9 +73,9 @@ public class Variable extends Entity {
     }
 
     public void disconnect () {
-        for (Variable rivarlry: rivalries)
-            rivarlry.removeRivalry(this);
-        rivalries = null;
+        for (Variable rivalry: rivalries)
+            rivalry.removeRivalry(this);
+        // rivalries = null;
     }
 
     public void addUsedCount () {

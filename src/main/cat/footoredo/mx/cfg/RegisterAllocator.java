@@ -45,6 +45,7 @@ public class RegisterAllocator {
             }
 
             if (found) {
+                // System.out.println (bestVariable.getName() + " " + bestVariable.getRivalryCount());
                 coloringStack.add (bestVariable);
             }
 
@@ -57,7 +58,7 @@ public class RegisterAllocator {
             coloringStack.removeLast();
 
             Set<Long> remainingRegister = fillRegisters ();
-            for (Variable rivalry: variable.getOriginalRivalries()) {
+            for (Variable rivalry: variable.getRivalries()) {
                 if (rivalry.isRegister()) {
                     remainingRegister.remove (rivalry.getRegister().getNumber());
                 }
