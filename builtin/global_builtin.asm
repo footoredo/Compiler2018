@@ -48,34 +48,36 @@ getString:
         leave
         ret
 
-ALIGN   8
-
 getInt:
         push    rbx
-        xor     ebx, ebx
 
 
-
-
-ALIGN   8
 getInt#L_003:  mov     rdi, qword [rel stdin]
+        call    _IO_getc
+        lea     edx, [rax-30H]
+        cmp     dl, 9
+        ja      getInt#L_003
+        movsx   ebx, al
+        sub     ebx, 48
+        movsxd  rbx, ebx
+
+
+getInt#L_004:  mov     rdi, qword [rel stdin]
         call    _IO_getc
         movsx   rdx, al
         sub     eax, 48
         cmp     al, 9
-        jbe     getInt#L_004
+        jbe     getInt#L_005
         mov     rax, rbx
         pop     rbx
         ret
 
 
 
-
-
-ALIGN   8
-getInt#L_004:  lea     rax, [rbx+rbx*4]
+getInt#L_005:  lea     rax, [rbx+rbx*4]
         lea     rbx, [rdx+rax*2-30H]
-        jmp     getInt#L_003
+        jmp     getInt#L_004
+
 
 
 SECTION .rodata
