@@ -1,49 +1,81 @@
-
-class TA{
-	string state;
-	int anger;
-}
-int init_anger = 100;
-int work_anger = 10;
-void work(string st, TA ta)
+int hilo(int hi, int lo)
 {
-	if (ta.anger <= 100) println(st + ", " + ta.state + " enjoys this work. XD");
-	else println(st + ", " + ta.state + " wants to give up!!!!!");
-	ta.anger = ta.anger + work_anger;
-}
-int main()
-{
-	TA mr;
-	TA mars;
-	mr = new TA;
-	mr.state = "the leading TA";
-	mr.anger = 0;
-	mars = new TA;
-	mars.state = "the striking TA";
-	mars.anger = init_anger;
-	work("MR", mr);
-	work("Mars", mars);
-	work("Mars", mars);
-	return 0;
+	return lo | (hi << 16);
 }
 
+int shift_l(int x, int n)
+{
+    return (x << n) & hilo(32767, 65535);	// 0x7fff ffff
+}
+
+int shift_r(int x, int n)
+{
+	return ((((hilo(32767, 65536) >> n) << 1 + 1) + 1) & (x >> n)) & hilo(32767, 65535);
+}
+
+int xorshift(int seed, int num)
+{
+	int x = seed + 1;
+	int i;
+
+	for(i=0; i<num * 10; i++)
+	{
+		x = x ^ shift_l(x, 13);
+		x = x ^ shift_r(x, 17);
+		x = x ^ shift_l(x, 5);
+	}
+
+	return x ^ 123456789;
+}
+
+
+int main() {
+	int n = getInt();
+	int i; int j; int k;
+	int [][] f = new int[n][n];
+	for (i = 0; i < n; ++i) {
+		for (j = 0; j < n; ++j) {
+			for (k = 0; k < n; ++k) {
+				if (i > 0 && j > 0 && k > 0)
+				{
+					if (i % j != j % k && j % k != k % i && i % j != k % i)
+					{
+						f[i][j] = xorshift(i & j & k, i + j + k);
+					}
+				}
+			}
+		}
+	}
+	int sum = 0;
+	for (i = 0; i < n; ++i) {
+		for (j = 0; j < n; ++j) {
+			for (k = 0; k < n; ++k) {
+				if (i >= j && j >= k) {
+					sum = (sum + f[i][j]) & ((1 << 30) - 1);
+				}
+			}
+		}
+	}
+	println("Ans is " + toString(sum));
+    return 0;
+}
 
 /*!! metadata:
 === comment ===
-class_test-mahaojun.mx
-=== input ===
-
+王天哲 Test for register allocate, function inline // 516030910591
+=== is_public ===
+True
 === assert ===
 output
 === timeout ===
-0.1
-=== output ===
-MR, the leading TA enjoys this work. XD
-Mars, the striking TA enjoys this work. XD
-Mars, the striking TA wants to give up!!!!!
+10.0
+=== input ===
+80
 === phase ===
-codegen pretest
-=== is_public ===
-True
+optim extended
+=== output ===
+Ans is 915763225
+=== exitcode ===
+0
 
 !!*/

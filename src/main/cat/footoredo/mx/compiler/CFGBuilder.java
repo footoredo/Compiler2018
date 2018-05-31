@@ -29,6 +29,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             backPropagate (definedFunction.getEndBasicBlock(), new HashSet<>(/*Arrays.asList((cat.footoredo.mx.entity.Variable)(ir.getScope().get("thisPointer")))*/));
             visitedBasicBlocks = new HashSet<>();
             dfsAndClean (definedFunction.getStartBasicBlock());
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndMerge (definedFunction.getStartBasicBlock());
         }
 
         return cfg;
@@ -58,6 +60,20 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (BasicBlock output: currentBasicBlock.getOutputs())
             if (!visitedBasicBlocks.contains(output))
                 dfsAndClean(output);
+    }
+
+    private void dfsAndMerge (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add (currentBasicBlock);
+        if (currentBasicBlock.getOutputs().size() == 0) return;
+        if (currentBasicBlock.getOutputs().size() == 1) {
+            BasicBlock output = currentBasicBlock.getOutputs().iterator().next();
+            if (output.getInputs().size() == 1) {
+                currentBasicBlock.merge(output);
+            }
+        }
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndMerge(output);
     }
 
     private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {

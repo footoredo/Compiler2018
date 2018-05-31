@@ -58,6 +58,14 @@ public class BasicBlock {
         }
     }
 
+    public void merge (BasicBlock basicBlock) {
+        this.instructions.addAll (basicBlock.getInstructions());
+        this.outputs = basicBlock.outputs;
+        this.isEndBlock = basicBlock.isEndBlock;
+        this.liveVariables = basicBlock.liveVariables;
+        this.jumpInst = basicBlock.jumpInst;
+    }
+
     public boolean backPropageted () {
         return liveVariables != null;
     }
