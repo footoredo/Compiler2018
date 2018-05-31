@@ -37,7 +37,7 @@ public class CallInst extends Instruction {
         }
         for (Operand arg: getOperands()) {
             if (arg.isVariable()) {
-                arg.getVariable().setUsed(true);
+                // arg.getVariable().setUsed(true);
                 resultLiveVariables.add(arg.getVariable());
             }
         }

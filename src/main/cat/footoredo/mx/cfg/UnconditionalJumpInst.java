@@ -32,4 +32,8 @@ public class UnconditionalJumpInst extends JumpInst {
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         return liveVariables;
     }
+
+    @Override
+    public void updateUsedCount() {
+    }
 }

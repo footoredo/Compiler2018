@@ -41,7 +41,7 @@ abstract public class Instruction {
             for (Operand operand: operands)
                 if (operand.isVariable()) {
                     Variable variable = operand.getVariable();
-                    variable.setUsed(true);
+                    // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
         }
@@ -49,6 +49,15 @@ abstract public class Instruction {
         for (Variable variable: resultLiveVariables)
             System.err.println (variable.getName());*/
         return resultLiveVariables;
+    }
+
+    public void updateUsedCount () {
+        if (result != null && result.isVariable())
+            result.getVariable().addUsedCount();
+
+        for (Operand operand: operands)
+            if (operand.isVariable())
+                operand.getVariable().addUsedCount();;
     }
 
     public Instruction(List<Operand> operands) {

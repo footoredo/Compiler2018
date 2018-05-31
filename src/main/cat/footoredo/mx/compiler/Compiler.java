@@ -4,6 +4,7 @@ import cat.footoredo.mx.asm.Assembly;
 import cat.footoredo.mx.asm.Type;
 import cat.footoredo.mx.ast.*;
 import cat.footoredo.mx.cfg.CFG;
+import cat.footoredo.mx.cfg.RegisterAllocator;
 import cat.footoredo.mx.cst.MxLexer;
 import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.entity.BuiltinFunction;
@@ -31,6 +32,7 @@ public class Compiler {
         AST sem = semanticAnalyze(ast_builtin_types, types);
         IR ir = new IRGenerator(types).generate(sem);
         CFG cfg = new CFGBuilder().generateCFG(ir);
+        new RegisterAllocator().solve(ir.getScope());
         AssemblyCode asm = generateAssembly(ir, cfg);
         String code = asm.toSource();
         code += readFile("builtin/global_builtin.asm");

@@ -386,7 +386,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private long locateLocalVariables (LocalScope scope, long parentStackLength) {
         long length = parentStackLength;
-        for (Variable variable: scope.getVariables()) if (!variable.isRegister()) {
+        for (Variable variable: scope.getVariables()) if (!variable.isRegister() && variable.isUsed()) {
             // System.out.println(variable.getName());
             length = alignStack(length + variable.size());
             variable.setMemory(relocatableMemory(Type.get(variable.size()), -length, bp()));
@@ -625,6 +625,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         // System.out.println (call.)
         //System.out.println (s.getFunction().getName());
         as.call(s.getFunction().getCallingSymbol());
+        if (s.getResult().toASMOperand() == null) {
+            System.out.println (s.getResult().getVariable().getName() + s.getResult().getVariable().isUsed());
+        }
         as.mov (s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
 

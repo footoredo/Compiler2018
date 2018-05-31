@@ -40,9 +40,13 @@ public class BasicBlock {
             if (verbose)
                 System.err.println (instruction.getClass());
             if (instruction.isLive()) {
+                instruction.updateUsedCount ();
                 newInstructions.add(instruction);
             }
         }
+
+        if (jumpInst != null)
+            jumpInst.updateUsedCount ();
 
         instructions = newInstructions;
 
@@ -134,10 +138,14 @@ public class BasicBlock {
 
     public Set<Variable> backPropagate () {
         Set<Variable> result = new HashSet<>(liveVariables);
-        if (jumpInst != null)
+        RegisterAllocator.solveRivalry(result);
+        if (jumpInst != null) {
             result = jumpInst.backPropagate(result);
+            RegisterAllocator.solveRivalry(result);
+        }
         for (Instruction instruction: ListUtils.reverse(instructions)) {
             result = instruction.backPropagate (result);
+            RegisterAllocator.solveRivalry(result);
         }
         ListUtils.reverse(instructions);
         return result;

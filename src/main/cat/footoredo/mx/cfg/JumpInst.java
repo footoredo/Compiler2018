@@ -11,4 +11,6 @@ abstract public class JumpInst {
     abstract public List<Label> getOutputs ();
 
     abstract public Set<Variable> backPropagate (Set<Variable> liveVariables);
+
+    abstract public void updateUsedCount ();
 }

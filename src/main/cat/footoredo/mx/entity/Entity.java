@@ -11,22 +11,22 @@ abstract public class Entity {
     protected TypeNode typeNode;
     protected String name;
     private int referredCount;
-    private boolean used;
+    //private boolean used;
 
     public Entity (TypeNode typeNode, String name) {
         this.typeNode = typeNode;
         this.name = name;
         this.referredCount = 0;
-        this.used = false;
+        //this.used = false;
     }
 
-    public boolean isUsed() {
+    /*public boolean isUsed() {
         return used;
-    }
+    }*/
 
-    public void setUsed(boolean used) {
+    /*public void setUsed(boolean used) {
         this.used = used;
-    }
+    }*/
 
     public String getName() {
         return name;
@@ -55,6 +55,8 @@ abstract public class Entity {
     }
 
     public int size () {
+        /*if (getType() == null)
+            System.out.println (name);*/
         return getType().size();
     }
 

@@ -1,45 +1,54 @@
-//input: 1 2 3 4
+//Target: use loops to calculate calculator of 6!
+//@author yixi
 
-int[] a = new int[4];
-int main()
-{
-    int[] b = new int[a.size()];
-	int i;
-    for (i = 0; i < a.size(); i++)
-	{
-		a[i] = 0;
-		b[i] = getInt();
-	}
-	for (i = 0; i < a.size(); i++)
-	{
-		print(toString(a[i]));
-	}
-	println("");
-	a=b;
-	for (i = 0; i < a.size(); i++)
-	{
-		print(toString(a[i]));
-	}
-    return 0;
+int N;
+int h = 99;
+int i = 100;
+int j = 101;
+int k = 102;
+int total = 0;
+
+int main() {
+  	int a;
+    int b;
+	int c;
+	int d;
+	int e;
+	int f;
+	N=getInt();
+	for ( a=1; a<=N; a++ )
+	for ( b=1; b<=N; b++ )
+	for ( c=1; c<=N; c++ )
+	for ( d=1; d<=N; d++ )
+	for ( e=1; e<=N; e++ )
+	for ( f=1; f<=N; f++ )
+		if (a!=b && a!=c && a!=d && a!=e && a!=f && a!=h && a!=i && a!=j && a!=k
+              && b!=c && b!=d && b!=e && b!=f && b!=h && b!=i && b!=j && b!=k
+              && c!=d && c!=e && c!=f && c!=h && c!=i && c!=j && c!=k
+              && d!=e && d!=f && d!=h && d!=i && d!=j && d!=k
+              && e!=f && e!=h && e!=i && e!=j && e!=k
+              && f!=h && f!=i && f!=j && f!=k && i!=j && h!=k)
+		{
+			total++;
+		}
+
+	println(toString(total));
+	return 0;
 }
 
 
 
 /*!! metadata:
 === comment ===
-array_test1-mahaojun.mx
+superloop-5090379042-jiaxiao.mx
 === input ===
-1
-2
-3
-4
+6
 === assert ===
 output
 === timeout ===
 0.1
 === output ===
-0000
-1234
+720
 === phase ===
 codegen pretest
 === is_public ===

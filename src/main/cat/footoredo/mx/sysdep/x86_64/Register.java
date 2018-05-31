@@ -96,8 +96,7 @@ public class Register extends cat.footoredo.mx.asm.Register {
             case 1:
             case 2:
             case 3: return getBaseName().substring(0, 1) + "l";
-            default:
-                throw new Error("does not have lower-byte register: " + getBaseName());
+            default: return getBaseName() + 'l';
         }
     }
 }

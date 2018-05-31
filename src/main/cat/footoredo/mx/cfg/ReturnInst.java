@@ -31,7 +31,7 @@ public class ReturnInst extends Instruction {
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
         if (hasValue() && getValue().isVariable()) {
-            getValue().getVariable().setUsed(true);
+            // getValue().getVariable().setUsed(true);
             resultLiveVariables.add(getValue().getVariable());
         }
         // System.out.println("asfas");

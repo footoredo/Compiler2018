@@ -44,9 +44,15 @@ public class ConditionalJumpInst extends JumpInst {
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
         if (condition.isVariable()) {
-            condition.getVariable().setUsed(true);
+            // condition.getVariable().setUsed(true);
             resultLiveVariables.add (condition.getVariable());
         }
         return resultLiveVariables;
+    }
+
+    @Override
+    public void updateUsedCount() {
+        if (condition.isVariable())
+            condition.getVariable().addUsedCount();
     }
 }

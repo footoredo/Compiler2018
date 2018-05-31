@@ -52,7 +52,7 @@ public class AssignInst extends Instruction {
             for (Operand operand: getOperands())
                 if (operand.isVariable()) {
                     Variable variable = operand.getVariable();
-                    variable.setUsed(true);
+                    // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
         }
