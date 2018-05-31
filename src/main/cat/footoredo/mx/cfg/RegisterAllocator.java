@@ -12,7 +12,7 @@ public class RegisterAllocator {
             8, 9, 11, 10,
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue()
     };
-    private static final int NUMBER_REGISTERS = /*AVAILABLE_REGISTERS.length*/ 5;
+    private static final int NUMBER_REGISTERS = /*AVAILABLE_REGISTERS.length*/ 4;
 
     private LinkedList<Variable> coloringStack;
     private Set<Variable> remainingVariables;
