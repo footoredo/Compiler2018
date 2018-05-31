@@ -450,7 +450,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     public void visit(ReturnInst s) {
         if (s.hasValue()) {
             // System.out.println ("asd");
-            as.mov (ax(), s.getValue().toASMOperand());
+            as.mov (ax(s.getValue().getType()), s.getValue().toASMOperand());
         }
     }
 
