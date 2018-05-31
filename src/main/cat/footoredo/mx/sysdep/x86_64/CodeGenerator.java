@@ -276,8 +276,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     static final long[] CALLEE_SAVE_REGISTERS = {
             RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
-            12, 13, 14, 15,
-            10, 11, 8, 9
+            12, 13, 14, 15/*,
+            10, 11, 8, 9*/
     };
 
     private List<Register> calleeSaveRegistersCache = null;
