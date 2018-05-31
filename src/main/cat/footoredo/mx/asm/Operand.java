@@ -6,6 +6,7 @@ abstract public class Operand implements OperandPattern {
     public boolean isRegister () { return false; }
     public boolean isMemoryReference () { return false; }
     public boolean isConstant () { return false; }
+    public boolean isConstantInteger () { return false; }
 
     @Override
     public boolean match(Operand operand) {

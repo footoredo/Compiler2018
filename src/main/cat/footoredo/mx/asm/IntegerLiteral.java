@@ -20,6 +20,11 @@ public class IntegerLiteral implements Literal {
     }
 
     @Override
+    public int hashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
     public boolean isZero () {
         return value == 0;
     }

@@ -15,6 +15,11 @@ public class DirectMemoryReference extends MemoryReference {
     }
 
     @Override
+    public int hashCode() {
+        return ("DMR" + value.hashCode()).hashCode();
+    }
+
+    @Override
     public void fixOffset(long diff) {
         throw new Error("DirectMemoryReference#fixOffset");
     }

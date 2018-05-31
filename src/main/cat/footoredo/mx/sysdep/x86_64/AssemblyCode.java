@@ -260,7 +260,8 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     public void mov (Operand destination, Operand source) {
-        instruction("mov", destination, source);
+        if (destination.hashCode() != source.hashCode())
+            instruction("mov", destination, source);
     }
 
     public void movzx (Register destination, Operand source) {
@@ -291,6 +292,10 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         instruction("movzx", destination, source);
     }*/
 
+    public ImmediateValue integer (long value) {
+        return new ImmediateValue(value);
+    }
+
     public void lea (Register destination, Operand source) {
         instruction("lea", destination, source);
     }
@@ -300,14 +305,41 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     public void add (Operand base, Operand diff) {
+        if (diff.isConstantInteger() && ((ImmediateValue)diff).getIntegerValue() == 0)
+            return;
         instruction("add", base, diff);
     }
 
     public void sub (Operand base, Operand diff) {
+        if (diff.isConstantInteger() && ((ImmediateValue)diff).getIntegerValue() == 0)
+            return;
         instruction("sub", base, diff);
     }
 
+    private boolean isPowerOfTwo (long number) {
+        return number > 0 && ((number & (number - 1)) == 0);
+    }
+
     public void imul (Operand base, Operand diff) {
+        if (diff.isConstantInteger()) {
+            long value = ((ImmediateValue)diff).getIntegerValue();
+            if (value == 0) {
+                mov (base, integer(0));
+                return;
+            }
+            else if (value == 1) {
+                return;
+            }
+            else if (isPowerOfTwo (value)) {
+                long logValue = 0;
+                while (value > 1) {
+                    logValue ++;
+                    value /= 2;
+                }
+                instruction("sal", base, integer(logValue));
+                return;
+            }
+        }
         instruction("imul", base, diff);
     }
 
@@ -328,10 +360,14 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     }
 
     public void or (Operand base, Operand bits) {
+        if (bits.isConstantInteger() && ((ImmediateValue)bits).getIntegerValue() == 0)
+            return;
         instruction("or", base, bits);
     }
 
     public void xor (Operand base, Operand bits) {
+        if (bits.isConstantInteger() && ((ImmediateValue)bits).getIntegerValue() == 0)
+            return;
         instruction("xor", base, bits);
     }
 

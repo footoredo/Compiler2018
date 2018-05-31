@@ -27,6 +27,11 @@ public class NamedSymbol extends BaseSymbol {
     }
 
     @Override
+    public int hashCode() {
+        return toSource().hashCode();
+    }
+
+    @Override
     public String toSource() {
         if (preserverNames.contains(name))
             return name;

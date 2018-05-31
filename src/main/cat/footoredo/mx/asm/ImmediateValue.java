@@ -18,6 +18,11 @@ public class ImmediateValue extends Operand {
         return value.equals(((ImmediateValue) other).value);
     }
 
+    @Override
+    public int hashCode() {
+        return ("IV" + value.hashCode()).hashCode();
+    }
+
     public Literal getValue() {
         return value;
     }
@@ -25,6 +30,15 @@ public class ImmediateValue extends Operand {
     @Override
     public boolean isConstant() {
         return true;
+    }
+
+    @Override
+    public boolean isConstantInteger() {
+        return value instanceof IntegerLiteral;
+    }
+
+    public long getIntegerValue () {
+        return ((IntegerLiteral) value).getValue();
     }
 
     @Override

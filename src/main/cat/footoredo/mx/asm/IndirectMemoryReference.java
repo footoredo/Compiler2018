@@ -12,6 +12,11 @@ public class IndirectMemoryReference extends MemoryReference {
         this.fixed = fixed;
     }
 
+    @Override
+    public int hashCode() {
+        return ("IMR" + offset.hashCode() + base.hashCode()).hashCode();
+    }
+
     public IndirectMemoryReference (Type type, long offset, Register base) {
         this (type, new IntegerLiteral(offset), base, true);
     }

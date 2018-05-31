@@ -97,9 +97,24 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         return null;
     }
 
+    private void cjump (Operand condition, Label trueLabel, Label falseLabel) {
+        if (condition instanceof ConstantIntegerOperand) {
+            boolean value = ((ConstantIntegerOperand) condition).getValue() != 0;
+            if (value) {
+                jump (new UnconditionalJumpInst(trueLabel));
+            }
+            else {
+                jump (new UnconditionalJumpInst(falseLabel));
+            }
+        }
+        else {
+            jump (new ConditionalJumpInst(condition, trueLabel, falseLabel));
+        }
+    }
+
     @Override
     public Void visit(CJump s) {
-        jump (new ConditionalJumpInst(processExpression(s.getCond()), s.getThenLabel(), s.getElseLabel()));
+        cjump (processExpression(s.getCond()), s.getThenLabel(), s.getElseLabel());
         return null;
     }
 
@@ -143,11 +158,60 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         return tmp;
     }
 
+    private Operand integer (Type t, long value) {
+        return new ConstantIntegerOperand(t, value);
+    }
+
+    private Operand integer (Type t, boolean value) {
+        return new ConstantIntegerOperand(t, value ? 1 : 0);
+    }
+
+
+    private Operand preprocessBinary(Type t, long left, Op op, long right) {
+        switch (op) {
+            case ADD: return integer(t, left + right);
+            case SUB: return integer(t, left - right);
+            case MUL: return integer(t, left * right);
+            case S_DIV: return integer(t, left / right);
+            case S_MOD: return integer(t, left % right);
+            case U_DIV: return integer(t, left / right);
+            case U_MOD: return integer(t, left % right);
+            case BIT_AND: return integer(t, left & right);
+            case BIT_OR: return integer(t, left | right);
+            case BIT_XOR: return integer(t, left ^ right);
+            case BIT_LSHIFT: return integer(t, left << right);
+            case BIT_RSHIFT: return integer(t, left >> right);
+            case ARITH_RSHIFT: return integer(t, left << right);
+            default:
+                switch (op) {
+                    case EQ: return integer(t, left == right);
+                    case NEQ: return integer(t, left != right);
+                    case S_GT: return integer(t, left > right);
+                    case S_GTEQ: return integer(t, left >= right);
+                    case S_LT: return integer(t, left < right);
+                    case S_LTEQ: return integer(t, left <= right);
+                    case U_GT: return integer(t, left > right);
+                    case U_GTEQ: return integer(t, left >= right);
+                    case U_LT: return integer(t, left < right);
+                    case U_LTEQ: return integer(t, left <= right);
+                    default:
+                        throw new Error ("unknown binary operator: " + op);
+                }
+        }
+    }
+
     @Override
     public Operand visit(Binary s) {
-        VariableOperand tmp = tmpVariable(s.getType());
-        insert (new BinaryInst(tmp, processExpression(s.getLhs()), s.getOp(), processExpression(s.getRhs())));
-        return tmp;
+        Operand right = processExpression(s.getRhs());
+        Operand left = processExpression(s.getLhs());
+        if (left instanceof ConstantIntegerOperand && right instanceof ConstantIntegerOperand) {
+            return preprocessBinary (s.getType(), ((ConstantIntegerOperand) left).getValue(), s.getOp(), ((ConstantIntegerOperand) right).getValue());
+        }
+        else {
+            VariableOperand tmp = tmpVariable(s.getType());
+            insert(new BinaryInst(tmp, left, s.getOp(), right));
+            return tmp;
+        }
     }
 
     @Override
