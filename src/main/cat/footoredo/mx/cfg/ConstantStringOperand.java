@@ -1,5 +1,6 @@
 package cat.footoredo.mx.cfg;
 
+import cat.footoredo.mx.asm.ImmediateValue;
 import cat.footoredo.mx.asm.MemoryReference;
 import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.asm.Type;
@@ -17,12 +18,13 @@ public class ConstantStringOperand extends Operand {
         return entry.getSymbol();
     }
 
-    public boolean isMemory () {
+    @Override
+    public boolean isConstant() {
         return true;
     }
 
     @Override
-    public MemoryReference getMemoryReference() {
-        return entry.getMemoryReference();
+    public ImmediateValue getImmediateValue() {
+        return new ImmediateValue(entry.getSymbol());
     }
 }
