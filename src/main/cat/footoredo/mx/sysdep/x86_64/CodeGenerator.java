@@ -402,7 +402,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     }
 
     private void fixLocalVariableOffsets(LocalScope scope, long length) {
-        for (Variable variable: scope.getAllVariables()) if (!variable.isRegister()) {
+        for (Variable variable: scope.getAllVariables()) if (!variable.isRegister() && variable.isUsed()) {
             variable.getMemory().fixOffset(-length);
         }
     }
