@@ -9,6 +9,7 @@ import cat.footoredo.mx.entity.DefinedFunction;
 import cat.footoredo.mx.ir.*;
 import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
+import cat.footoredo.mx.type.BooleanType;
 import cat.footoredo.mx.type.PointerType;
 
 import java.util.ArrayList;
@@ -38,8 +39,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         }
     }
 
-    private VariableOperand tmpVariable () {
-        return new VariableOperand(currentFunction.getScope().allocateTmpVariable(new PointerType()));
+    private VariableOperand tmpVariable (Type type) {
+        cat.footoredo.mx.type.Type typeType = type == Type.INT64 ? new PointerType() : new BooleanType();
+        return new VariableOperand(currentFunction.getScope().allocateTmpVariable(typeType));
     }
 
     private void newBasicBlock (Label label) {
@@ -132,14 +134,14 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     @Override
     public Operand visit(Unary s) {
-        VariableOperand tmp = tmpVariable ();
+        VariableOperand tmp = tmpVariable (s.getType());
         insert (new UnaryInst(tmp, s.getOp(), processExpression(s.getExpression())));
         return tmp;
     }
 
     @Override
     public Operand visit(Binary s) {
-        VariableOperand tmp = tmpVariable();
+        VariableOperand tmp = tmpVariable(s.getType());
         insert (new BinaryInst(tmp, processExpression(s.getLhs()), s.getOp(), processExpression(s.getRhs())));
         return tmp;
     }
@@ -150,14 +152,14 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (int i = 0; i < s.getArgc(); ++ i) {
             parameters.add (processExpression(s.getArg(i)));
         }
-        VariableOperand tmp = tmpVariable ();
+        VariableOperand tmp = tmpVariable (s.getType());
         insert (new CallInst(tmp, s.getFunction(), parameters));
         return tmp;
     }
 
     @Override
     public Operand visit(Memory s) {
-        VariableOperand tmp = tmpVariable ();
+        VariableOperand tmp = tmpVariable (s.getType());
         insert (new DereferenceInst(tmp, processExpression(s.getExpression())));
         return tmp;
     }
@@ -179,7 +181,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     @Override
     public Operand visit(Malloc s) {
-        VariableOperand tmp = tmpVariable();
+        VariableOperand tmp = tmpVariable(Type.INT64);
         insert (new MallocInst(tmp, processExpression(s.getSize())));
         return tmp;
     }

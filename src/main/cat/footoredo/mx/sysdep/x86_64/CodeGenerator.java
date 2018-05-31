@@ -485,12 +485,14 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         cat.footoredo.mx.asm.Operand resultOperand = s.getResult().toASMOperand();
         cat.footoredo.mx.asm.Operand leftOperand = s.getLeft().toASMOperand();
         cat.footoredo.mx.asm.Operand rightOperand = s.getRight().toASMOperand();
-        compileAssign(s.getResult(), s.getLeft());
+        cat.footoredo.mx.asm.Operand tmpOperand = cx(s.getLeft().getType());
+        as.mov (tmpOperand, leftOperand);/*
         if (s.getResult().isMemory() && s.getRight().isMemory()) {
             as.mov (cx(t), s.getRight().toASMOperand());
             rightOperand = cx(t);
-        }
-        compileBinaryOp(t, s.getLeft().getType(), op, resultOperand, rightOperand);
+        }*/
+        compileBinaryOp(t, s.getLeft().getType(), op, tmpOperand, rightOperand);
+        as.mov (resultOperand, cx(t));
     }
 
     private boolean requireRegisterOperand (Op op) {
@@ -627,7 +629,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     @Override
     public void visit(DereferenceInst s) {
         as.mov(cx(), s.getAddress().toASMOperand());
-        load(ax(s.getResult().getType()), memory(Type.INT64, cx()));
+        load(ax(s.getResult().getType()), memory(s.getResult().getType(), cx()));
+        // System.out.println (s.getResult().getType());
         as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
 

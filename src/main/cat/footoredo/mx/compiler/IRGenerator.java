@@ -657,6 +657,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     }
 
     private Memory memory(Expression expression, cat.footoredo.mx.type.Type type) {
+        // System.out.println ("sss" + type + asmType(type));
         return new Memory(asmType(type), expression);
     }
 
