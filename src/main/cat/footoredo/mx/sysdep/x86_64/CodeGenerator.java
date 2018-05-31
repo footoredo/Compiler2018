@@ -485,14 +485,14 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         cat.footoredo.mx.asm.Operand resultOperand = s.getResult().toASMOperand();
         cat.footoredo.mx.asm.Operand leftOperand = s.getLeft().toASMOperand();
         cat.footoredo.mx.asm.Operand rightOperand = s.getRight().toASMOperand();
-        cat.footoredo.mx.asm.Operand tmpOperand = cx(s.getLeft().getType());
+        cat.footoredo.mx.asm.Operand tmpOperand = ax(s.getLeft().getType());
         as.mov (tmpOperand, leftOperand);/*
         if (s.getResult().isMemory() && s.getRight().isMemory()) {
             as.mov (cx(t), s.getRight().toASMOperand());
             rightOperand = cx(t);
         }*/
         compileBinaryOp(t, s.getLeft().getType(), op, tmpOperand, rightOperand);
-        as.mov (resultOperand, cx(t));
+        as.mov (resultOperand, ax(t));
     }
 
     private boolean requireRegisterOperand (Op op) {
