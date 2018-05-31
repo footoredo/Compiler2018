@@ -12,4 +12,5 @@ public interface CFGVisitor {
     // public void visit (PushArgInst inst);
     public void visit (ConditionalJumpInst inst);
     public void visit (UnconditionalJumpInst inst);
+    public void visit (ULTIMATERETURNINST inst);
 }

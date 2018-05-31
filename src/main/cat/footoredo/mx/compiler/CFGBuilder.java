@@ -37,6 +37,10 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (Statement statement: definedFunction.getIR()) {
             processStatement(statement);
         }
+        if (currentBasicBlock == null)
+            throw new Error("FFFAFAF");
+        insert (new ULTIMATERETURNINST());
+        currentBasicBlock = null;
     }
 
     private VariableOperand tmpVariable (Type type) {

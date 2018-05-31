@@ -210,7 +210,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     private AssemblyCode as;
     private Label epilogueLabel;
 
-    private void compileBasicBlock (BasicBlock block, boolean isEpilogue) {
+    private void compileBasicBlock (BasicBlock block) {
         if (block == null)
             throw new Error("fasas");
         as.label(block.getLabel());
@@ -218,27 +218,20 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         for (Instruction instruction: block.getInstructions()) {
             compileInstruction (instruction);
         }
-        if (isEpilogue) {
-            as.jmp (epilogueLabel);
-        }
-        compileJump(block.getJumpInst(), block.getInstructions().size() > 0 && block.getInstructions().get(block.getInstructions().size() - 1) instanceof ReturnInst);
-    }
-
-    private void compileBasicBlock (BasicBlock block) {
-        compileBasicBlock(block, false);
+        compileJump(block.getJumpInst());
     }
 
     private void compileInstruction (Instruction instruction) {
         instruction.accept (this);
     }
 
-    private void compileJump (JumpInst jumpInst, boolean isEpilogue) {
+    private void compileJump (JumpInst jumpInst) {
         if (jumpInst != null) {
             jumpInst.accept(this);
             for (Label label : jumpInst.getOutputs()) {
                 // System.err.println(label.hashCode());
                 if (!compiledLabels.contains(label)) {
-                    compileBasicBlock(cfg.get(label), isEpilogue);
+                    compileBasicBlock(cfg.get(label));
                 }
             }
         }
@@ -452,6 +445,11 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             // System.out.println ("asd");
             as.mov (ax(s.getValue().getType()), s.getValue().toASMOperand());
         }
+    }
+
+    @Override
+    public void visit(ULTIMATERETURNINST inst) {
+        as.jmp(epilogueLabel);
     }
 
     @Override
