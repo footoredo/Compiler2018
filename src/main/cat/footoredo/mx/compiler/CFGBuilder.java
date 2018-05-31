@@ -65,10 +65,13 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private void dfsAndMerge (BasicBlock currentBasicBlock) {
         visitedBasicBlocks.add (currentBasicBlock);
         if (currentBasicBlock.getOutputs().size() == 0) return;
-        if (currentBasicBlock.getOutputs().size() == 1) {
+        while (currentBasicBlock.getOutputs().size() == 1) {
             BasicBlock output = currentBasicBlock.getOutputs().iterator().next();
             if (output.getInputs().size() == 1) {
                 currentBasicBlock.merge(output);
+            }
+            else {
+                break;
             }
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())

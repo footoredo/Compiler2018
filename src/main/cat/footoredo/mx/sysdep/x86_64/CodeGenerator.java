@@ -135,7 +135,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     static final private long STACK_WORD_SIZE = 8;
 
     private long alignStack(long size) {
-        return AsmUtils.align(size, STACK_WORD_SIZE);
+        return AsmUtils.align(size, STACK_WORD_SIZE * 2);
     }
 
     private long stackSizeFromPosition (long position) {

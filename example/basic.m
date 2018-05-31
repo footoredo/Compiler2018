@@ -1,66 +1,81 @@
-int func(int a, int b, int c)
+int hilo(int hi, int lo)
 {
-	return (a + b + c) & ((1 << 30) - 1);
+	return lo | (hi << 16);
 }
 
-int main()
+int shift_l(int x, int n)
 {
+    return (x << n) & hilo(32767, 65535);	// 0x7fff ffff
+}
+
+int shift_r(int x, int n)
+{
+	return ((((hilo(32767, 65536) >> n) << 1 + 1) + 1) & (x >> n)) & hilo(32767, 65535);
+}
+
+int xorshift(int seed, int num)
+{
+	int x = seed + 1;
+	int i;
+
+	for(i=0; i<num * 10; i++)
+	{
+		x = x ^ shift_l(x, 13);
+		x = x ^ shift_r(x, 17);
+		x = x ^ shift_l(x, 5);
+	}
+
+	return x ^ 123456789;
+}
+
+
+int main() {
 	int n = getInt();
-	int[][] f = new int[n][n];
-	int[][] g = new int[n][n];
-	int[][] g_useless = new int[n][n];
 	int i; int j; int k;
-	for(i = 0; i < n; ++i)
-		for(j = 0; j < n; ++j)
-			f[i][j] = i + j;
-	for(i = 0; i < n; ++i)
-		for(j = 0; j < n; ++j)
-		{
-			for(k = 0; k < n; ++k)
-			{
-				if(j >= i)
+	int [][] f = new int[n][n];
+	for (i = 0; i < n; ++i) {
+		for (j = 0; j < n; ++j) {
+			for (k = 0; k < n; ++k) {
+				if (i > 0 && j > 0 && k > 0)
 				{
-					g[i][j] = func(g[i][j], f[i][k], f[k][j]);
-					g_useless[i][j] = func(g[i][j], f[i][k], f[k][j]);
-					g_useless[i][j] = func(g[i][j], f[i][k], f[k][j]);
-					g_useless[i][j] = func(g[i][j], f[i][k], f[k][j]);
+					if (i % j != j % k && j % k != k % i && i % j != k % i)
+					{
+						f[i][j] = xorshift(i & j & k, i + j + k);
+					}
 				}
 			}
 		}
+	}
 	int sum = 0;
-	for(i = 0; i < n; ++i)
-		for(j = 0; j < n; ++j)
-			sum = (sum + g[i][j]) & ((1 << 30) - 1);
-	print(toString(sum));
-	return 0;
+	for (i = 0; i < n; ++i) {
+		for (j = 0; j < n; ++j) {
+			for (k = 0; k < n; ++k) {
+				if (i >= j && j >= k) {
+					sum = (sum + f[i][j]) & ((1 << 30) - 1);
+				}
+			}
+		}
+	}
+	println("Ans is " + toString(sum));
+    return 0;
 }
-
-
-
 
 /*!! metadata:
 === comment ===
-optim1-5140309234-xietiancheng.txt
-Hint: (j >= i) is invariant, so the code should be changed to
-if (j >= i)
-{
-	for (...)
-	...
-}
-You may also want to do a inline optimization if you cannot pass it
-We also expect you to do dead code elimination.
-If the time bound is too tight or too loose, contact TA for help.
-=== input ===
-700
+王天哲 Test for register allocate, function inline // 516030910591
+=== is_public ===
+True
 === assert ===
 output
 === timeout ===
-15.0
-=== output ===
-655083248
+10.0
+=== input ===
+80
 === phase ===
-optim pretest
-=== is_public ===
-True
+optim extended
+=== output ===
+Ans is 915763225
+=== exitcode ===
+0
 
 !!*/
