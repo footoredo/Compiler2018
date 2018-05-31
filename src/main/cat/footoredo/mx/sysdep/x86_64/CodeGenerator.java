@@ -210,15 +210,24 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     private AssemblyCode as;
     private Label epilogueLabel;
 
+    private Set<BasicBlock> compiledBasicBlocks;
     private void compileBasicBlock (BasicBlock block) {
         if (block == null)
             throw new Error("fasas");
+        compiledBasicBlocks.add (block);
         as.label(block.getLabel());
-        compiledLabels.add (block.getLabel());
+        // compiledLabels.add (block.getLabel());
         for (Instruction instruction: block.getInstructions()) {
             compileInstruction (instruction);
         }
-        compileJump(block.getJumpInst());
+        if (block.getJumpInst() != null)
+            block.getJumpInst().accept (this);
+        for (BasicBlock output: block.getOutputs()) {
+            if (!compiledBasicBlocks.contains (output)) {
+                compileBasicBlock(output);
+            }
+        }
+        // compileJump(block.getJumpInst());
     }
 
     private void compileInstruction (Instruction instruction) {
@@ -242,7 +251,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         epilogueLabel = new Label();
         // System.out.println (function.getSymbolString());
         // System.out.println ("qurying " + (new Label(function.getCallingSymbol())).hashCode());
-        compileBasicBlock(cfg.get(new Label(function.getCFGSymbol())));
+        compiledBasicBlocks = new HashSet<>();
+        compileBasicBlock(function.getStartBasicBlock());
         as.label(epilogueLabel);
         return as;
     }

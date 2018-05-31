@@ -14,6 +14,7 @@ public class VariableOperand extends Operand {
         this.variable = variable;
     }
 
+    @Override
     public Variable getVariable() {
         return variable;
     }
@@ -40,5 +41,10 @@ public class VariableOperand extends Operand {
     @Override
     public Register getRegister() {
         return variable.getRegister();
+    }
+
+    @Override
+    public boolean isVariable() {
+        return true;
     }
 }

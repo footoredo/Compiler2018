@@ -31,6 +31,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         this.ast = ast;
         ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "thisPointer"));
         thisPointer = ref(ast.getScope().get("thisPointer"));
+        ((cat.footoredo.mx.entity.Variable)(ast.getScope().get("thisPointer"))).setGlobal (true);
         currentClass = null;
         for (TypeDefinition t: ast.getTypeDefinitions()) {
             if (t instanceof ClassNode) {

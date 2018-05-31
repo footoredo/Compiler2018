@@ -3,6 +3,7 @@ package cat.footoredo.mx.entity;
 import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.ast.BlockNode;
 import cat.footoredo.mx.ast.MethodNode;
+import cat.footoredo.mx.cfg.BasicBlock;
 import cat.footoredo.mx.ir.Statement;
 
 import java.util.List;
@@ -13,6 +14,9 @@ public class DefinedFunction extends Function {
     List<Statement> IR;
     Symbol CFGSymbol;
 
+    private BasicBlock startBasicBlock;
+    private BasicBlock endBasicBlock;
+
     public DefinedFunction (MethodNode methodNode, String parentClass) {
         super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
         // System.out.println (parentClass + "#" + methodNode.getName());
@@ -22,6 +26,22 @@ public class DefinedFunction extends Function {
     public void appendFront (List<Statement> statements) {
         statements.addAll(IR);
         IR = statements;
+    }
+
+    public BasicBlock getStartBasicBlock() {
+        return startBasicBlock;
+    }
+
+    public void setStartBasicBlock(BasicBlock startBasicBlock) {
+        this.startBasicBlock = startBasicBlock;
+    }
+
+    public BasicBlock getEndBasicBlock() {
+        return endBasicBlock;
+    }
+
+    public void setEndBasicBlock(BasicBlock endBasicBlock) {
+        this.endBasicBlock = endBasicBlock;
     }
 
     public Symbol getCFGSymbol() {

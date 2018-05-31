@@ -15,14 +15,26 @@ public class Variable extends Entity {
     private MemoryReference memory;
     private Register register;
 
+    private Boolean isGlobal;
+
     public Variable (VariableDeclarationNode variableDeclarationNode) {
         super (variableDeclarationNode.getTypeNode(), variableDeclarationNode.getName());
         this.initializer = variableDeclarationNode.getInitExpr();
+        this.isGlobal = false;
     }
 
     public Variable (TypeNode type, String name) {
         super (type, name);
         this.initializer = null;
+        this.isGlobal = false;
+    }
+
+    public Boolean isGlobal() {
+        return isGlobal;
+    }
+
+    public void setGlobal(Boolean global) {
+        isGlobal = global;
     }
 
     private static int tmpCounter = 0;

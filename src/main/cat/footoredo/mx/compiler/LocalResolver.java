@@ -42,6 +42,7 @@ public class LocalResolver extends Visitor {
         for (Entity decl : ast.getDeclarations()) {
             if (decl instanceof Variable) {
                 toplevelScope.declareEntity(decl, reservedWords);
+                ((Variable) decl).setGlobal(true);
                 resolveGvarInitializer((Variable) decl);
             }
             else if (decl instanceof DefinedFunction){

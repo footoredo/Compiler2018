@@ -12,28 +12,81 @@ import cat.footoredo.mx.ir.String;
 import cat.footoredo.mx.type.BooleanType;
 import cat.footoredo.mx.type.PointerType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CFGBuilder implements IRVisitor<Void, Operand> {
     private CFG cfg;
 
     public CFG generateCFG (IR ir) {
         cfg = new CFG();
+
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
             processDefinedFunction (definedFunction);
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndLink (definedFunction.getStartBasicBlock());
+            backPropagate (definedFunction.getEndBasicBlock(), new HashSet<>(/*Arrays.asList((cat.footoredo.mx.entity.Variable)(ir.getScope().get("thisPointer")))*/));
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndClean (definedFunction.getStartBasicBlock());
         }
+
         return cfg;
     }
 
-    private BasicBlock currentBasicBlock;
     private DefinedFunction currentFunction;
+    private Set<BasicBlock> visitedBasicBlocks;
+
+    private void dfsAndLink (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add (currentBasicBlock);
+        if (currentBasicBlock.isEndBlock()) {
+            currentFunction.setEndBasicBlock(currentBasicBlock);
+        }
+        for (Label outputLabel: currentBasicBlock.getOutputLabels()) {
+            BasicBlock nextBasicBlock = cfg.get (outputLabel);
+            currentBasicBlock.addOutput(nextBasicBlock);
+            nextBasicBlock.addInput(currentBasicBlock);
+            if (!visitedBasicBlocks.contains(nextBasicBlock)) {
+                dfsAndLink(nextBasicBlock);
+            }
+        }
+    }
+
+    private void dfsAndClean (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add (currentBasicBlock);
+        currentBasicBlock.cleanInstructions();
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndClean(output);
+    }
+
+    private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {
+        boolean isUpdated = false;
+        if (!currentBasicBlock.backPropageted()) {
+            isUpdated = true;
+            currentBasicBlock.prepareForFirstBackPropagate();
+        }
+        for (cat.footoredo.mx.entity.Variable variable: liveVariables) {
+            // System.out.println (variable.getName());
+            if (!currentBasicBlock.isLiveVariable(variable)) {
+                isUpdated = true;
+                currentBasicBlock.addLiveVariable(variable);
+            }
+        }
+        if (isUpdated) {
+            Set <cat.footoredo.mx.entity.Variable> newLiveVariables = currentBasicBlock.backPropagate ();
+            for (BasicBlock input: currentBasicBlock.getInputs()) {
+                backPropagate(input, liveVariables);
+            }
+        }
+    }
+
+    private BasicBlock currentBasicBlock;
     private void processDefinedFunction (DefinedFunction definedFunction) {
         Symbol symbol = new NamedSymbol("@@CFG_function_start__" + definedFunction.getSymbolString());
         Label label = new Label(symbol);
         definedFunction.setCFGSymbol (symbol);
         newBasicBlock(label);
-        currentFunction = definedFunction;
+        definedFunction.setStartBasicBlock(currentBasicBlock);
         for (Statement statement: definedFunction.getIR()) {
             processStatement(statement);
         }

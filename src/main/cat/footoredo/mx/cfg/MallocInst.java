@@ -7,6 +7,7 @@ import java.util.Arrays;
 public class MallocInst extends Instruction {
     public MallocInst (Operand result, Operand length) {
         super (result, Arrays.asList(length));
+        // System.out.println (length.getImmediateValue().getIntegerValue());
     }
 
     public Operand getLength () {

@@ -1,14 +1,20 @@
 package cat.footoredo.mx.cfg;
 
+import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.ir.Op;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AssignInst extends Instruction {
     private boolean isDeref;
     public AssignInst(Operand a, Operand b, boolean isDeref) {
-        super(Arrays.asList(a, b));
+        super(a, Arrays.asList(b));
         this.isDeref = isDeref;
+        /*if (a.isVariable()) {
+            System.err.println ("assign " + a.getVariable().getName() + " = " + " @ " + isDeref);
+        }*/
     }
 
     public boolean isDeref() {
@@ -16,15 +22,43 @@ public class AssignInst extends Instruction {
     }
 
     public Operand getLeft () {
-        return getOperand(0);
+        return getResult();
     }
 
     public Operand getRight () {
-        return getOperand(1);
+        return getOperand(0);
     }
 
     @Override
     public void accept(CFGVisitor visitor) {
         visitor.visit(this);
+    }
+
+    @Override
+    public Set<Variable> backPropagate(Set<Variable> liveVariables) {
+        Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
+        // System.err.println (getClass() + " : before");
+        /*for (Variable variable: resultLiveVariables)
+            System.err.println (variable.getName());*/
+        if (liveCheck(liveVariables) || isDeref) {
+            // System.out.println ("here");
+            setLive(true);
+            if (!isDeref) {
+                resultLiveVariables.remove(getResult().getVariable());
+            }
+            else {
+                resultLiveVariables.add (getResult().getVariable());
+            }
+            for (Operand operand: getOperands())
+                if (operand.isVariable()) {
+                    Variable variable = operand.getVariable();
+                    variable.setUsed(true);
+                    resultLiveVariables.add(variable);
+                }
+        }
+        /*System.err.println (getClass() + " : after");
+        for (Variable variable: resultLiveVariables)
+            System.err.println (variable.getName());*/
+        return resultLiveVariables;
     }
 }

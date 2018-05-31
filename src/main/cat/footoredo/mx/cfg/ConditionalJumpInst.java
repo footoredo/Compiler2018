@@ -1,9 +1,12 @@
 package cat.footoredo.mx.cfg;
 
 import cat.footoredo.mx.asm.Label;
+import cat.footoredo.mx.entity.Variable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ConditionalJumpInst extends JumpInst {
     private Operand condition;
@@ -35,5 +38,15 @@ public class ConditionalJumpInst extends JumpInst {
     @Override
     public List<Label> getOutputs() {
         return Arrays.asList(trueTarget, falseTarget);
+    }
+
+    @Override
+    public Set<Variable> backPropagate(Set<Variable> liveVariables) {
+        Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
+        if (condition.isVariable()) {
+            condition.getVariable().setUsed(true);
+            resultLiveVariables.add (condition.getVariable());
+        }
+        return resultLiveVariables;
     }
 }
