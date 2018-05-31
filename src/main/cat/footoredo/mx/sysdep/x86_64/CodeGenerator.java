@@ -565,15 +565,15 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
                 as.xor (left, right);
                 break;
             case BIT_LSHIFT:
-                as.mov (cl(), right);
+                as.mov (cx(operandType), right);
                 as.shl (left, cl());
                 break;
             case BIT_RSHIFT:
-                as.mov (cl(), right);
+                as.mov (cx(operandType), right);
                 as.shr (left, cl());
                 break;
             case ARITH_RSHIFT:
-                as.mov (cl(), right);
+                as.mov (cx(operandType), right);
                 as.sar (left, cl());
                 break;
                 default:
