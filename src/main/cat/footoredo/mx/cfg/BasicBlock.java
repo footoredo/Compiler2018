@@ -26,9 +26,19 @@ public class BasicBlock {
 
     public void cleanInstructions () {
         List<Instruction> newInstructions = new ArrayList<>();
-        //System.err.println ("before clean: ");
+
+        boolean verbose = false;
+        if (verbose) {
+            for (Variable variable: liveVariables) {
+                System.err.println (variable.getName());
+            }
+        }
+
+        if (verbose)
+            System.err.println ("before clean: ");
         for (Instruction instruction: instructions) {
-            //System.err.println (instruction.getClass());
+            if (verbose)
+                System.err.println (instruction.getClass());
             if (instruction.isLive()) {
                 newInstructions.add(instruction);
             }
@@ -36,10 +46,12 @@ public class BasicBlock {
 
         instructions = newInstructions;
 
-        /*System.err.println ("\nafter clean: ");
-        for (Instruction instruction: instructions) {
-            System.err.println (instruction.getClass());
-        }*/
+        if (verbose) {
+            System.err.println("\nafter clean: ");
+            for (Instruction instruction : instructions) {
+                System.err.println(instruction.getClass());
+            }
+        }
     }
 
     public boolean backPropageted () {
@@ -122,6 +134,8 @@ public class BasicBlock {
 
     public Set<Variable> backPropagate () {
         Set<Variable> result = new HashSet<>(liveVariables);
+        if (jumpInst != null)
+            result = jumpInst.backPropagate(result);
         for (Instruction instruction: ListUtils.reverse(instructions)) {
             result = instruction.backPropagate (result);
         }

@@ -68,6 +68,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (cat.footoredo.mx.entity.Variable variable: liveVariables) {
             // System.out.println (variable.getName());
             if (!currentBasicBlock.isLiveVariable(variable)) {
+                // System.err.println ("ere");
                 isUpdated = true;
                 currentBasicBlock.addLiveVariable(variable);
             }
@@ -75,7 +76,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         if (isUpdated) {
             Set <cat.footoredo.mx.entity.Variable> newLiveVariables = currentBasicBlock.backPropagate ();
             for (BasicBlock input: currentBasicBlock.getInputs()) {
-                backPropagate(input, liveVariables);
+                backPropagate(input, newLiveVariables);
             }
         }
     }
