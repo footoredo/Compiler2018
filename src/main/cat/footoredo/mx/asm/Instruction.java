@@ -66,6 +66,10 @@ public class Instruction extends Assembly {
         return mnemonic.equals("jmp") || mnemonic.equals("j");
     }
 
+    public boolean isMOV () {
+        return mnemonic.equals("mov") && suffix.equals("");
+    }
+
     @Override
     public void collectStatistics(Statistics statistics) {
         statistics.useInstruction(mnemonic + suffix);

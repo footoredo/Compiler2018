@@ -1,6 +1,7 @@
 package cat.footoredo.mx.sysdep.x86_64;
 
 import cat.footoredo.mx.asm.*;
+import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.Op;
 
 import java.util.ArrayList;
@@ -19,6 +20,28 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         this.naturalType = naturalType;
         this.stackWordSize = stackWordSize;
         this.symbolTable = symbolTable;
+    }
+
+    public AssemblyCode peepholeOptimize () {
+        int n = assemblies.size();
+        List <Assembly> newAssemblies = new ArrayList<>();
+
+        for (int i = 0; i < n - 1; ++ i) {
+            newAssemblies.add (assemblies.get(i));
+            if (assemblies.get(i) instanceof Instruction
+                    && assemblies.get(i + 1) instanceof  Instruction) {
+                Instruction IA = (Instruction) (assemblies.get(i)),
+                        IB = (Instruction) (assemblies.get(i + 1));
+                if (IA.isMOV() && IB.isMOV() &&
+                        IA.operand1().hashCode() == IB.operand2().hashCode() &&
+                        IA.operand2().hashCode() == IB.operand1().hashCode()) {
+                    ++ i;
+                }
+            }
+        }
+
+        assemblies = newAssemblies;
+        return this;
     }
 
     private Statistics getStatistics() {

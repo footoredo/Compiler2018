@@ -48,29 +48,35 @@ getString:
         leave
         ret
 
-
+ALIGN   8
 
 getInt:
-        push    rbp
-        mov     rbp, rsp
-        sub     rsp, 16
+        push    rbx
+        xor     ebx, ebx
 
 
-        mov     rax, qword [fs:abs 28H]
-        mov     qword [rbp-8H], rax
-        xor     eax, eax
-        lea     rax, [rbp-10H]
-        mov     rsi, rax
-        mov     edi, getInt#L_002
-        mov     eax, 0
-        call    scanf
-        mov     rax, qword [rbp-10H]
-        mov     rdx, qword [rbp-8H]
 
 
-        xor     rdx, qword [fs:abs 28H]
-        leave
+ALIGN   8
+getInt#L_003:  mov     rdi, qword [rel stdin]
+        call    _IO_getc
+        movsx   rdx, al
+        sub     eax, 48
+        cmp     al, 9
+        jbe     getInt#L_004
+        mov     rax, rbx
+        pop     rbx
         ret
+
+
+
+
+
+ALIGN   8
+getInt#L_004:  lea     rax, [rbx+rbx*4]
+        lea     rbx, [rdx+rax*2-30H]
+        jmp     getInt#L_003
+
 
 SECTION .rodata
 

@@ -28,7 +28,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         this.cfg = cfg;
         compiledLabels = new HashSet<>();
         locateSymbols(ir);
-        return generateAssemblyCode(ir);
+        return generateAssemblyCode(ir).peepholeOptimize();
     }
 
     private static final java.lang.String LABEL_SYMBOL_BASE = "_QAQ_L";
@@ -87,7 +87,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     }
 
     private void generateExterns (AssemblyCode file) {
-        file._extern("malloc, _Znam");
+        file._extern("malloc, _Znam, _IO_getc, _IO_putc, stdin, stdout");
         file._extern("putchar, puts, scanf, sprintf");
         file._extern("strcmp, strcpy, strlen, strncpy");
     }
