@@ -64,4 +64,9 @@ public class TesterTest {
     public void T939() throws Exception {
         Tester.compileAndRun("T939",  true);
     }
+
+    @Test
+    public void T923() throws Exception {
+        Tester.compileAndRun("T923", true);
+    }
 }

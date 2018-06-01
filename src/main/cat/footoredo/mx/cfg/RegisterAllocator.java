@@ -49,7 +49,7 @@ public class RegisterAllocator {
                 coloringStack.add (bestVariable);
             }
             else {
-                // System.out.println (bestVariable.getName() + " " + ratio);
+                System.err.println (bestVariable.getName() + " " + ratio);
             }
 
             bestVariable.disconnect ();
