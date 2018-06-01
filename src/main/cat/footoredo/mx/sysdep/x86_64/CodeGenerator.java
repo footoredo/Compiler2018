@@ -391,10 +391,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
                            long frameSize) {
         file.push (bp());
         file.mov (bp(), sp());
+        extendStack(file, AsmUtils.align(frameSize, 16));
         for (Register register: savedRegisters) {
             file.virtualPush(register);
         }
-        extendStack(file, AsmUtils.align(frameSize, 16));
     }
 
     private void epilogue (AssemblyCode file,
