@@ -36,7 +36,7 @@ public class CallInst extends Instruction {
         List<Operand> copiedOperands = new ArrayList<>();
         for (Operand operand: getOperands())
             copiedOperands.add (operand.copy());
-        return new CallInst(getResult().copy(), function, copiedOperands);
+        return new CallInst(hasResult() ? getResult().copy() : null, function, copiedOperands);
     }
 
     public boolean hasResult () {
