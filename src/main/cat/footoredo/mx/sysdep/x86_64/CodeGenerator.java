@@ -405,9 +405,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         file.ret ();
     }
 
-    static final long[] PARAMETER_REGISTERS = {
+    static final long[] PARAMETER_REGISTERS = {/*
             RegisterClass.DI.getValue(), RegisterClass.SI.getValue(),
-            RegisterClass.DX.getValue(), RegisterClass.CX.getValue()/*, 8, 9*/
+            RegisterClass.DX.getValue(), RegisterClass.CX.getValue(), 8, 9*/
     };
 
     // static final long [] PARAMETER_REGISTERS = {};
