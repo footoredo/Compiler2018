@@ -30,7 +30,10 @@ public enum Op {
 
     UMINUS,
     BIT_NOT,
-    NOT;
+    NOT,
+
+    LOGIC_AND,
+    LOGIC_OR;
 
     static public Op internBinary(java.lang.String op, boolean isSigned) {
         if (op.equals("+")) {
@@ -80,6 +83,12 @@ public enum Op {
         }
         else if (op.equals(">=")) {
             return isSigned ? Op.S_GTEQ : Op.U_GTEQ;
+        }
+        else if (op.equals("&&")) {
+            return Op.LOGIC_AND;
+        }
+        else if (op.equals("||")) {
+            return Op.LOGIC_OR;
         }
         else {
             throw new Error("unknown binary op: " + op);

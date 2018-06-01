@@ -79,16 +79,12 @@ public class BasicBlock {
                         toCheck.add (binaryInst.getRight().getVariable());
                     if (binaryInst.getResult().isVariable())
                         toCheck.add (binaryInst.getResult().getVariable());
-                    for (int j = i; j < n; ++ j) {
+                    // System.out.println ("i: " + i + " " + instructions.get(i));
+                    for (int j = i + 1; j < n; ++ j) {
                         boolean affected = false;
-                        for (Variable variable: toCheck) {
-                            if (instructions.get(i).affect(variable)) {
-                                affected = true;
-                                break;
-                            }
-                        }
-                        if (affected) break;
+                        // System.out.println (instructions.get(j));
                         if (j > i && instructions.get(j) instanceof BinaryInst) {
+                            // System.out.println ("ere");
                             BinaryInst otherBinaryInst = (BinaryInst) instructions.get(j);
                             if (binaryInst.isSame(otherBinaryInst)) {
                                 // System.out.println ("FOUND! " + i + " " + j);
@@ -97,6 +93,13 @@ public class BasicBlock {
                                 break;
                             }
                         }
+                        for (Variable variable: toCheck) {
+                            if (instructions.get(j).affect(variable)) {
+                                affected = true;
+                                break;
+                            }
+                        }
+                        if (affected) break;
                     }
                     if (found) {
                         // System.out.println ("gonna break");

@@ -576,6 +576,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             case BIT_OR:
                 as.or (left, right);
                 break;
+            case LOGIC_AND:
+                as.and (left, right);
+                break;
+            case LOGIC_OR:
+                as.or (left, right);
+                break;
             case BIT_XOR:
                 as.xor (left, right);
                 break;
