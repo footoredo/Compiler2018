@@ -58,8 +58,8 @@ abstract public class Instruction {
                     // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
-            resultLiveVariables.remove(result.getVariable());
             RegisterAllocator.solveRivalry(resultLiveVariables);
+            resultLiveVariables.remove(result.getVariable());
         }
         /*System.err.println (getClass() + " : after");
         for (Variable variable: resultLiveVariables)
