@@ -3,7 +3,7 @@ print:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+8H]
+        mov     rax, qword [rbp+16]
         mov     qword [rbp-8H], rax
 print#L_001:  mov     rax, qword [rbp-8H]
         movzx   eax, byte [rax]
@@ -25,7 +25,7 @@ println:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+8H]
+        mov     rax, qword [rbp+24]
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp-8H]
         mov     rdi, rax
@@ -94,9 +94,9 @@ _strcmp:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+8H]
+        mov     rax, qword [rbp+16]
         mov     qword [rbp-8H], rax
-        mov     rax, qword [rbp+16H]
+        mov     rax, qword [rbp+24]
         mov     qword [rbp-10H], rax
         mov     rdx, qword [rbp-10H]
         mov     rax, qword [rbp-8H]
@@ -111,7 +111,7 @@ toString:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 32
-        mov     rax, qword [rbp+8H]
+        mov     rax, qword [rbp+16]
         mov     qword [rbp-18H], rax
         mov     edi, 20
         call    _Znam
@@ -134,9 +134,9 @@ _strcat:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 32
-        mov     rax, qword [rbp+8H]
+        mov     rax, qword [rbp+16]
                 mov     qword [rbp-18H], rax
-                mov     rax, qword [rbp+16H]
+                mov     rax, qword [rbp+24]
                 mov     qword [rbp-20H], rax
         mov     rax, qword [rbp-18H]
         mov     rdi, rax
@@ -191,9 +191,9 @@ string#substring:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 32
-        mov     rax, qword [rbp+8H]
+        mov     rax, qword [rbp+16]
                 mov     qword [rbp-18H], rax
-                mov     rax, qword [rbp+16H]
+                mov     rax, qword [rbp+24]
                 mov     qword [rbp-20H], rax
         mov     rax, qword [rbp-20H]
         sub     rax, qword [rbp-18H]
@@ -261,7 +261,7 @@ string#parseInt#L_003:  mov     rax, qword [rbp-10H]
 string#ord:
         push    rbp
         mov     rbp, rsp
-        mov     eax, dword [rbp+8H]
+        mov     eax, dword [rbp+16]
         mov     dword [rbp-4H], eax
         mov     rdx, qword [rel @_@thisPointer]
         ;mov     rdx, qword [rax]
