@@ -424,7 +424,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         long currentPosition = PARAMETER_START_POSITION;
         for (int i = PARAMETER_REGISTERS.length; i < parameters.size(); ++ i) {
             Parameter var = parameters.get(i);
-            var.setParameterSpace(memory(naturalType, stackSizeFromPosition(currentPosition), bp()));
+            var.setParameterSpace(memory(Type.get(var.size()), stackSizeFromPosition(currentPosition), bp()));
             currentPosition ++;
         }
     }
@@ -679,7 +679,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             Operand operand = s.getArg(i);
             Type t = operand.getType();
             as.mov (ax(t), operand.toASMOperand());
-            as.push (ax(t));
+            as.push (ax(naturalType));
             // as.mov (s.getFunction().getParameter(i).getMemoryReference(), ax());
         }
         // System.out.println (call.)
