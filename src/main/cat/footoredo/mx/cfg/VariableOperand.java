@@ -29,6 +29,7 @@ public class VariableOperand extends Operand {
 
     @Override
     public void replace(Map<Variable, Variable> replacement, Scope scope) {
+        if (variable.isGlobal()) return;
         if (replacement.containsKey(variable)) {
             // System.out.println (variable.getName() + " is " + replacement.get(variable).getName());
             variable = replacement.get(variable);
