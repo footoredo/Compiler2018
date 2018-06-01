@@ -144,14 +144,17 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     class StackFrameInfo {
         List <Register> savedRegs;
+        List <Register> toSaveRegs;
         long lvarSize;
         long tempSize;
 
-        long savedRegsSize() { return savedRegs.size() * STACK_WORD_SIZE; }
+        long savedRegsSize() { return (savedRegs.size() + toSaveRegs.size()) * STACK_WORD_SIZE; }
         long lvarOffset() { return savedRegsSize(); }
         long tempOffset() { return savedRegsSize() + lvarSize; }
         long frameSize() { return savedRegsSize() + lvarSize + tempSize; }
     }
+
+    private Set<Register> toSaveRegisters, allToSaveRegisters;
 
     private void compileFunctionBody (AssemblyCode file, DefinedFunction function) {
         StackFrameInfo frame = new StackFrameInfo();
@@ -159,8 +162,24 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         // System.out.println (function.getName());
         frame.lvarSize = locateLocalVariables(function.getScope());
 
+        allToSaveRegisters = new HashSet<>();
+        allToSaveRegisters.addAll(callerSaveRegisters());
+        toSaveRegisters = new HashSet<>();
+        visitedBasicBlock = new HashSet<>();
+
+        for (Variable variable: function.getScope().getAllVariables()) {
+            if (variable.isRegister()) {
+                Register register = variable.getRegister();
+                if (allToSaveRegisters.contains(register)) {
+                    toSaveRegisters.add (register);
+                }
+            }
+        }
+
         AssemblyCode body = compileStatements(function);
         frame.savedRegs = usedCalleeSaveRegisters(body);
+        frame.toSaveRegs = new ArrayList<>();
+        frame.toSaveRegs.addAll (toSaveRegisters);
         frame.tempSize = body.getVirtualStack().getMaxSize();
 
         fixLocalVariableOffsets (function.getScope(), frame.lvarOffset());
@@ -248,6 +267,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private AssemblyCode compileStatements (DefinedFunction function) {
         as = newAssemblyCode();
+        for (Parameter par: function.getParameters()) if (par.isUsed()) {
+            // System.out.println (par.getName() + " " + par.getSpace() + " " + par.getParameterSpace());
+            compileAssign (as, Type.get(par.size()), Type.get(par.size()), par.getSpace(), par.getParameterSpace());
+        }
         epilogueLabel = new Label();
         // System.out.println (function.getSymbolString());
         // System.out.println ("qurying " + (new Label(function.getCallingSymbol())).hashCode());
@@ -274,6 +297,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         return result;
     }
 
+    private Set<BasicBlock> visitedBasicBlock;
+
+
     static final long[] CALLEE_SAVE_REGISTERS = {
             RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
             12, 13, 14, 15/*,
@@ -291,6 +317,24 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             calleeSaveRegistersCache = registers;
         }
         return calleeSaveRegistersCache;
+    }
+
+    static final long[] CALLER_SAVE_REGISTERS = {
+            RegisterClass.SI.getValue(), RegisterClass.DI.getValue(),
+            10, 11, 8, 9
+    };
+
+    private List<Register> callerSaveRegistersCache = null;
+
+    private List<Register> callerSaveRegisters() {
+        if (callerSaveRegistersCache == null) {
+            List<Register> registers = new ArrayList<>();
+            for (long c: CALLER_SAVE_REGISTERS) {
+                registers.add (new Register(c, naturalType));
+            }
+            callerSaveRegistersCache = registers;
+        }
+        return callerSaveRegistersCache;
     }
 
     private void compileAssign (AssemblyCode as, Type leftType, Type rightType, cat.footoredo.mx.asm.Operand a, cat.footoredo.mx.asm.Operand b) {
@@ -333,10 +377,6 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
                                       List<Parameter> parameters) {
         file.virtualStack.reset();
         prologue (file, frame.savedRegs, frame.frameSize());
-        for (Parameter par: parameters) if (par.isUsed()) {
-            // System.out.println (par.getName() + " " + par.getSpace() + " " + par.getParameterSpace());
-            compileAssign (file, Type.get(par.size()), Type.get(par.size()), par.getSpace(), par.getParameterSpace());
-        }
         file.addAll(body.getAssemblies());
         epilogue (file, frame.savedRegs);
         file.virtualStack.fixOffset(0);
@@ -621,6 +661,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(CallInst s) {
+        for (Register register: toSaveRegisters) {
+            as.virtualPush(register);
+        }
         for (int i = 0; i < s.getArgc() && i < PARAMETER_REGISTERS.length; ++ i) {
             Operand operand = s.getArg(i);
             Type t = operand.getType();
@@ -641,6 +684,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         }*/
         if (s.hasResult()) {
             as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
+        }
+        for (Register register: toSaveRegisters) {
+            as.virtualPop(register);
         }
     }
 
