@@ -340,32 +340,32 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         java.lang.String operator = node.getOperator();
         assert (operator.equals("||") || operator.equals("&&"));
 
-        Expression rhs = transformExpression(node.getRhs());
+        /*Expression rhs = transformExpression(node.getRhs());
         Expression lhs = transformExpression(node.getLhs());
 
         Op op = Op.internBinary(node.getOperator(),false);
         cat.footoredo.mx.type.Type type = node.getType();
-        return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);
+        return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);*/
 
-        // Label rightLabel = new Label ();
-        // Label endLabel = new Label ();
+        Label rightLabel = new Label ();
+        Label endLabel = new Label ();
 
-        // cat.footoredo.mx.entity.Variable variable = tmpVariable(node.getType());
-        // assign (node.getLhs().getLocation(), ref(variable), transformExpression(node.getLhs()));
+        cat.footoredo.mx.entity.Variable variable = tmpVariable(node.getType());
+        assign (node.getLhs().getLocation(), ref(variable), transformExpression(node.getLhs()));
 
-        /*if (operator.equals("&&")) {
+        if (operator.equals("&&")) {
             cjump(node.getLocation(), ref(variable), rightLabel, endLabel);
         }
         else {
             cjump(node.getLocation(), ref(variable), endLabel, rightLabel);
-        }*/
+        }
 
-        // label (rightLabel);
-        // assign (node.getRhs().getLocation(), ref (variable), transformExpression(node.getRhs()));
+        label (rightLabel);
+        assign (node.getRhs().getLocation(), ref (variable), transformExpression(node.getRhs()));
 
-        // label (endLabel);
+        label (endLabel);
 
-        // return isStatement() ? null : ref (variable);
+        return isStatement() ? null : ref (variable);
     }
 
     @Override
