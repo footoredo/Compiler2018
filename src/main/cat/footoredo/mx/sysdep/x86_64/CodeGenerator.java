@@ -661,7 +661,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(CallInst s) {
-        for (Register register: toSaveRegisters) {
+        List<Register> saving = new ArrayList<>(toSaveRegisters);
+        // System.out.println (saving.size() + " " + s);
+        for (Register register: saving) {
             as.virtualPush(register);
         }
         for (int i = 0; i < s.getArgc() && i < PARAMETER_REGISTERS.length; ++ i) {
@@ -685,7 +687,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         if (s.hasResult()) {
             as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
         }
-        for (Register register: toSaveRegisters) {
+        for (Register register: ListUtils.reverse(saving)) {
             as.virtualPop(register);
         }
     }
@@ -706,9 +708,17 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(MallocInst s) {
+        List<Register> saving = new ArrayList<>(toSaveRegisters);
+        // System.out.println (saving.size() + " " + s);
+        for (Register register: saving) {
+            as.virtualPush(register);
+        }
         as.mov (new Register(PARAMETER_REGISTERS[0], s.getLength().getType()), s.getLength().toASMOperand());
         as.call(new NamedSymbol("malloc"));
         as.mov (s.getResult().toASMOperand(), ax());
+        for (Register register: ListUtils.reverse(saving)) {
+            as.virtualPop(register);
+        }
     }
 
     private IndirectMemoryReference relocatableMemory(Type type, long offset, Register base) {
