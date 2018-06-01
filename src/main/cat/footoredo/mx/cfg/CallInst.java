@@ -15,7 +15,20 @@ public class CallInst extends Instruction {
     public CallInst (Operand result, Function function, List<Operand> operands) {
         super (result, operands);
         this.function = function;
-        // System.err.println ("Call " + result + " " + function.getName());
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Call " + getResult() + " = " + function.getName() + "(");
+        String sep = "";
+        for (Operand operand: getOperands()) {
+            buffer.append(sep);
+            sep = ", ";
+            buffer.append (operand);
+        }
+        buffer.append (")");
+        return buffer.toString();
     }
 
     @Override

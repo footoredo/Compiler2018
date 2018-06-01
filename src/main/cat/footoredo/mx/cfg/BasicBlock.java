@@ -25,6 +25,8 @@ public class BasicBlock {
     }
 
     public void cleanInstructions () {
+        // displayInstructions();
+
         List<Instruction> newInstructions = new ArrayList<>();
 
         boolean verbose = false;
@@ -55,6 +57,15 @@ public class BasicBlock {
             for (Instruction instruction : instructions) {
                 System.err.println(instruction.getClass());
             }
+        }
+
+        // displayInstructions();
+    }
+
+    public void displayInstructions () {
+        System.out.println ("\n\n-- Instructions of " + toString() + " --\n");
+        for (Instruction instruction: instructions) {
+            System.out.println (instruction);
         }
     }
 

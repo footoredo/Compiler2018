@@ -23,11 +23,18 @@ public class VariableOperand extends Operand {
     }
 
     @Override
+    public String toString() {
+        return variable.getName();
+    }
+
+    @Override
     public void replace(Map<Variable, Variable> replacement, Scope scope) {
         if (replacement.containsKey(variable)) {
+            // System.out.println (variable.getName() + " is " + replacement.get(variable).getName());
             variable = replacement.get(variable);
         }
         else {
+            // System.out.println ("what is " + variable.getName());
             Variable tmp = scope.allocateTmpVariable(variable.getType());
             replacement.put (variable, tmp);
             variable = tmp;

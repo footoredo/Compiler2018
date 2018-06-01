@@ -19,6 +19,11 @@ public class ConstantStringOperand extends Operand {
     }
 
     @Override
+    public String toString() {
+        return entry.getValue();
+    }
+
+    @Override
     public boolean isConstant() {
         return true;
     }

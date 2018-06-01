@@ -16,6 +16,11 @@ public class ConstantIntegerOperand extends Operand {
     }
 
     @Override
+    public String toString() {
+        return Long.toString(value);
+    }
+
+    @Override
     public boolean isConstant() {
         return true;
     }

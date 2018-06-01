@@ -40,6 +40,10 @@ abstract public class Operand {
     public void replace (Map<Variable, Variable> replacement, Scope scope) {
     }
 
+    public String display () {
+        return toString();
+    }
+
     public Operand copy () {
         return this;
     }

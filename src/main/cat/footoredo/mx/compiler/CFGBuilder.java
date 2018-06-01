@@ -48,9 +48,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
             backPropagate (definedFunction.getEndBasicBlock(), new HashSet<>());
             visitedBasicBlocks = new HashSet<>();
-            dfsAndClean (definedFunction.getStartBasicBlock());
-            visitedBasicBlocks = new HashSet<>();
             dfsAndMerge (definedFunction.getStartBasicBlock());
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndClean (definedFunction.getStartBasicBlock());
         }
 
         return cfg;
@@ -73,8 +73,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         // System.out.println ("inlined block: " + newBasicBlock);
         for (Instruction instruction: currentBasicBlock.getInstructions())
             if (instruction instanceof ReturnInst) {
-                if (((ReturnInst) instruction).hasValue())
-                newBasicBlock.addInstruction(new AssignInst(returnValue, ((ReturnInst) instruction).getValue(), false));
+                if (((ReturnInst) instruction).hasValue()) {
+                    Operand value = ((ReturnInst) instruction).getValue().copy();
+                    value.replace(replacement, currentFunction.getScope());
+                    newBasicBlock.addInstruction(new AssignInst(returnValue, value, false));
+                }
             }
             else {
                 Instruction copiedInstruction = instruction.copy ();
@@ -165,7 +168,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                     // System.out.println ("function end label: " + inlineFunction.getFunctionEndLabel());
                     labelReplacement.put (inlineFunction.getFunctionEndLabel(), inlineEndLabel);
                     currentBasicBlock.setJumpInst(new UnconditionalJumpInst(inlineStartLabel));
-                    System.out.println (newInstructions.size());
+                    // System.out.println (newInstructions.size());
                     currentBasicBlock.setInstructions(newInstructions);
                     newInstructions = new ArrayList<>();
                     visitedInlineBasicBlocks = new HashSet<>();

@@ -9,8 +9,16 @@ import java.util.Set;
 public class ReturnInst extends Instruction {
     public ReturnInst (Operand value) {
         super (Arrays.asList(value));
-        if (value == null)
-            throw new Error ("asdas");
+    }
+
+    @Override
+    public String toString() {
+        if (hasValue()) {
+            return "Return " + getValue();
+        }
+        else {
+            return "Return";
+        }
     }
 
     @Override

@@ -25,7 +25,9 @@ abstract public class Instruction {
         if (result != null) {
             result.replace (replacement, scope);
         }
+
         for (Operand operand: operands) {
+            // System.out.println ("replacing " + operand);
             operand.replace(replacement, scope);
         }
     }
