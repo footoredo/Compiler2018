@@ -324,8 +324,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     static final long[] CALLER_SAVE_REGISTERS = {
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue(),
-            10, 11, 8, 9/*, RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
-            12, 13, 14, 15*/
+            10, 11, 8, 9, RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
+            12, 13, 14, 15
     };
 
     private List<Register> callerSaveRegistersCache = null;
@@ -721,7 +721,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         /* as.mov (ax(s.getLength().getType()), s.getLength().toASMOperand());
         as.push (ax(s.getLength().getType()));*/
         as.mov (new Register(RegisterClass.DI, s.getLength().getType()), s.getLength().toASMOperand());
-        as.call(new NamedSymbol("malloc"));
+        as.call(new NamedSymbol("_Znam"));
         for (Register register: ListUtils.reverse(saving)) {
             as.virtualPop(register);
         }
