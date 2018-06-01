@@ -87,7 +87,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     }
 
     private void generateExterns (AssemblyCode file) {
-        file._extern("malloc, _Znam, _IO_getc, _IO_putc, stdin, stdout");
+        file._extern("malloc, _Znam, _IO_getc, _IO_putc, stdin, stdout, __stack_chk_fail");
         file._extern("putchar, puts, scanf, sprintf");
         file._extern("strcmp, strcpy, strlen, strncpy");
     }
@@ -324,7 +324,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     static final long[] CALLER_SAVE_REGISTERS = {
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue(),
-            10, 11, 8, 9
+            10, 11, 8, 9/*, RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
+            12, 13, 14, 15*/
     };
 
     private List<Register> callerSaveRegistersCache = null;

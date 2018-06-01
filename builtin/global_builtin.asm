@@ -51,41 +51,35 @@ getString:
         ret
 
 getInt:
-        push    rbx
+        push    rbp
+        mov     rbp, rsp
+        sub     rsp, 16
 
 
-getInt#L_003:  mov     rdi, qword [rel stdin]
-        call    _IO_getc
-        lea     edx, [rax-30H]
-        cmp     dl, 9
-        ja      getInt#L_003
-        movsx   ebx, al
-        sub     ebx, 48
-        movsxd  rbx, ebx
+        mov     rax, qword [fs:abs 28H]
+        mov     qword [rbp-8H], rax
+        xor     eax, eax
+        lea     rax, [rbp-10H]
+        mov     rsi, rax
+        mov     edi, getInt#L_004
+        mov     eax, 0
+        call    scanf
+        mov     rax, qword [rbp-10H]
+        mov     rdx, qword [rbp-8H]
 
 
-getInt#L_004:  mov     rdi, qword [rel stdin]
-        call    _IO_getc
-        movsx   rdx, al
-        sub     eax, 48
-        cmp     al, 9
-        jbe     getInt#L_005
-        mov     rax, rbx
-        pop     rbx
+        xor     rdx, qword [fs:abs 28H]
+        jz      getInt#L_001
+        call    __stack_chk_fail
+getInt#L_001:  leave
         ret
-
-
-
-getInt#L_005:  lea     rax, [rbx+rbx*4]
-        lea     rbx, [rdx+rax*2-30H]
-        jmp     getInt#L_004
-
-
 
 SECTION .rodata
 
-getInt#L_002:
+getInt#L_004:
         db 25H, 6CH, 64H, 00H
+
+
 
 getString#L_005:
         db 25H, 73H, 00H
