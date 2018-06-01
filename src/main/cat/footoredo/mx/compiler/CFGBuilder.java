@@ -48,9 +48,13 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
             backPropagate (definedFunction.getEndBasicBlock(), new HashSet<>());
             visitedBasicBlocks = new HashSet<>();
-            dfsAndMerge (definedFunction.getStartBasicBlock());
-            visitedBasicBlocks = new HashSet<>();
             dfsAndClean (definedFunction.getStartBasicBlock());
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndMerge (definedFunction.getStartBasicBlock());/*
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndReset (definedFunction.getStartBasicBlock());
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndClean (definedFunction.getStartBasicBlock());*/
         }
 
         return cfg;
@@ -61,6 +65,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private Set<BasicBlock> visitedBasicBlocks;
     private Set<BasicBlock> visitedInlineBasicBlocks;
     private Map<Label, Label> labelReplacement;
+    private boolean merged;
+    private boolean cleaned;
 
     private Operand returnValue;
 
@@ -231,6 +237,14 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         }
     }
 
+    private void dfsAndReset (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add (currentBasicBlock);
+        currentBasicBlock.resetLiveVariables();
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndReset(output);
+    }
+
     private void dfsAndClean (BasicBlock currentBasicBlock) {
         visitedBasicBlocks.add (currentBasicBlock);
         currentBasicBlock.cleanInstructions();
@@ -258,7 +272,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {
         boolean isUpdated = false;
-        if (!currentBasicBlock.backPropageted()) {
+        if (!currentBasicBlock.backPropagated()) {
             isUpdated = true;
             currentBasicBlock.prepareForFirstBackPropagate();
         }

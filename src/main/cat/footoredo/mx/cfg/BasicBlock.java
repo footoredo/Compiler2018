@@ -81,7 +81,11 @@ public class BasicBlock {
         this.instructions = instructions;
     }
 
-    public boolean backPropageted () {
+    public void resetLiveVariables() {
+        liveVariables = new HashSet<>();
+    }
+
+    public boolean backPropagated () {
         return liveVariables != null;
     }
 
