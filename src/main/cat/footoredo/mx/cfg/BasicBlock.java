@@ -87,7 +87,7 @@ public class BasicBlock {
                             // System.out.println ("ere");
                             BinaryInst otherBinaryInst = (BinaryInst) instructions.get(j);
                             if (binaryInst.isSame(otherBinaryInst)) {
-                                System.out.println ("FOUND! " + i + " " + j);
+                                // System.out.println ("FOUND! " + i + " " + j);
                                 found = true;
                                 instructions.set(j, new AssignInst(otherBinaryInst.getResult(), binaryInst.getResult(), false));
                                 break;
