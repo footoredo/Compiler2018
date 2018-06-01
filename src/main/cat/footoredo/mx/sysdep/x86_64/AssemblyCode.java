@@ -193,11 +193,11 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
 
     public void virtualPush (Register register) {
         virtualStack.extend(stackWordSize);
-        mov (virtualStack.top(), register);
+        mov (virtualStack.top(), register.forType(naturalType));
     }
 
     public void virtualPop (Register register) {
-        mov (register, virtualStack.top());
+        mov (register.forType(naturalType), virtualStack.top());
         virtualStack.rewind (stackWordSize);
     }
 
