@@ -5,6 +5,7 @@ import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.ir.Binary;
 import cat.footoredo.mx.utils.ListUtils;
 
+import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.util.*;
 
 public class BasicBlock {
@@ -27,6 +28,10 @@ public class BasicBlock {
 
     public void cleanInstructions () {
         // displayInstructions();
+
+        /*for (Variable variable: liveVariables) {
+            System.out.println ("LIVE: " + variable.getName());
+        }*/
 
         List<Instruction> newInstructions = new ArrayList<>();
 

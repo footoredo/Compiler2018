@@ -12,7 +12,7 @@ public class RegisterAllocator {
             8, 9, 11, 10,
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue()
     };
-    private static final int NUMBER_REGISTERS = /*AVAILABLE_REGISTERS.length*/ 9;
+    private static final int NUMBER_REGISTERS = /*AVAILABLE_REGISTERS.length*/ 11;
 
     private LinkedList<Variable> coloringStack;
     private Set<Variable> remainingVariables;
@@ -38,11 +38,12 @@ public class RegisterAllocator {
                     bestVariable = variable;
                     break;
                 }
-                else if ((double)variable.getRivalryCount() / variable.getUsedCount() > ratio) {
+                else if ((double)variable.getRivalryCount() / /*variable.getUsedCount() */ 1> ratio) {
                     bestVariable = variable;
-                    ratio = (double)variable.getRivalryCount() / variable.getUsedCount();
+                    ratio = (double)variable.getRivalryCount() / /*variable.getUsedCount()*/ 1;
                 }
             }
+
 
             if (found) {
                 // System.out.println (bestVariable.getName() + " " + bestVariable.getRivalryCount());
@@ -50,6 +51,9 @@ public class RegisterAllocator {
             }
             else {
                 System.err.println (bestVariable.getName() + " " + ratio);
+                /*for (Variable variable: bestVariable.getRivalries()) {
+                    System.err.println(" fucking " + variable.getName());
+                }*/
             }
 
             bestVariable.disconnect ();

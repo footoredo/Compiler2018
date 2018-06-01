@@ -225,7 +225,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private void dfsAndCSE (BasicBlock currentBasicBlock) {
         // System.out.println ("SHOULDBE: " + currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
         visitedBasicBlocks.add (currentBasicBlock);
-        currentBasicBlock.CSE();
+        // currentBasicBlock.CSE();
         for (Label output: currentBasicBlock.getOutputLabels()) {
             BasicBlock nextBasicBlock = cfg.get (output);
             if (!visitedBasicBlocks.contains(nextBasicBlock))
