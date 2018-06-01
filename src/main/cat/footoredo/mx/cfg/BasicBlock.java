@@ -78,7 +78,7 @@ public class BasicBlock {
                     if (binaryInst.getRight().isVariable())
                         toCheck.add (binaryInst.getRight().getVariable());
                     if (binaryInst.getResult().isVariable())
-                        toCheck.add (binaryInst.getRight().getVariable());
+                        toCheck.add (binaryInst.getResult().getVariable());
                     for (int j = i; j < n; ++ j) {
                         boolean affected = false;
                         for (Variable variable: toCheck) {
