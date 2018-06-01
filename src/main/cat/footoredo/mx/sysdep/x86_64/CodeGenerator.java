@@ -592,8 +592,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             case S_DIV:
             case S_MOD:
                 as.c(t);
-                as.mov (cx(t), right);
-                as.idiv(cx(t));
+                //as.mov (cx(t), right);
+                as.idiv(right);
                 if (op == Op.S_MOD) {
                     as.mov(left, dx(t));
                 }
@@ -604,8 +604,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             case U_DIV:
             case U_MOD:
                 as.mov(dx(t), immediate(0));
-                as.mov (cx(t), right);
-                as.div(cx(t));
+                //as.mov (cx(t), right);
+                as.div(right);
                 if (op == Op.U_MOD) {
                     as.mov (left, dx(t));
                 }
