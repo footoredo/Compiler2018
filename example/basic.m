@@ -12,24 +12,3 @@ int tak(int x, int y, int z) {
 int main() {
     return tak(18,12,6);
 }
-
-
-
-
-/*!! metadata:
-=== comment ===
-function2.mx
-=== assert ===
-exitcode
-=== timeout ===
-0.1
-=== input ===
-
-=== phase ===
-codegen pretest
-=== is_public ===
-True
-=== exitcode ===
-13
-
-!!*/
