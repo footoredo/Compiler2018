@@ -687,6 +687,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         /*if (s.getResult().toASMOperand() == null) {
             System.out.println (s.getResult().getVariable().getName() + s.getResult().getVariable().isUsed());
         }*/
+        saving = new ArrayList<>(toSaveRegisters);
         for (Register register: ListUtils.reverse(saving)) {
             as.virtualPop(register);
         }

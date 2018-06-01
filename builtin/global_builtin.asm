@@ -25,7 +25,7 @@ println:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+24]
+        mov     rax, qword [rbp+16]
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp-8H]
         mov     rdi, rax
