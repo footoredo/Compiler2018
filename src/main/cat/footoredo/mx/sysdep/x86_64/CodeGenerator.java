@@ -177,7 +177,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         }
 
         toSaveRegisters.add (new Register(RegisterClass.DI));
-        toSaveRegisters.add (new Register(RegisterClass.SI));
+        // toSaveRegisters.add (new Register(RegisterClass.SI));
 
         AssemblyCode body = compileStatements(function);
         frame.savedRegs = usedCalleeSaveRegisters(body);

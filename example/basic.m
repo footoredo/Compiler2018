@@ -1,13 +1,15 @@
 int main() {
-    int[] a = new int[20];
-    return a.size();
+    string s1 = "aaa";
+    string s2 = "bbbbb";
+    string s3 = s1 + s2;
+    return s3.length() + s3.ord(5);
 }
 
 
 
 /*!! metadata:
 === comment ===
-builtin1.mx
+string1.mx
 === assert ===
 exitcode
 === timeout ===
@@ -19,6 +21,6 @@ codegen pretest
 === is_public ===
 True
 === exitcode ===
-20
+106
 
 !!*/
