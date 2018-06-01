@@ -176,6 +176,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             }
         }
 
+        toSaveRegisters.add (new Register(RegisterClass.DI));
+        toSaveRegisters.add (new Register(RegisterClass.SI));
+
         AssemblyCode body = compileStatements(function);
         frame.savedRegs = usedCalleeSaveRegisters(body);
         frame.toSaveRegs = new ArrayList<>();
@@ -684,11 +687,11 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         /*if (s.getResult().toASMOperand() == null) {
             System.out.println (s.getResult().getVariable().getName() + s.getResult().getVariable().isUsed());
         }*/
-        if (s.hasResult()) {
-            as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
-        }
         for (Register register: ListUtils.reverse(saving)) {
             as.virtualPop(register);
+        }
+        if (s.hasResult()) {
+            as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
         }
     }
 
@@ -715,10 +718,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         }
         as.mov (new Register(PARAMETER_REGISTERS[0], s.getLength().getType()), s.getLength().toASMOperand());
         as.call(new NamedSymbol("malloc"));
-        as.mov (s.getResult().toASMOperand(), ax());
         for (Register register: ListUtils.reverse(saving)) {
             as.virtualPop(register);
         }
+        as.mov (s.getResult().toASMOperand(), ax());
     }
 
     private IndirectMemoryReference relocatableMemory(Type type, long offset, Register base) {
