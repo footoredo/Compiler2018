@@ -12,6 +12,11 @@ public class BinaryInst extends Instruction {
         // System.err.println ("Binary: " + result.getVariable().getName() + " = " + (left.isVariable() ? left.getVariable().getName() : left.getClass()) + " " + op +  " " + (right.isVariable() ? right.getVariable().getName() : right.getClass()) );
     }
 
+    @Override
+    public Instruction copy() {
+        return new BinaryInst(getResult().copy(), getLeft().copy(), op, getRight().copy());
+    }
+
     public Op getOp() {
         return op;
     }

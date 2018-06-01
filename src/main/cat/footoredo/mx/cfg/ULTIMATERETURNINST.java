@@ -11,6 +11,11 @@ public class ULTIMATERETURNINST extends Instruction {
     }
 
     @Override
+    public Instruction copy() {
+        return new ULTIMATERETURNINST();
+    }
+
+    @Override
     public void accept(CFGVisitor visitor) {
         visitor.visit(this);
     }

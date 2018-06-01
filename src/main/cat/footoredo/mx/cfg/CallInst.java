@@ -1,8 +1,10 @@
 package cat.footoredo.mx.cfg;
 
+import cat.footoredo.mx.entity.DefinedFunction;
 import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Variable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +16,14 @@ public class CallInst extends Instruction {
         super (result, operands);
         this.function = function;
         // System.err.println ("Call " + result + " " + function.getName());
+    }
+
+    @Override
+    public Instruction copy() {
+        List<Operand> copiedOperands = new ArrayList<>();
+        for (Operand operand: getOperands())
+            copiedOperands.add (operand.copy());
+        return new CallInst(getResult().copy(), function, copiedOperands);
     }
 
     public boolean hasResult () {

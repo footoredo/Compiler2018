@@ -17,6 +17,11 @@ public class AssignInst extends Instruction {
         }*/
     }
 
+    @Override
+    public Instruction copy() {
+        return new AssignInst(getLeft().copy(), getRight().copy(), isDeref);
+    }
+
     public boolean isDeref() {
         return isDeref;
     }

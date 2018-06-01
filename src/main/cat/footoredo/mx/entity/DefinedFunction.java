@@ -1,12 +1,14 @@
 package cat.footoredo.mx.entity;
 
+import cat.footoredo.mx.asm.Label;
 import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.ast.BlockNode;
 import cat.footoredo.mx.ast.MethodNode;
 import cat.footoredo.mx.cfg.BasicBlock;
+import cat.footoredo.mx.cfg.CallInst;
 import cat.footoredo.mx.ir.Statement;
 
-import java.util.List;
+import java.util.*;
 
 public class DefinedFunction extends Function {
     BlockNode block;
@@ -17,10 +19,41 @@ public class DefinedFunction extends Function {
     private BasicBlock startBasicBlock;
     private BasicBlock endBasicBlock;
 
+    private Set<DefinedFunction> calls;
+
+    private Label functionEndLabel;
+
     public DefinedFunction (MethodNode methodNode, String parentClass) {
         super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
         // System.out.println (parentClass + "#" + methodNode.getName());
         this.block = methodNode.getBlock();
+        this.calls = new HashSet<>();
+        this.functionEndLabel = null;
+    }
+
+    public void addCall (CallInst callInst) {
+        if (callInst.getFunction() instanceof DefinedFunction)
+            calls.add ((DefinedFunction) callInst.getFunction());
+    }
+
+    public Label getFunctionEndLabel() {
+        return functionEndLabel;
+    }
+
+    public void setFunctionEndLabel(Label functionEndLabel) {
+        this.functionEndLabel = functionEndLabel;
+    }
+
+    public Set<DefinedFunction> getCalls() {
+        return calls;
+    }
+
+    public int getCallCount () {
+        return calls.size();
+    }
+
+    public boolean hasCall () {
+        return !calls.isEmpty();
     }
 
     public void appendFront (List<Statement> statements) {

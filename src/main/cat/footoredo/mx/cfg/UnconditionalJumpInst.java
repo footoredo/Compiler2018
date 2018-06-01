@@ -18,6 +18,10 @@ public class UnconditionalJumpInst extends JumpInst {
         return target;
     }
 
+    public void setTarget(Label target) {
+        this.target = target;
+    }
+
     @Override
     public void accept(CFGVisitor visitor) {
         visitor.visit(this);
@@ -35,5 +39,10 @@ public class UnconditionalJumpInst extends JumpInst {
 
     @Override
     public void updateUsedCount() {
+    }
+
+    @Override
+    public JumpInst copy() {
+        return new UnconditionalJumpInst(target);
     }
 }

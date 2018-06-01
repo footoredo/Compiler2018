@@ -10,6 +10,11 @@ public class MallocInst extends Instruction {
         // System.out.println (length.getImmediateValue().getIntegerValue());
     }
 
+    @Override
+    public Instruction copy() {
+        return new MallocInst(getResult().copy(), getLength().copy());
+    }
+
     public Operand getLength () {
         return getOperand(0);
     }

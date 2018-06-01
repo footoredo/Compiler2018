@@ -13,6 +13,14 @@ public class ReturnInst extends Instruction {
             throw new Error ("asdas");
     }
 
+    @Override
+    public Instruction copy() {
+        if (hasValue())
+            return new ReturnInst(getValue().copy());
+        else
+            return new ReturnInst();
+    }
+
     public ReturnInst () {
         super (Arrays.asList());
     }

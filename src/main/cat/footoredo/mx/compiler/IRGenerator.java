@@ -96,6 +96,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         breakStack = new LinkedList<>();
         continueStack = new LinkedList<>();
         functionEndLabel = new Label();
+        function.setFunctionEndLabel(functionEndLabel);
 
         scopeStack.add(function.getScope());
         transformStatement(function.getBlock());

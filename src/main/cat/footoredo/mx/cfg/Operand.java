@@ -4,7 +4,10 @@ import cat.footoredo.mx.asm.ImmediateValue;
 import cat.footoredo.mx.asm.MemoryReference;
 import cat.footoredo.mx.asm.Register;
 import cat.footoredo.mx.asm.Type;
+import cat.footoredo.mx.entity.Scope;
 import cat.footoredo.mx.entity.Variable;
+
+import java.util.Map;
 
 abstract public class Operand {
     public boolean isRegister () {
@@ -32,6 +35,13 @@ abstract public class Operand {
         if (isConstant()) return getImmediateValue();
         else if (isRegister()) return getRegister();
         else return getMemoryReference();
+    }
+
+    public void replace (Map<Variable, Variable> replacement, Scope scope) {
+    }
+
+    public Operand copy () {
+        return this;
     }
 
     public Variable getVariable () {

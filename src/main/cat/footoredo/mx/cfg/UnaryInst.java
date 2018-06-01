@@ -12,6 +12,11 @@ public class UnaryInst extends Instruction {
         this.op = op;
     }
 
+    @Override
+    public Instruction copy() {
+        return new UnaryInst(getResult().copy(), op, getOperand().copy());
+    }
+
     public Op getOp() {
         return op;
     }

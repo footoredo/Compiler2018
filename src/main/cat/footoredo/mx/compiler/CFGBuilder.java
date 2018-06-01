@@ -1,11 +1,11 @@
 package cat.footoredo.mx.compiler;
 
-import cat.footoredo.mx.asm.Label;
-import cat.footoredo.mx.asm.NamedSymbol;
-import cat.footoredo.mx.asm.Symbol;
-import cat.footoredo.mx.asm.Type;
+import cat.footoredo.mx.asm.*;
 import cat.footoredo.mx.cfg.*;
+import cat.footoredo.mx.cfg.Instruction;
+import cat.footoredo.mx.cfg.Operand;
 import cat.footoredo.mx.entity.DefinedFunction;
+import cat.footoredo.mx.entity.Parameter;
 import cat.footoredo.mx.ir.*;
 import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
@@ -24,9 +24,29 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
             processDefinedFunction (definedFunction);
+        }
+
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndBuildCallGraph (definedFunction.getStartBasicBlock());
+        }
+
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            visitedBasicBlocks = new HashSet<>();
+            currentFunction = definedFunction;
+            dfsAndInline (definedFunction.getStartBasicBlock());
+        }
+
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
             visitedBasicBlocks = new HashSet<>();
             dfsAndLink (definedFunction.getStartBasicBlock());
-            backPropagate (definedFunction.getEndBasicBlock(), new HashSet<>(/*Arrays.asList((cat.footoredo.mx.entity.Variable)(ir.getScope().get("thisPointer")))*/));
+            visitedBasicBlocks = new HashSet<>();
+            if (definedFunction.getEndBasicBlock() == null) {
+                throw new Error ("s\t" + definedFunction.getName());
+            }
+            backPropagate (definedFunction.getEndBasicBlock(), new HashSet<>());
             visitedBasicBlocks = new HashSet<>();
             dfsAndClean (definedFunction.getStartBasicBlock());
             visitedBasicBlocks = new HashSet<>();
@@ -37,11 +57,165 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     }
 
     private DefinedFunction currentFunction;
+    private DefinedFunction currentInlineFunction;
     private Set<BasicBlock> visitedBasicBlocks;
+    private Set<BasicBlock> visitedInlineBasicBlocks;
+    private Map<Label, Label> labelReplacement;
+
+    private Operand returnValue;
+
+    private Map<cat.footoredo.mx.entity.Variable, cat.footoredo.mx.entity.Variable> replacement;
+
+    private void dfsAndInlineCopy (BasicBlock currentBasicBlock, Label startLabel) {
+        BasicBlock newBasicBlock = new BasicBlock(startLabel);
+        visitedInlineBasicBlocks.add (currentBasicBlock);
+        cfg.put(startLabel, newBasicBlock);
+        // System.out.println ("inlined block: " + newBasicBlock);
+        for (Instruction instruction: currentBasicBlock.getInstructions())
+            if (instruction instanceof ReturnInst) {
+                if (((ReturnInst) instruction).hasValue())
+                newBasicBlock.addInstruction(new AssignInst(returnValue, ((ReturnInst) instruction).getValue(), false));
+            }
+            else {
+                Instruction copiedInstruction = instruction.copy ();
+                copiedInstruction.replace (replacement, currentFunction.getScope());
+                newBasicBlock.addInstruction(copiedInstruction);
+            }
+        JumpInst jumpInst = currentBasicBlock.getJumpInst();
+        if (jumpInst != null) {
+            jumpInst = jumpInst.copy();
+            jumpInst.replace(replacement, currentFunction.getScope());
+            if (jumpInst instanceof UnconditionalJumpInst) {
+                UnconditionalJumpInst unconditionalJumpInst = (UnconditionalJumpInst) jumpInst;
+                Label originalLabel = unconditionalJumpInst.getTarget();
+                // System.out.println ("target: " + originalLabel);
+                if (labelReplacement.containsKey(originalLabel)) {
+                    unconditionalJumpInst.setTarget(labelReplacement.get(originalLabel));
+
+                    // System.out.println ("replaced to: " + unconditionalJumpInst.getTarget());
+                }
+                else {
+                    Label newLabel = new Label (new UnnamedSymbol());
+                    labelReplacement.put (originalLabel, newLabel);
+                    unconditionalJumpInst.setTarget(newLabel);
+                    BasicBlock nextBasicBlock = cfg.get(originalLabel);
+                    if (visitedInlineBasicBlocks.contains(nextBasicBlock))
+                        throw new Error ("WWWTTTTFFFF???");
+                    dfsAndInlineCopy(nextBasicBlock, newLabel);
+                }
+            }
+            else {
+                ConditionalJumpInst conditionalJumpInst = (ConditionalJumpInst) jumpInst;
+                Label originalLabel = conditionalJumpInst.getTrueTarget();
+                if (labelReplacement.containsKey(originalLabel))
+                    conditionalJumpInst.setTrueTarget(labelReplacement.get(originalLabel));
+                else {
+                    Label newLabel = new Label (new UnnamedSymbol());
+                    labelReplacement.put (originalLabel, newLabel);
+                    conditionalJumpInst.setTrueTarget(newLabel);
+                    BasicBlock nextBasicBlock = cfg.get(originalLabel);
+                    if (visitedInlineBasicBlocks.contains(nextBasicBlock))
+                        throw new Error ("WWWTTTTFFFF???");
+                    dfsAndInlineCopy(nextBasicBlock, newLabel);
+                }
+                originalLabel = conditionalJumpInst.getFalseTarget();
+                if (labelReplacement.containsKey(originalLabel))
+                    conditionalJumpInst.setFalseTarget(labelReplacement.get(originalLabel));
+                else {
+                    Label newLabel = new Label (new UnnamedSymbol());
+                    labelReplacement.put (originalLabel, newLabel);
+                    conditionalJumpInst.setFalseTarget(newLabel);
+                    BasicBlock nextBasicBlock = cfg.get(originalLabel);
+                    if (visitedInlineBasicBlocks.contains(nextBasicBlock))
+                        throw new Error ("WWWTTTTFFFF???");
+                    dfsAndInlineCopy(nextBasicBlock, newLabel);
+                }
+            }
+        }
+        newBasicBlock.setJumpInst(jumpInst);
+    }
+
+    private void dfsAndInline (BasicBlock currentBasicBlock) {
+        // System.out.println ("dfsAndInline: " + currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
+        visitedBasicBlocks.add(currentBasicBlock);
+        List<Instruction> originalInstructions = new ArrayList<>(currentBasicBlock.getInstructions());
+        List<Instruction> newInstructions = new ArrayList<>();
+        for (Instruction instruction: originalInstructions) {
+            if (instruction instanceof CallInst) {
+                CallInst callInst = (CallInst) instruction;
+                if (callInst.getFunction() instanceof DefinedFunction &&
+                        !(((DefinedFunction) callInst.getFunction()).hasCall())) {
+                    DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
+                    // System.out.println ("Inlining " + inlineFunction.getName());
+                    replacement = new HashMap<>();
+                    for (int i = 0; i < inlineFunction.getParameters().size(); ++ i) {
+                        Parameter parameter = inlineFunction.getParameter(i);
+                        cat.footoredo.mx.entity.Variable tmp = currentFunction.getScope().allocateTmpVariable(parameter.getType());
+                        replacement.put (parameter, tmp);
+                        newInstructions.add(new AssignInst(new VariableOperand(tmp), callInst.getArg(i), false));
+                    }
+                    returnValue = callInst.getResult();
+                    currentInlineFunction = inlineFunction;
+                    labelReplacement = new HashMap<>();
+                    JumpInst originalJumpInst = currentBasicBlock.getJumpInst();
+                    boolean originalIsEndBlock = currentBasicBlock.isEndBlock();
+                    BasicBlock startBasicBlock = inlineFunction.getStartBasicBlock();
+                    Label inlineStartLabel = new Label(new UnnamedSymbol());
+                    Label inlineEndLabel = new Label (new UnnamedSymbol());
+                    // System.out.println ("function end label: " + inlineFunction.getFunctionEndLabel());
+                    labelReplacement.put (inlineFunction.getFunctionEndLabel(), inlineEndLabel);
+                    currentBasicBlock.setJumpInst(new UnconditionalJumpInst(inlineStartLabel));
+                    System.out.println (newInstructions.size());
+                    currentBasicBlock.setInstructions(newInstructions);
+                    newInstructions = new ArrayList<>();
+                    visitedInlineBasicBlocks = new HashSet<>();
+                    dfsAndInlineCopy (startBasicBlock, inlineStartLabel);
+                    currentBasicBlock = new BasicBlock(inlineEndLabel);
+                    cfg.put (inlineEndLabel, currentBasicBlock);
+                    currentBasicBlock.setJumpInst(originalJumpInst.copy());
+                    currentBasicBlock.setEndBlock(originalIsEndBlock);
+                    // System.out.println ("asdasd\t" + currentBasicBlock + " " + originalIsEndBlock + " " + inlineEndLabel);
+                }
+                else {
+                    newInstructions.add (instruction.copy());
+                }
+            }
+            else {
+                newInstructions.add (instruction.copy());
+            }
+        }
+
+        currentBasicBlock.setInstructions(newInstructions);
+
+        for (Label outputLabel: currentBasicBlock.getOutputLabels()) {
+            BasicBlock nextBasicBlock = cfg.get (outputLabel);
+            // System.out.println ( "going to label " + outputLabel);
+            if (!visitedBasicBlocks.contains(nextBasicBlock)) {
+                dfsAndInline(nextBasicBlock);
+            }
+        }
+    }
+
+    private void dfsAndBuildCallGraph (BasicBlock currentBasicBlock) {
+        // System.out.println ("SHOULDBE: " + currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
+        visitedBasicBlocks.add (currentBasicBlock);
+        for (Instruction instruction: currentBasicBlock.getInstructions()) {
+            if (instruction instanceof CallInst) {
+                currentFunction.addCall((CallInst) instruction);
+            }
+        }
+        for (Label output: currentBasicBlock.getOutputLabels()) {
+            BasicBlock nextBasicBlock = cfg.get (output);
+            if (!visitedBasicBlocks.contains(nextBasicBlock))
+                dfsAndBuildCallGraph(nextBasicBlock);
+        }
+    }
 
     private void dfsAndLink (BasicBlock currentBasicBlock) {
         visitedBasicBlocks.add (currentBasicBlock);
+        // System.out.println (currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
         if (currentBasicBlock.isEndBlock()) {
+            // System.out.println (currentFunction.getName());
             currentFunction.setEndBasicBlock(currentBasicBlock);
         }
         for (Label outputLabel: currentBasicBlock.getOutputLabels()) {

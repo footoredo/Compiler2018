@@ -66,6 +66,10 @@ public class BasicBlock {
         this.jumpInst = basicBlock.jumpInst;
     }
 
+    public void setInstructions(List<Instruction> instructions) {
+        this.instructions = instructions;
+    }
+
     public boolean backPropageted () {
         return liveVariables != null;
     }
@@ -92,9 +96,14 @@ public class BasicBlock {
 
     public void addInstruction (Instruction instruction) {
         if (instruction instanceof ULTIMATERETURNINST) {
+            // System.out.println (this + " is end block " + "with label " + label);
             isEndBlock = true;
         }
         instructions.add(instruction);
+    }
+
+    public void setEndBlock(boolean endBlock) {
+        isEndBlock = endBlock;
     }
 
     public void addInput (BasicBlock basicBlock) {

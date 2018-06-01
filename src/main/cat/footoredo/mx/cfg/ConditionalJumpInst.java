@@ -1,12 +1,10 @@
 package cat.footoredo.mx.cfg;
 
 import cat.footoredo.mx.asm.Label;
+import cat.footoredo.mx.entity.Scope;
 import cat.footoredo.mx.entity.Variable;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ConditionalJumpInst extends JumpInst {
     private Operand condition;
@@ -15,6 +13,24 @@ public class ConditionalJumpInst extends JumpInst {
     public ConditionalJumpInst(Operand condition, Label trueTarget, Label falseTarget) {
         this.condition = condition;
         this.trueTarget = trueTarget;
+        this.falseTarget = falseTarget;
+    }
+
+    @Override
+    public JumpInst copy() {
+        return new ConditionalJumpInst(condition.copy(), trueTarget, falseTarget);
+    }
+
+    @Override
+    public void replace (Map<Variable, Variable> replacement, Scope scope) {
+        condition.replace(replacement, scope);
+    }
+
+    public void setTrueTarget(Label trueTarget) {
+        this.trueTarget = trueTarget;
+    }
+
+    public void setFalseTarget(Label falseTarget) {
         this.falseTarget = falseTarget;
     }
 

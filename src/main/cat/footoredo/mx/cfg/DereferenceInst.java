@@ -12,6 +12,11 @@ public class DereferenceInst extends Instruction {
         // System.err.println ("Dereference: " + result.getVariable().getName() + " = *" + address.getVariable().getName());
     }
 
+    @Override
+    public Instruction copy() {
+        return new DereferenceInst(getResult().copy(), getAddress().copy());
+    }
+
     public Operand getAddress () {
         return getOperand(0);
     }

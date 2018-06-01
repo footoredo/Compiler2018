@@ -1,9 +1,11 @@
 package cat.footoredo.mx.cfg;
 
+import cat.footoredo.mx.entity.Scope;
 import cat.footoredo.mx.entity.Variable;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 abstract public class Instruction {
@@ -15,6 +17,17 @@ abstract public class Instruction {
         this.result = result;
         this.operands = operands;
         this.isLive = false;
+    }
+
+    abstract public Instruction copy();
+
+    public void replace (Map<Variable, Variable> replacement, Scope scope) {
+        if (result != null) {
+            result.replace (replacement, scope);
+        }
+        for (Operand operand: operands) {
+            operand.replace(replacement, scope);
+        }
     }
 
     public boolean isLive() {
