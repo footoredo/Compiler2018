@@ -31,16 +31,16 @@ public class RegisterAllocator {
         while (!remainingVariables.isEmpty()) {
             boolean found = false;
             Variable bestVariable = null;
-            double ratio = 0;
+            double ratio = -1e10;
             for (Variable variable: remainingVariables) {
                 if (variable.getRivalryCount() < NUMBER_REGISTERS) {
                     found = true;
                     bestVariable = variable;
                     break;
                 }
-                else if ((double)variable.getRivalryCount() / /*variable.getUsedCount() */ 1> ratio) {
+                else if ((double)variable.getRivalryCount() - variable.getUsedCount() > ratio) {
                     bestVariable = variable;
-                    ratio = (double)variable.getRivalryCount() / /*variable.getUsedCount()*/ 1;
+                    ratio = (double)variable.getRivalryCount() - variable.getUsedCount();
                 }
             }
 
