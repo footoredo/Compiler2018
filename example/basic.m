@@ -1,31 +1,22 @@
 int main()
 {
-    int[][] a = new int[100][];
+    int k;
+    k = getInt();
+    print("p cnf ");
+    println(toString(k * 2 + 1) + " " + toString(k));
     int i;
-	int j;
-    for (i = 0; i < 100; i++)
-        a[i] = new int[100];
-    int sum = 0;
-
-    for (i = 0;i < 100;i++)
-        for (j = 0;j < 100;j++)
-            a[i][j] = 0;
-    int quotient;
-    int remainder;
-    for (i = 0;i < 100;i++)
-    	if (i > 20 && i < 80) {
-        	for (j = 0;j < 100;j++)
-            	if (j > 5 || i < 90) {
-                    quotient = j * 4 / 100;
-                    remainder = j * 4 % 100;
-                	a[i + quotient][remainder] = j + (100 - 1 + 1 - 1 + 1) / 2;
-                }
-    	}
-
-    for (i = 0;i < 100;i++)
-        for (j = 0;j < 100;j++)
-            sum = sum + a[i][j];
-    println(toString(sum));
+    int last;
+    last = 1;
+    string t;
+    for(i = 0; i < k; ++i)
+    {
+        t = toString(last) + " " + toString(last + 1) + " " + toString(-(last + 2));
+        if(i % 100000 == 0)
+        {
+            println(t);
+        }
+        last = last + 2;
+    }
     return 0;
 }
 
@@ -33,18 +24,30 @@ int main()
 
 /*!! metadata:
 === comment ===
-basicopt1-5100309127-hetianxing.mx
-=== input ===
-
+print_cnf-5140309234-xietiancheng.txtprint a 3-cnf, fast built in function
+=== is_public ===
+True
 === assert ===
 output
 === timeout ===
-0.1
-=== output ===
-99850
+1.5
+=== input ===
+1000000
 === phase ===
-codegen pretest
-=== is_public ===
-True
+optim pretest
+=== output ===
+p cnf 2000001 1000000
+1 2 -3
+200001 200002 -200003
+400001 400002 -400003
+600001 600002 -600003
+800001 800002 -800003
+1000001 1000002 -1000003
+1200001 1200002 -1200003
+1400001 1400002 -1400003
+1600001 1600002 -1600003
+1800001 1800002 -1800003
+=== exitcode ===
+
 
 !!*/
