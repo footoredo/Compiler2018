@@ -11,6 +11,12 @@ public class BinaryInst extends Instruction {
         this.op = op;
     }
 
+    public boolean isSame (BinaryInst other) {
+        return op == other.op &&
+                getLeft().isSame(other.getLeft()) &&
+                getRight().isSame(other.getRight());
+    }
+
     @Override
     public String toString () {
         return "Binary: " + getResult() + " = " + getLeft() + " " + op +  " " + getRight();

@@ -30,6 +30,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             currentFunction = definedFunction;
             visitedBasicBlocks = new HashSet<>();
             dfsAndBuildCallGraph (definedFunction.getStartBasicBlock());
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndCSE (definedFunction.getStartBasicBlock());
         }
 
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
@@ -217,6 +219,17 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             BasicBlock nextBasicBlock = cfg.get (output);
             if (!visitedBasicBlocks.contains(nextBasicBlock))
                 dfsAndBuildCallGraph(nextBasicBlock);
+        }
+    }
+
+    private void dfsAndCSE (BasicBlock currentBasicBlock) {
+        // System.out.println ("SHOULDBE: " + currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
+        visitedBasicBlocks.add (currentBasicBlock);
+        currentBasicBlock.CSE();
+        for (Label output: currentBasicBlock.getOutputLabels()) {
+            BasicBlock nextBasicBlock = cfg.get (output);
+            if (!visitedBasicBlocks.contains(nextBasicBlock))
+                dfsAndCSE(nextBasicBlock);
         }
     }
 

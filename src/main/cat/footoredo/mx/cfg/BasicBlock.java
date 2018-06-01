@@ -2,6 +2,7 @@ package cat.footoredo.mx.cfg;
 
 import cat.footoredo.mx.asm.Label;
 import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.ir.Binary;
 import cat.footoredo.mx.utils.ListUtils;
 
 import java.util.*;
@@ -60,6 +61,49 @@ public class BasicBlock {
         }
 
         // displayInstructions();
+    }
+
+    public void CSE () {
+        int n = instructions.size();
+        // System.out.println (n);
+        while (true) {
+            boolean found = false;
+            for (int i = 0; i < n - 1; ++ i) {
+                // System.out.println ("checking " + i);
+                if (instructions.get(i) instanceof BinaryInst) {
+                    BinaryInst binaryInst = (BinaryInst) instructions.get(i);
+                    List<Variable> toCheck = new ArrayList<>();
+                    if (binaryInst.getLeft().isVariable())
+                        toCheck.add (binaryInst.getLeft().getVariable());
+                    if (binaryInst.getRight().isVariable())
+                        toCheck.add (binaryInst.getRight().getVariable());
+                    for (int j = i; j < n; ++ j) {
+                        boolean affected = false;
+                        for (Variable variable: toCheck) {
+                            if (instructions.get(i).affect(variable)) {
+                                affected = true;
+                                break;
+                            }
+                        }
+                        if (affected) break;
+                        if (j > i && instructions.get(j) instanceof BinaryInst) {
+                            BinaryInst otherBinaryInst = (BinaryInst) instructions.get(j);
+                            if (binaryInst.isSame(otherBinaryInst)) {
+                                // System.out.println ("FOUND! " + i + " " + j);
+                                found = true;
+                                instructions.set(j, new AssignInst(otherBinaryInst.getResult(), binaryInst.getResult(), false));
+                                break;
+                            }
+                        }
+                    }
+                    if (found) {
+                        // System.out.println ("gonna break");
+                        break;
+                    }
+                }
+            }
+            if (!found) break;
+        }
     }
 
     public void displayInstructions () {

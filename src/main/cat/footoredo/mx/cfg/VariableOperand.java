@@ -43,6 +43,12 @@ public class VariableOperand extends Operand {
     }
 
     @Override
+    boolean isSame(Operand operand) {
+        if (!(operand instanceof VariableOperand)) return false;
+        else return variable == operand.getVariable();
+    }
+
+    @Override
     public Variable getVariable() {
         return variable;
     }

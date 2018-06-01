@@ -67,6 +67,10 @@ abstract public class Instruction {
         return resultLiveVariables;
     }
 
+    public boolean affect (Variable variable) {
+        return result != null && result.isVariable() && result.getVariable() == variable;
+    }
+
     public void updateUsedCount () {
         if (result != null && result.isVariable())
             result.getVariable().addUsedCount();

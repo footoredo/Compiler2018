@@ -18,9 +18,19 @@ public class ConstantStringOperand extends Operand {
         return entry.getSymbol();
     }
 
+    public String getValue () {
+        return entry.getValue();
+    }
+
     @Override
     public String toString() {
         return entry.getValue();
+    }
+
+    @Override
+    boolean isSame(Operand operand) {
+        if (!(operand instanceof ConstantStringOperand)) return false;
+        else return getValue().equals(((ConstantStringOperand) operand).getValue());
     }
 
     @Override

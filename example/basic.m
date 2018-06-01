@@ -1,8 +1,7 @@
-int fuck (int x) {
-    return x + 1;
-}
-
 int main () {
-    int c = 10;
-    return fuck(c);
+    int a = 1;
+    int b = 10;
+    int c = a + b;
+    int d = a + b;
+    return c + d;
 }

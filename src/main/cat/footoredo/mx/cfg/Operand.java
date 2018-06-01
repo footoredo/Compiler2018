@@ -40,6 +40,8 @@ abstract public class Operand {
     public void replace (Map<Variable, Variable> replacement, Scope scope) {
     }
 
+    abstract boolean isSame (Operand operand);
+
     public String display () {
         return toString();
     }

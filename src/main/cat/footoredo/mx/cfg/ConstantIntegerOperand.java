@@ -21,6 +21,12 @@ public class ConstantIntegerOperand extends Operand {
     }
 
     @Override
+    boolean isSame(Operand operand) {
+        if (!(operand instanceof ConstantIntegerOperand)) return false;
+        else return value == ((ConstantIntegerOperand) operand).value;
+    }
+
+    @Override
     public boolean isConstant() {
         return true;
     }
