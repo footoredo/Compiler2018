@@ -721,7 +721,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         /* as.mov (ax(s.getLength().getType()), s.getLength().toASMOperand());
         as.push (ax(s.getLength().getType()));*/
         as.mov (new Register(RegisterClass.DI, s.getLength().getType()), s.getLength().toASMOperand());
-        as.call(new NamedSymbol("_Znam"));
+        as.call(new NamedSymbol("malloc"));
         for (Register register: ListUtils.reverse(saving)) {
             as.virtualPop(register);
         }

@@ -39,7 +39,7 @@ getString:
         mov     rbp, rsp
         sub     rsp, 16
         mov     edi, 256
-        call    _Znam
+        call    malloc
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp-8H]
         mov     rsi, rax
@@ -108,7 +108,7 @@ toString:
         mov     rax, qword [rbp+16]
         mov     qword [rbp-18H], rax
         mov     edi, 20
-        call    _Znam
+        call    malloc
         mov     qword [rbp-8H], rax
         mov     rdx, qword [rbp-18H]
         mov     rax, qword [rbp-8H]
@@ -144,7 +144,7 @@ _strcat:
         add     rax, rdx
         add     rax, 1
         mov     rdi, rax
-        call    _Znam
+        call    malloc
         mov     qword [rbp-8H], rax
         mov     rdx, qword [rbp-18H]
         mov     rax, qword [rbp-8H]
@@ -193,7 +193,7 @@ string#substring:
         sub     rax, qword [rbp-18H]
         add     rax, 2
         mov     rdi, rax
-        call    _Znam
+        call    malloc
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp-20H]
         sub     rax, qword [rbp-18H]
