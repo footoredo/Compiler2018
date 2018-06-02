@@ -30,7 +30,7 @@ println:
         mov     rax, qword [rbp-8H]
         mov     rdi, rax
         call    puts
-        nop
+        ;nop
         leave
         ret
 
