@@ -16,6 +16,7 @@ public class BasicBlock {
     private JumpInst jumpInst;
     private boolean isEndBlock;
     private Set<Variable> liveVariables;
+    private Set<Variable> endLiveVariables;
 
     public BasicBlock(Label label) {
         this.label = label;
@@ -233,6 +234,11 @@ public class BasicBlock {
             result = instruction.backPropagate (result);
         }
         ListUtils.reverse(instructions);
+        this.endLiveVariables = result;
         return result;
+    }
+
+    public Set<Variable> getEndLiveVariables() {
+        return endLiveVariables;
     }
 }

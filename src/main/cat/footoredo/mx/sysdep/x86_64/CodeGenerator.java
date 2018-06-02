@@ -274,9 +274,11 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private AssemblyCode compileStatements (DefinedFunction function) {
         as = newAssemblyCode();
+        BasicBlock startBasicBlock = function.getStartBasicBlock();
         for (Parameter par: function.getParameters()) if (par.isUsed()) {
             // System.out.println (par.getName() + " " + par.getSpace() + " " + par.getParameterSpace());
-            compileAssign (as, Type.get(par.size()), Type.get(par.size()), par.getSpace(), par.getParameterSpace());
+            if (startBasicBlock.getEndLiveVariables().contains(par))
+                compileAssign (as, Type.get(par.size()), Type.get(par.size()), par.getSpace(), par.getParameterSpace());
         }
         epilogueLabel = new Label();
         // System.out.println (function.getSymbolString());
@@ -400,13 +402,13 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         for (Register register: savedRegisters) {
             file.virtualPush(register);
         }
-        for (long index = 0; index < 16; ++ index) {
+        /*for (long index = 0; index < 16; ++ index) {
             if (index != RegisterClass.DI.getValue() &&
                     index != RegisterClass.SP.getValue() &&
                     index != RegisterClass.BP.getValue()) {
                 file.mov (new Register(index, naturalType), new ImmediateValue(0));
             }
-        }
+        }*/
     }
 
     private void epilogue (AssemblyCode file,
@@ -677,6 +679,11 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(CallInst s) {
+        /*if (s.getFunction().getName().equals("toString")) {
+            as.mov (ax(), s.getArg(0).toASMOperand());
+            as.leave ();
+            as.ret ();
+        }*/
         List<Register> saving = new ArrayList<>(toSaveRegisters);
         // System.out.println (saving.size() + " " + s);
         for (Register register: saving) {
@@ -714,10 +721,11 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
         }
 
-        for (int i = s.getArgc() - 1 + cnt % 2; i >= PARAMETER_REGISTERS.length; -- i) {
+        /*for (int i = s.getArgc() - 1 + cnt % 2; i >= PARAMETER_REGISTERS.length; -- i) {
             as.pop (ax(naturalType));
             // as.mov (s.getFunction().getParameter(i).getMemoryReference(), ax());
-        }
+        }*/
+        as.add (sp(), new ImmediateValue(8 * (s.getArgc() + cnt % 2 - PARAMETER_REGISTERS.length)));
     }
 
     /*@Override
