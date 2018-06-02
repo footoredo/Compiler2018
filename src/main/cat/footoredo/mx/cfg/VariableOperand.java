@@ -73,7 +73,7 @@ public class VariableOperand extends Operand {
     }
 
     @Override
-    public Register getRegister() {
+    public cat.footoredo.mx.sysdep.x86_64.Register getRegister() {
         return variable.getRegister();
     }
 

@@ -2,10 +2,10 @@ package cat.footoredo.mx.cfg;
 
 import cat.footoredo.mx.asm.ImmediateValue;
 import cat.footoredo.mx.asm.MemoryReference;
-import cat.footoredo.mx.asm.Register;
 import cat.footoredo.mx.asm.Type;
 import cat.footoredo.mx.entity.Scope;
 import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.sysdep.x86_64.Register;
 
 import java.util.Map;
 

@@ -159,6 +159,33 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private Set<Register> toSaveRegisters, allToSaveRegisters;
 
+    private void dfsAndFind (BasicBlock currentBasicBlock) {
+        visitedBasicBlock.add(currentBasicBlock);
+        for (Instruction instruction: currentBasicBlock.getInstructions()) {
+            List<Register> toCheck = new ArrayList<>();
+            if (instruction.getResult() != null &&
+                    instruction.getResult().isRegister()) {
+                toCheck.add (instruction.getResult().getRegister());
+            }
+            for (Operand operand: instruction.getOperands()) {
+                if (operand.isRegister()) {
+                    toCheck.add (operand.getRegister());
+                }
+            }
+            for (Register register: toCheck) {
+                if (allToSaveRegisters.contains(register)) {
+                    toSaveRegisters.add(register);
+                }
+            }
+        }
+
+        for (BasicBlock basicBlock: currentBasicBlock.getOutputs()) {
+            if (!visitedBasicBlock.contains(basicBlock)) {
+                dfsAndFind(basicBlock);
+            }
+        }
+    }
+
     private void compileFunctionBody (AssemblyCode file, DefinedFunction function) {
         StackFrameInfo frame = new StackFrameInfo();
         locateParameters (function.getParameters());
@@ -170,14 +197,21 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         toSaveRegisters = new HashSet<>();
         visitedBasicBlock = new HashSet<>();
 
-        for (Variable variable: function.getScope().getAllVariables()) {
+        dfsAndFind (function.getStartBasicBlock());
+
+        /*for (Variable variable: function.getScope().getAllVariables()) {
             if (variable.isRegister()) {
                 Register register = variable.getRegister();
+                if (register.getNumber() == 11 && function.getName().equals("main")) {
+                    System.out.println ("!!");
+                }
                 if (allToSaveRegisters.contains(register)) {
+                    if (!toSaveRegisters.contains(register) && function.getName().equals("main"))
+                    System.out.println (register.getNumber());
                     toSaveRegisters.add (register);
                 }
             }
-        }
+        }*/
 
         toSaveRegisters.add (new Register(RegisterClass.DI));
         toSaveRegisters.add (new Register(RegisterClass.SI));
