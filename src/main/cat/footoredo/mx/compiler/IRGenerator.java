@@ -335,11 +335,32 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         }
     }
 
+    private void process (ExpressionNode node, Label trueLabel, Label falseLabel) {
+        if (node instanceof LogicalOpNode) {
+            LogicalOpNode logicalOpNode = (LogicalOpNode) node;
+            ExpressionNode lhs = logicalOpNode.getLhs();
+            ExpressionNode rhs = logicalOpNode.getRhs();
+
+            Label rightLabel = new Label();
+            if (logicalOpNode.getOperator().equals("&&")) {
+                process(lhs, rightLabel, falseLabel);
+            }
+            else {
+                process(lhs, trueLabel, rightLabel);
+            }
+
+            label (rightLabel);
+            process(rhs, trueLabel, falseLabel);
+        }
+        else {
+            cat.footoredo.mx.entity.Variable tmp = tmpVariable(node.getType());
+            assign (node.getLocation(), ref(tmp), transformExpression(node));
+            cjump (node.getLocation(), ref(tmp), trueLabel, falseLabel);
+        }
+    }
+
     @Override
     public Expression visit(LogicalOpNode node) {
-        java.lang.String operator = node.getOperator();
-        assert (operator.equals("||") || operator.equals("&&"));
-
         /*Expression rhs = transformExpression(node.getRhs());
         Expression lhs = transformExpression(node.getLhs());
 
@@ -347,21 +368,21 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         cat.footoredo.mx.type.Type type = node.getType();
         return isStatement() ? null : new Binary(asmType(type), op, lhs, rhs);*/
 
-        Label rightLabel = new Label ();
+        Label trueLabel = new Label ();
+        Label falseLabel = new Label ();
         Label endLabel = new Label ();
 
+        process(node, trueLabel, falseLabel);
+
         cat.footoredo.mx.entity.Variable variable = tmpVariable(node.getType());
-        assign (node.getLhs().getLocation(), ref(variable), transformExpression(node.getLhs()));
 
-        if (operator.equals("&&")) {
-            cjump(node.getLocation(), ref(variable), rightLabel, endLabel);
-        }
-        else {
-            cjump(node.getLocation(), ref(variable), endLabel, rightLabel);
-        }
+        label (trueLabel);
+        assign (node.getLocation(), ref(variable), new Integer(Type.INT8, 1));
+        jump (endLabel);
 
-        label (rightLabel);
-        assign (node.getRhs().getLocation(), ref (variable), transformExpression(node.getRhs()));
+        label (falseLabel);
+        assign (node.getLocation(), ref(variable), new Integer(Type.INT8, 0));
+        jump (endLabel);
 
         label (endLabel);
 

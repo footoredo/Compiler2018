@@ -38,9 +38,9 @@ public class RegisterAllocator {
                     bestVariable = variable;
                     break;
                 }
-                else if ((double)variable.getRivalryCount() / variable.getUsedCount() > ratio) {
+                else if ((double)variable.getRivalryCount() /*/ variable.getUsedCount()*/ > ratio) {
                     bestVariable = variable;
-                    ratio = (double)variable.getRivalryCount() / variable.getUsedCount();
+                    ratio = (double)variable.getRivalryCount() /*/ variable.getUsedCount()*/;
                 }
             }
 

@@ -21,7 +21,7 @@ public class Variable extends Entity {
     private Boolean isGlobal;
 
     private Set<Variable> rivalries;
-    private Set<Variable> orignalRivalries;
+    private Set<Variable> originalRivalries;
 
     private int usedCount;
 
@@ -30,7 +30,7 @@ public class Variable extends Entity {
         this.initializer = variableDeclarationNode.getInitExpr();
         this.isGlobal = false;
         this.rivalries = new HashSet<>();
-        this.orignalRivalries = new HashSet<>();
+        this.originalRivalries = new HashSet<>();
         this.usedCount = 0;
     }
 
@@ -39,7 +39,7 @@ public class Variable extends Entity {
         this.initializer = null;
         this.isGlobal = false;
         this.rivalries = new HashSet<>();
-        this.orignalRivalries = new HashSet<>();
+        this.originalRivalries = new HashSet<>();
         this.usedCount = 0;
     }
 
@@ -56,7 +56,7 @@ public class Variable extends Entity {
         if (rivalry != this && !rivalry.isGlobal()) {
             // System.out.println (name + " <-> " + rivalry.getName());
             rivalries.add(rivalry);
-            orignalRivalries.add(rivalry);
+            originalRivalries.add(rivalry);
         }
     }
 
@@ -69,7 +69,7 @@ public class Variable extends Entity {
     }
 
     public Set<Variable> getOriginalRivalries() {
-        return orignalRivalries;
+        return originalRivalries;
     }
 
     public void disconnect () {
