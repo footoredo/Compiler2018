@@ -34,11 +34,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             dfsAndCSE (definedFunction.getStartBasicBlock());
         }
 
-        /*for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             visitedBasicBlocks = new HashSet<>();
             currentFunction = definedFunction;
             dfsAndInline (definedFunction.getStartBasicBlock());
-        }*/
+        }
 
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
