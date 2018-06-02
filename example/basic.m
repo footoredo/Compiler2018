@@ -1,11 +1,6 @@
-int f (int x) {
-    return x;
-}
-
-int g (int x) {
-    return f(x);
-}
-
 int main () {
-    return g(1);
+    int i;
+    for (i = 0; i < 100000000; ++ i) {
+    }
+    return 0;
 }

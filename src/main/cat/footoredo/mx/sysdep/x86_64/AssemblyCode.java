@@ -16,6 +16,18 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
     private List<Assembly> assemblies = new ArrayList<>();
     private Statistics statistics;
 
+    static private boolean isInstant (Register register) {
+        long index = register.getNumber();
+        if (index == RegisterClass.AX.getValue() ||
+                index == RegisterClass.CX.getValue() ||
+                index == RegisterClass.DX.getValue()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     public AssemblyCode(Type naturalType, long stackWordSize, SymbolTable symbolTable) {
         this.naturalType = naturalType;
         this.stackWordSize = stackWordSize;
@@ -27,17 +39,29 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         List <Assembly> newAssemblies = new ArrayList<>();
 
         for (int i = 0; i < n - 1; ++ i) {
-            newAssemblies.add (assemblies.get(i));
             if (assemblies.get(i) instanceof Instruction
-                    && assemblies.get(i + 1) instanceof  Instruction) {
+                    && assemblies.get(i + 1) instanceof Instruction) {
                 Instruction IA = (Instruction) (assemblies.get(i)),
                         IB = (Instruction) (assemblies.get(i + 1));
                 if (IA.isMOV() && IB.isMOV() &&
                         IA.operand1().hashCode() == IB.operand2().hashCode() &&
                         IA.operand2().hashCode() == IB.operand1().hashCode()) {
-                    ++ i;
+                    newAssemblies.add (assemblies.get(i));
+                    i += 2;
+                    continue;
+                }
+                else if (IA.isMOV() && IB.isMOV() &&
+                        IA.operand2().hashCode() == IB.operand1().hashCode() &&
+                        IA.operand1().isRegister() &&
+                        isInstant((Register) IA.operand1()) &&
+                        ! (IA.operand1().isMemoryReference() && IA.operand2().isMemoryReference()) &&
+                        ((Register)IA.operand2()).getType() == ((Register)IB.operand1()).getType()) {
+                    newAssemblies.add (new Instruction("mov", "", IA.operand1(), IB.operand2()));
+                    i += 2;
+                    continue;
                 }
             }
+            newAssemblies.add (assemblies.get(i));
         }
 
         assemblies = newAssemblies;
