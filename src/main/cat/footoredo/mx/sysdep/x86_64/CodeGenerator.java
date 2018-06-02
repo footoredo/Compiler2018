@@ -725,7 +725,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             as.pop (ax(naturalType));
             // as.mov (s.getFunction().getParameter(i).getMemoryReference(), ax());
         }*/
-        as.add (sp(), new ImmediateValue(8 * (s.getArgc() + cnt % 2 - PARAMETER_REGISTERS.length)));
+        if (cnt > 0)
+        as.add (sp(), new ImmediateValue(8 * (cnt + cnt % 2)));
     }
 
     /*@Override
