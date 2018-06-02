@@ -56,7 +56,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (!inlined) break;
         }
 
-        for (int i = 0; i < 5; ++ i) {
+        /* for (int i = 0; i < 5; ++ i) {
             inlined = false;
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
@@ -76,7 +76,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
 
             if (!inlined) break;
-        }
+        }*/
 
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
