@@ -42,6 +42,10 @@ public class Instruction extends Assembly {
         return true;
     }
 
+    public String getInst () {
+        return mnemonic + suffix;
+    }
+
     public String getMnemonic() {
         return mnemonic;
     }
@@ -67,7 +71,15 @@ public class Instruction extends Assembly {
     }
 
     public boolean isMOV () {
-        return mnemonic.equals("mov") && suffix.equals("");
+        return getInst().equals("mov");
+    }
+
+    public boolean isMOVLIKE () {
+        return isMOV() ||
+                getInst().equals("and") ||
+                getInst().equals("or") ||
+                getInst().equals("add") ||
+                getInst().equals("sub");
     }
 
     @Override

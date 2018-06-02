@@ -34,7 +34,8 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         this.symbolTable = symbolTable;
     }
 
-    public AssemblyCode peepholeOptimize () {
+    public boolean peepholeOptimize () {
+        boolean optimized = false;
         int n = assemblies.size();
         List <Assembly> newAssemblies = new ArrayList<>();
 
@@ -48,25 +49,40 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
                         IA.operand2().hashCode() == IB.operand1().hashCode()) {
                     newAssemblies.add (assemblies.get(i));
                     i ++;
+                    optimized = true;
                     continue;
                 }
-                else if (IA.isMOV() && IB.isMOV() &&
+                /*else if (IA.isMOVLIKE() && IB.isMOV() &&
                         IA.operand2().hashCode() == IB.operand1().hashCode() &&
                         IA.operand1().isRegister() &&
                         isInstant((Register) IA.operand1()) &&
                         ! (IA.operand1().isMemoryReference() && IA.operand2().isMemoryReference()) &&
                         ((Register)IA.operand2()).getType() == ((Register)IB.operand1()).getType()) {
-                    // System.out.println ("ffff");
-                    newAssemblies.add (new Instruction("mov", "", IA.operand1(), IB.operand2()));
+                    System.err.println ("ffff");
+                    newAssemblies.add (new Instruction(IA.getMnemonic(), IA.getSuffix(), IA.operand1(), IB.operand2()));
                     i ++;
+                    optimized = true;
+                    continue;
+                }*/
+                else if (IA.isMOV() && IB.isMOVLIKE() &&
+                        IA.operand2().hashCode() == IB.operand1().hashCode() &&
+                        IA.operand1().isRegister() &&
+                        isInstant((Register) IA.operand1()) &&
+                        ! (IA.operand1().isMemoryReference() && IA.operand2().isMemoryReference()) &&
+                        ((Register)IA.operand2()).getType() == ((Register)IB.operand1()).getType()) {
+                    System.err.println ("ffff");
+                    newAssemblies.add (new Instruction(IB.getMnemonic(), IB.getSuffix(), IA.operand1(), IB.operand2()));
+                    i ++;
+                    optimized = true;
                     continue;
                 }
             }
             newAssemblies.add (assemblies.get(i));
         }
 
+        newAssemblies.add(assemblies.get(n - 1));
         assemblies = newAssemblies;
-        return this;
+        return optimized;
     }
 
     private Statistics getStatistics() {

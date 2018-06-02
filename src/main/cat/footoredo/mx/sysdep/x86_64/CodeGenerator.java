@@ -28,7 +28,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         this.cfg = cfg;
         compiledLabels = new HashSet<>();
         locateSymbols(ir);
-        return generateAssemblyCode(ir).peepholeOptimize();
+        AssemblyCode assemblyCode = generateAssemblyCode(ir);
+        while (assemblyCode.peepholeOptimize());
+        return assemblyCode;
     }
 
     private static final java.lang.String LABEL_SYMBOL_BASE = "_QAQ_L";
