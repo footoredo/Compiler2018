@@ -1,108 +1,62 @@
-int[][] c;
-int ans = 0;
-int[] visit = new int[110];
-int[] pre = new int[110];
-int[] f = new int[110];
-int i;
-int j;
-int open;
-int closed;
+//考察点：section 10 字符串，包括字符串定义，运算符语义，字符串的内建方法
+//算法：递归模拟
+//样例输入：
+//DCBAE
+//4ssfsdf
+//样例输出：
+//ABCD
 
-void origin(int N)
+string A;
+string B;
+string C;
+int N;
+
+string calc(string A)
 {
-	c = new int[N][];
-    for (i = 0; i < N; i ++ ) {
-		c[i] = new int[N];
-        for (j = 0; j < N; j ++ )
-        c[i][j] = 0;
-    }
+	int len = A.length();
+	if (1 == len) return A;
+	int mid = len/2;
+	string L = calc(A.substring(0,mid-1));
+	string R = calc(A.substring(mid,len-1));
+	if (L < R) return L + R;
+	else if (L == R) {
+		int l = L.ord(0);
+		int r = R.ord(0);
+		if (l < r) return L + R;
+		return R + L;
+	}
+	else if (L > R) return R + L;
+	println("Never Ever!");
 }
 
-int build(int start, int ending) {
-    for (i = 1; i <= 49; i++) {
-        for (j = 50; j <= 98-i+1; j++) {
-            c[i][j] = 1;
-        }
-    }
-    for (i = 1; i <= 49; i++)
-        c[start][i] = 1;
-    for (i = 50; i <= 98; i++)
-        c[i][ending] = 1;
-    return 0;
+int main()
+{
+	A = getString();
+	B = getString();
+	N = B.parseInt();
+	if (A.length() < N) {
+		println("length error!");
+		return 0;
+	}
+	C = calc(A.substring(0,N-1));
+	println(C);
+	return 0;
 }
-
-int find(int ending, int start, int flag) {
-    open = 0;
-    closed = 1;
-    for (i = 1; i <= ending; i++) {
-        visit[i] = 0;
-    }
-    f[1]=start;
-    visit[start]=1;
-    pre[start]=0;
-    flag=0;
-    while (open<closed && flag==0) {
-        open++;
-        i=f[open];
-        for (j = 1; j <= ending; j++)
-            if (c[i][j]>0 && visit[j]==0) {
-                visit[j]=1;
-                closed++;
-                f[closed]=j;
-                pre[j]=i;
-                if (closed==ending) flag=1;
-            }
-    }
-    return flag;
-}
-
-int improve(int ending) {
-    i=ending;
-    ans++;
-    while (pre[i]>0) {
-        j=pre[i];
-        c[j][i]--;
-        c[i][j]++;
-        i=j;
-    }
-    return 0;
-}
-
-int main() {
-	origin(110);
-    int k;
-	int start;
-	int ending;
-    int flag;
-    int i1;
-
-    k = 0;
-    start = 99;
-    ending = 100;
-    flag = 0;
-
-    build(start, ending);
-    while (find(ending, start, flag)>0) {
-        improve(ending);
-    }
-	println(toString(ans));
-    return 0;
-}
-
 
 
 
 /*!! metadata:
 === comment ===
-maxflow-5100379110-daibo.mx
+string_test-huyuncong.mx
 === input ===
-
+DCBAE
+4ssfsdf
 === assert ===
 output
 === timeout ===
-0.3
+0.1
 === output ===
-49
+ABCD
 === phase ===
 codegen pretest
 === is_public ===
