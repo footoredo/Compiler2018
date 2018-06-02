@@ -406,8 +406,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         file.ret ();
     }
 
-    static final long[] PARAMETER_REGISTERS = {
-            RegisterClass.DI.getValue(), RegisterClass.SI.getValue()/*,
+    static final long[] PARAMETER_REGISTERS = {/*
+            RegisterClass.DI.getValue(), RegisterClass.SI.getValue(),
             RegisterClass.DX.getValue(), RegisterClass.CX.getValue(), 8, 9*/
     };
 
@@ -675,6 +675,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             Type t = operand.getType();
             as.mov (new Register(PARAMETER_REGISTERS[i], t), operand.toASMOperand());
         }
+        int cnt = s.getArgc() - PARAMETER_REGISTERS.length;
+        if (cnt % 2 == 1) {
+            as.push (ax());
+        }
         for (int i = s.getArgc() - 1; i >= PARAMETER_REGISTERS.length; -- i) {
             Operand operand = s.getArg(i);
             Type t = operand.getType();
@@ -687,6 +691,10 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         as.call(s.getFunction().getCallingSymbol());
         /*if (s.getResult().toASMOperand() == null) {
             System.out.println (s.getResult().getVariable().getName() + s.getResult().getVariable().isUsed());
+        }*/
+        /*for (int i = s.getArgc() - 1; i >= PARAMETER_REGISTERS.length; -- i) {
+            as.pop (ax(naturalType));
+            // as.mov (s.getFunction().getParameter(i).getMemoryReference(), ax());
         }*/
         saving = new ArrayList<>(toSaveRegisters);
         for (Register register: ListUtils.reverse(saving)) {
