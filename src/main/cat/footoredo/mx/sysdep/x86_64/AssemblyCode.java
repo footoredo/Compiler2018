@@ -47,7 +47,7 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
                         IA.operand1().hashCode() == IB.operand2().hashCode() &&
                         IA.operand2().hashCode() == IB.operand1().hashCode()) {
                     newAssemblies.add (assemblies.get(i));
-                    i += 2;
+                    i ++;
                     continue;
                 }
                 else if (IA.isMOV() && IB.isMOV() &&
@@ -56,8 +56,9 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
                         isInstant((Register) IA.operand1()) &&
                         ! (IA.operand1().isMemoryReference() && IA.operand2().isMemoryReference()) &&
                         ((Register)IA.operand2()).getType() == ((Register)IB.operand1()).getType()) {
+                    // System.out.println ("ffff");
                     newAssemblies.add (new Instruction("mov", "", IA.operand1(), IB.operand2()));
-                    i += 2;
+                    i ++;
                     continue;
                 }
             }
