@@ -401,7 +401,9 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             file.virtualPush(register);
         }
         for (long index = 0; index < 16; ++ index) {
-            if (index != RegisterClass.DI.getValue()) {
+            if (index != RegisterClass.DI.getValue() &&
+                    index != RegisterClass.SP.getValue() &&
+                    index != RegisterClass.BP.getValue()) {
                 file.mov (new Register(index, naturalType), new ImmediateValue(0));
             }
         }
