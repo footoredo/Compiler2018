@@ -3,7 +3,7 @@ print:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+16]
+        mov     rax, rdi
         mov     qword [rbp-8H], rax
 print#L_001:  mov     rax, qword [rbp-8H]
         movzx   eax, byte [rax]
@@ -25,7 +25,7 @@ println:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+16]
+        mov     rax, rdi
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp-8H]
         mov     rdi, rax
@@ -88,7 +88,7 @@ _strcmp:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 16
-        mov     rax, qword [rbp+16]
+        mov     rax, rdi
         mov     qword [rbp-8H], rax
         mov     rax, qword [rbp+24]
         mov     qword [rbp-10H], rax
@@ -105,7 +105,7 @@ toString:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 32
-        mov     rax, qword [rbp+16]
+        mov     rax, rdi
         mov     qword [rbp-18H], rax
         mov     edi, 20
         call    malloc
@@ -127,49 +127,39 @@ toString#L_002:
 _strcat:
         push    rbp
         mov     rbp, rsp
-        sub     rsp, 48
-        mov     rax, qword [rbp + 16]
-        mov     qword [rbp-28H], rax
-        mov     rax, qword [rbp + 24]
-        mov     qword [rbp-30H], rax
-        mov     rax, qword [rbp-28H]
-        mov     rdi, rax
-        call    strlen
-        mov     qword [rbp-18H], rax
-        mov     rax, qword [rbp-30H]
+        sub     rsp, 32
+        mov     qword [rbp-18H], rdi
+        mov     rsi, qword [rbp + 16]
+        mov     qword [rbp-20H], rsi
+        mov     rax, qword [rbp-18H]
         mov     rdi, rax
         call    strlen
         mov     qword [rbp-10H], rax
-        mov     rdx, qword [rbp-18H]
+        mov     rax, qword [rbp-20H]
+        mov     rdi, rax
+        call    strlen
+        mov     rdx, rax
         mov     rax, qword [rbp-10H]
         add     rax, rdx
         add     rax, 1
         mov     rdi, rax
-        call    _Znam
+        call    malloc
         mov     qword [rbp-8H], rax
-        mov     rdx, qword [rbp-28H]
+        mov     rdx, qword [rbp-18H]
         mov     rax, qword [rbp-8H]
         mov     rsi, rdx
         mov     rdi, rax
         call    strcpy
-        mov     rdx, qword [rbp-18H]
+        mov     rdx, qword [rbp-10H]
         mov     rax, qword [rbp-8H]
         add     rdx, rax
-        mov     rax, qword [rbp-30H]
+        mov     rax, qword [rbp-20H]
         mov     rsi, rax
         mov     rdi, rdx
         call    strcpy
-        mov     rdx, qword [rbp-18H]
-        mov     rax, qword [rbp-10H]
-        add     rax, rdx
-        mov     rdx, rax
-        mov     rax, qword [rbp-8H]
-        add     rax, rdx
-        mov     byte [rax], 0
         mov     rax, qword [rbp-8H]
         leave
         ret
-
 
 __array#size:
         push    rbp
@@ -194,7 +184,7 @@ string#substring:
         push    rbp
         mov     rbp, rsp
         sub     rsp, 32
-        mov     rax, qword [rbp+16]
+        mov     rax, rdi
                 mov     qword [rbp-18H], rax
                 mov     rax, qword [rbp+24]
                 mov     qword [rbp-20H], rax
