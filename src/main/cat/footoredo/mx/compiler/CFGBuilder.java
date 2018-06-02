@@ -50,7 +50,29 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
                 visitedBasicBlocks = new HashSet<>();
                 currentFunction = definedFunction;
-                dfsAndInline(definedFunction.getStartBasicBlock());
+                dfsAndInline(definedFunction.getStartBasicBlock(), false);
+            }
+
+            if (!inlined) break;
+        }
+
+        for (int i = 0; i < 5; ++ i) {
+            inlined = false;
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                definedFunction.resetCalls ();
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                currentFunction = definedFunction;
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                visitedBasicBlocks = new HashSet<>();
+                currentFunction = definedFunction;
+                dfsAndInline(definedFunction.getStartBasicBlock(), true);
             }
 
             if (!inlined) break;
@@ -162,7 +184,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         newBasicBlock.setJumpInst(jumpInst);
     }
 
-    private void dfsAndInline (BasicBlock currentBasicBlock) {
+    private void dfsAndInline (BasicBlock currentBasicBlock, boolean inlineRecursion) {
         // System.out.println ("dfsAndInline: " + currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
         visitedBasicBlocks.add(currentBasicBlock);
         List<Instruction> originalInstructions = new ArrayList<>(currentBasicBlock.getInstructions());
@@ -171,7 +193,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (instruction instanceof CallInst) {
                 CallInst callInst = (CallInst) instruction;
                 if (callInst.getFunction() instanceof DefinedFunction &&
-                        !(((DefinedFunction) callInst.getFunction()).callItself())) {
+                        (!(((DefinedFunction) callInst.getFunction()).callItself()) || inlineRecursion)) {
                     inlined = true;
                     DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
                     // System.out.println ("Inlining " + inlineFunction.getName());
@@ -219,7 +241,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             BasicBlock nextBasicBlock = cfg.get (outputLabel);
             // System.out.println ( "going to label " + outputLabel);
             if (!visitedBasicBlocks.contains(nextBasicBlock)) {
-                dfsAndInline(nextBasicBlock);
+                dfsAndInline(nextBasicBlock, inlineRecursion);
             }
         }
     }
