@@ -254,7 +254,7 @@ string#parseInt#L_003:  mov     rax, qword [rbp-10H]
 string#ord:
         push    rbp
         mov     rbp, rsp
-        mov     eax, dword [rbp+16]
+        mov     eax, edi
         mov     dword [rbp-4H], eax
         mov     rdx, qword [rel @_@thisPointer]
         ;mov     rdx, qword [rax]
