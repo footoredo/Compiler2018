@@ -400,6 +400,11 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         for (Register register: savedRegisters) {
             file.virtualPush(register);
         }
+        for (long index = 0; index < 16; ++ index) {
+            if (index != RegisterClass.DI.getValue()) {
+                file.mov (new Register(index, naturalType), new ImmediateValue(0));
+            }
+        }
     }
 
     private void epilogue (AssemblyCode file,
