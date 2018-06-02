@@ -36,6 +36,17 @@ public class DefinedFunction extends Function {
             calls.add ((DefinedFunction) callInst.getFunction());
     }
 
+    public void resetCalls () {
+        calls = new HashSet<>();
+    }
+
+    public boolean callItself () {
+        for (DefinedFunction function: calls)
+            if (function == this)
+                return true;
+        return false;
+    }
+
     public Label getFunctionEndLabel() {
         return functionEndLabel;
     }
