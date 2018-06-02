@@ -90,7 +90,7 @@ _strcmp:
         sub     rsp, 16
         mov     rax, rdi
         mov     qword [rbp-8H], rax
-        mov     rax, qword [rbp+24]
+        mov     rax, qword [rbp+16]
         mov     qword [rbp-10H], rax
         mov     rdx, qword [rbp-10H]
         mov     rax, qword [rbp-8H]
@@ -186,7 +186,7 @@ string#substring:
         sub     rsp, 32
         mov     rax, rdi
                 mov     qword [rbp-18H], rax
-                mov     rax, qword [rbp+24]
+                mov     rax, qword [rbp+16]
                 mov     qword [rbp-20H], rax
         mov     rax, qword [rbp-20H]
         sub     rax, qword [rbp-18H]
