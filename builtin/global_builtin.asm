@@ -107,7 +107,7 @@ toString:
         sub     rsp, 32
         mov     rax, rdi
         mov     qword [rbp-18H], rax
-        mov     edi, 20
+        mov     rdi, 20
         call    malloc
         mov     qword [rbp-8H], rax
         mov     rdx, qword [rbp-18H]

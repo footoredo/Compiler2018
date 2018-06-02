@@ -181,7 +181,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
         toSaveRegisters.add (new Register(RegisterClass.DI));
         toSaveRegisters.add (new Register(RegisterClass.SI));
-        toSaveRegisters.add (new Register(RegisterClass.CX));
+        // toSaveRegisters.add (new Register(RegisterClass.CX));
 
         AssemblyCode body = compileStatements(function);
         frame.savedRegs = usedCalleeSaveRegisters(body);
@@ -329,7 +329,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     static final long[] CALLER_SAVE_REGISTERS = {
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue(),
             10, 11, 8, 9, RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
-            12, 13, 14, 15, RegisterClass.CX.getValue()
+            12, 13, 14, 15
     };
 
     private List<Register> callerSaveRegistersCache = null;
