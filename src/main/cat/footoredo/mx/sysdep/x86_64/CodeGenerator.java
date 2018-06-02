@@ -720,8 +720,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(DereferenceInst s) {
-        as.mov(cx(), s.getAddress().toASMOperand());
-        load(ax(s.getResult().getType()), memory(s.getResult().getType(), cx()));
+        as.mov(ax(), s.getAddress().toASMOperand());
+        load(ax(s.getResult().getType()), memory(s.getResult().getType(), ax()));
         // System.out.println (s.getResult().getType());
         as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
