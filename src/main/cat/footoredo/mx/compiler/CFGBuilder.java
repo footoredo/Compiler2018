@@ -193,7 +193,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (instruction instanceof CallInst) {
                 CallInst callInst = (CallInst) instruction;
                 if (callInst.getFunction() instanceof DefinedFunction &&
-                        (!(((DefinedFunction) callInst.getFunction()).callItself()) || inlineRecursion)) {
+                        ((!((DefinedFunction) callInst.getFunction()).callItself()) || inlineRecursion)) {
                     inlined = true;
                     DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
                     // System.out.println ("Inlining " + inlineFunction.getName());
