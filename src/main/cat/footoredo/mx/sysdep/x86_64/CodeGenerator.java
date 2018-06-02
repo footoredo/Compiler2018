@@ -181,6 +181,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
         toSaveRegisters.add (new Register(RegisterClass.DI));
         toSaveRegisters.add (new Register(RegisterClass.SI));
+        toSaveRegisters.add (new Register(RegisterClass.CX));
 
         AssemblyCode body = compileStatements(function);
         frame.savedRegs = usedCalleeSaveRegisters(body);
@@ -328,7 +329,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     static final long[] CALLER_SAVE_REGISTERS = {
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue(),
             10, 11, 8, 9, RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
-            12, 13, 14, 15
+            12, 13, 14, 15, RegisterClass.CX.getValue()
     };
 
     private List<Register> callerSaveRegistersCache = null;
@@ -720,8 +721,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(DereferenceInst s) {
-        as.mov(ax(), s.getAddress().toASMOperand());
-        load(ax(s.getResult().getType()), memory(s.getResult().getType(), ax()));
+        as.mov(cx(), s.getAddress().toASMOperand());
+        load(ax(s.getResult().getType()), memory(s.getResult().getType(), cx()));
         // System.out.println (s.getResult().getType());
         as.mov(s.getResult().toASMOperand(), ax(s.getResult().getType()));
     }
