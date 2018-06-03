@@ -1,12 +1,15 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.asm.Label;
+import cat.footoredo.mx.asm.Register;
 import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.ast.BlockNode;
 import cat.footoredo.mx.ast.MethodNode;
 import cat.footoredo.mx.cfg.BasicBlock;
 import cat.footoredo.mx.cfg.CallInst;
+import cat.footoredo.mx.cfg.RegisterAllocator;
 import cat.footoredo.mx.ir.Statement;
+import cat.footoredo.mx.sysdep.x86_64.RegisterClass;
 
 import java.util.*;
 
@@ -20,6 +23,10 @@ public class DefinedFunction extends Function {
     private BasicBlock endBasicBlock;
 
     private Set<DefinedFunction> calls;
+
+    private static Set<>
+
+    private Set <Register> usedRegisters;
 
     private Label functionEndLabel;
 

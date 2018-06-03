@@ -7,7 +7,7 @@ import cat.footoredo.mx.sysdep.x86_64.RegisterClass;
 import java.util.*;
 
 public class RegisterAllocator {
-    private static final long [] AVAILABLE_REGISTERS = {
+    public static final long [] AVAILABLE_REGISTERS = {
             12, 13, 14, 15, RegisterClass.BX.getValue(),
             8, 9, 11, 10,
             RegisterClass.SI.getValue(), RegisterClass.DI.getValue()
