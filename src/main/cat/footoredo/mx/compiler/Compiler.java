@@ -32,7 +32,6 @@ public class Compiler {
         AST sem = semanticAnalyze(ast_builtin_types, types);
         IR ir = new IRGenerator(types).generate(sem);
         CFG cfg = new CFGBuilder().generateCFG(ir);
-        new RegisterAllocator().solve(ir.getScope());
         AssemblyCode asm = generateAssembly(ir, cfg);
         String code = asm.toSource();
         code += readFile("builtin/global_builtin.asm");

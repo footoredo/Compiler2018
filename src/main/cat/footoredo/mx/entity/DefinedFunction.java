@@ -1,7 +1,6 @@
 package cat.footoredo.mx.entity;
 
 import cat.footoredo.mx.asm.Label;
-import cat.footoredo.mx.asm.Register;
 import cat.footoredo.mx.asm.Symbol;
 import cat.footoredo.mx.ast.BlockNode;
 import cat.footoredo.mx.ast.MethodNode;
@@ -9,6 +8,7 @@ import cat.footoredo.mx.cfg.BasicBlock;
 import cat.footoredo.mx.cfg.CallInst;
 import cat.footoredo.mx.cfg.RegisterAllocator;
 import cat.footoredo.mx.ir.Statement;
+import cat.footoredo.mx.sysdep.x86_64.Register;
 import cat.footoredo.mx.sysdep.x86_64.RegisterClass;
 
 import java.util.*;
@@ -24,11 +24,17 @@ public class DefinedFunction extends Function {
 
     private Set<DefinedFunction> calls;
 
-    private static Set<>
+    private static final Set<Register> allRegisters = new HashSet<>();
 
     private Set <Register> usedRegisters;
 
     private Label functionEndLabel;
+
+    static {
+        for (long index: RegisterAllocator.AVAILABLE_REGISTERS) {
+            allRegisters.add(new Register(index));
+        }
+    }
 
     public DefinedFunction (MethodNode methodNode, String parentClass) {
         super (methodNode.getTypeNode(), methodNode.getMethodDescription(), parentClass);
@@ -36,6 +42,19 @@ public class DefinedFunction extends Function {
         this.block = methodNode.getBlock();
         this.calls = new HashSet<>();
         this.functionEndLabel = null;
+    }
+
+    public void resetUsedRegisters () {
+        usedRegisters = new HashSet<>();
+    }
+
+    public void addUsedRegisters (Register register) {
+        if (allRegisters.contains(register))
+            usedRegisters.add(register);
+    }
+
+    public Set<Register> getUsedRegisters () {
+        return usedRegisters;
     }
 
     public void addCall (CallInst callInst) {
