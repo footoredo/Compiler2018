@@ -100,6 +100,14 @@ public class Variable extends Entity {
         return new Variable(new TypeNode(type), "@tmp" + tmpCounter ++);
     }
 
+    private boolean isTmp () {
+        return name.length() > 4 && name.substring(0, 4).equals("@tmp");
+    }
+
+    public double getScore () {
+        return (double) getRivalryCount() / getUsedCount() + (isTmp() ? -50 : 0);
+    }
+
     public void setIR(Expression ir) {
         this.ir = ir;
     }

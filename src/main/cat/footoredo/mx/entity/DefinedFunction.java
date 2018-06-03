@@ -25,8 +25,8 @@ public class DefinedFunction extends Function {
 
     private Set<DefinedFunction> calls;
 
-    private static final Set<Register> allRegisters = new HashSet<>();
-    private static final Set<Register> calleeSaveRegisters = new HashSet<>();
+    public static final Set<Register> allRegisters = new HashSet<>();
+    public static final Set<Register> calleeSaveRegisters = new HashSet<>();
 
     private Set <Register> usedRegisters;
 

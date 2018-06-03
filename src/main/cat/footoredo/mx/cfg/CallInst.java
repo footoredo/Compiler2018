@@ -56,6 +56,11 @@ public class CallInst extends Instruction {
     }
 
     @Override
+    public void resetLive() {
+        super.setLive(true);
+    }
+
+    @Override
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
         for (Operand arg: getOperands()) {
@@ -73,7 +78,6 @@ public class CallInst extends Instruction {
             if (resultLiveVariables.contains(result))
                 resultLiveVariables.remove(result);
         }
-        setLive(true);
         return resultLiveVariables;
     }
 

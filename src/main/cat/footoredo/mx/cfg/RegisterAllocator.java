@@ -38,9 +38,9 @@ public class RegisterAllocator {
                     bestVariable = variable;
                     break;
                 }
-                else if ((double)variable.getRivalryCount() /*/ variable.getUsedCount()*/ > ratio) {
+                else if (variable.getScore() > ratio) {
                     bestVariable = variable;
-                    ratio = (double)variable.getRivalryCount() /*/ variable.getUsedCount()*/;
+                    ratio = variable.getScore() /*/ variable.getUsedCount()*/;
                 }
             }
 
@@ -50,7 +50,7 @@ public class RegisterAllocator {
                 coloringStack.add (bestVariable);
             }
             else {
-                System.err.println (bestVariable.getName() + " " + bestVariable.getRivalryCount() + " " + bestVariable.getUsedCount());
+                System.err.println (bestVariable.getName());
                 /*for (Variable variable: bestVariable.getRivalries()) {
                     System.err.println(" fucking " + variable.getName());
                 }*/

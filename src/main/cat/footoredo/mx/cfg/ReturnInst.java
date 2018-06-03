@@ -44,14 +44,20 @@ public class ReturnInst extends Instruction {
     }
 
     @Override
+    public void resetLive() {
+        super.setLive(true);
+    }
+
+    @Override
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
+        // System.out.println (hasValue() + " " + getValue());
         if (hasValue() && getValue().isVariable()) {
+            // System.out.println ("ss");
             // getValue().getVariable().setUsed(true);
             resultLiveVariables.add(getValue().getVariable());
         }
         // System.out.println("asfas");
-        setLive(true);
         // System.out.println (resultLiveVariables.size());
         return resultLiveVariables;
     }

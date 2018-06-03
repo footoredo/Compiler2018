@@ -21,8 +21,12 @@ public class ULTIMATERETURNINST extends Instruction {
     }
 
     @Override
+    public void resetLive() {
+        super.setLive(true);
+    }
+
+    @Override
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
-        setLive(true);
         return liveVariables;
     }
 }

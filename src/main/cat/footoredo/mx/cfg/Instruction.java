@@ -12,11 +12,24 @@ abstract public class Instruction {
     private Operand result;
     private List<Operand> operands;
     private boolean isLive;
+    private Set<Variable> liveVariables;    // what is needed after the execution of this command
 
     public Instruction(Operand result, List<Operand> operands) {
         this.result = result;
         this.operands = operands;
         this.isLive = false;
+    }
+
+    public void resetLive () {
+        isLive = false;
+    }
+
+    public Set<Variable> getLiveVariables() {
+        return liveVariables;
+    }
+
+    public void setLiveVariables(Set<Variable> liveVariables) {
+        this.liveVariables = liveVariables;
     }
 
     abstract public Instruction copy();

@@ -15,8 +15,7 @@ public class BasicBlock {
     private Set<BasicBlock> outputs;
     private JumpInst jumpInst;
     private boolean isEndBlock;
-    private Set<Variable> liveVariables;
-    private Set<Variable> endLiveVariables;
+    private List<Set<Variable>> liveVariables;
 
     public BasicBlock(Label label) {
         this.label = label;
@@ -27,46 +26,115 @@ public class BasicBlock {
         this.liveVariables = null;
     }
 
-    public void cleanInstructions () {
+    public int getAllInstructionCount () {
+        return instructions.size() + (jumpInst == null ? 0 : 1) + 1;
+    }
+
+    public boolean cleanInstructions () {
         // displayInstructions();
 
         /*for (Variable variable: liveVariables) {
             System.out.println ("LIVE: " + variable.getName());
         }*/
 
+        boolean cleaned = false;
+
         List<Instruction> newInstructions = new ArrayList<>();
 
         boolean verbose = false;
-        if (verbose) {
+        /*if (verbose) {
             for (Variable variable: liveVariables) {
                 System.err.println (variable.getName());
             }
-        }
+        }*/
 
-        if (verbose)
-            System.err.println ("before clean: ");
-        for (Instruction instruction: instructions) {
-            if (verbose)
-                System.err.println (instruction.getClass());
-            if (instruction.isLive()) {
-                instruction.updateUsedCount ();
-                newInstructions.add(instruction);
+        if (verbose) {
+            System.err.println("before clean: ");
+            for (Instruction instruction : instructions) {
+                System.err.println(instruction);
             }
         }
-
-        if (jumpInst != null)
-            jumpInst.updateUsedCount ();
+        for (Instruction instruction: instructions) {
+            if (instruction.isLive()) {
+                // instruction.updateUsedCount ();
+                newInstructions.add(instruction);
+            }
+            else {
+                cleaned = true;
+            }
+        }
 
         instructions = newInstructions;
 
         if (verbose) {
             System.err.println("\nafter clean: ");
             for (Instruction instruction : instructions) {
-                System.err.println(instruction.getClass());
+                System.err.println(instruction);
             }
         }
 
+        return cleaned;
+
         // displayInstructions();
+    }
+
+    public void resetLive () {
+        for (Instruction instruction: instructions) {
+            instruction.resetLive ();
+        }
+    }
+
+    public boolean remove () {
+        /*boolean removed = false;
+        int n = instructions.size();
+        while (true) {
+            boolean found = false;
+            for (int i = 0; i < n - 1; ++ i) {
+                // System.out.println ("checking " + i);
+                if (instructions.get(i) instanceof AssignInst && instructions.get(i).isLive()) {
+                    AssignInst assignInst = (AssignInst) instructions.get(i);
+                    List<Variable> toCheck = new ArrayList<>();
+                    if (assignInst.getLeft().isVariable())
+                        toCheck.add (assignInst.getLeft().getVariable());
+                    if (assignInst.getRight().isVariable())
+                        toCheck.add (assignInst.getRight().getVariable());
+                    // System.out.println ("i: " + i + " " + instructions.get(i));
+                    for (int j = i + 1; j < n; ++ j) {
+                        boolean affected = false;
+                        // System.out.println (instructions.get(j));
+                        if (instructions.get(j) instanceof AssignInst && instructions.get(j).isLive()) {
+                            // System.out.println ("ere");
+                            AssignInst otherAssignInst = (AssignInst) instructions.get(j);
+                            if (assignInst.getLeft() == otherAssignInst.getRight()) {
+                                // System.out.println ("FOUND! " + i + " " + j);
+                                found = true;
+                                instructions.set(i, new AssignInst(otherAssignInst.getLeft(), assignInst.getRight(), otherAssignInst.isDeref()));
+                                otherAssignInst.setLive(false);
+                                break;
+                            }
+                        }
+                        for (Variable variable: toCheck) {
+                            if (instructions.get(j).affect(variable)) {
+                                affected = true;
+                                break;
+                            }
+                        }
+                        if (affected) break;
+                    }
+                    if (found) {
+                        // System.out.println ("gonna break");
+                        break;
+                    }
+                }
+            }
+            removed |= found;
+            if (!found) break;
+        }
+        if (removed) {
+            System.out.println ("sss");
+        }
+        return removed;*/
+        return false;
     }
 
     public void CSE () {
@@ -137,7 +205,7 @@ public class BasicBlock {
     }
 
     public void resetLiveVariables() {
-        liveVariables = new HashSet<>();
+        this.liveVariables = null;
     }
 
     public boolean backPropagated () {
@@ -145,19 +213,26 @@ public class BasicBlock {
     }
 
     public void prepareForFirstBackPropagate () {
-        liveVariables = new HashSet<>();
+        liveVariables = new ArrayList<>(getAllInstructionCount());
+        for (int i = 0; i < getAllInstructionCount() - 1; ++ i)
+            liveVariables.add(null);
+        // System.out.println(getAllInstructionCount());
+        liveVariables.add(new HashSet<>());
     }
 
     public Set<Variable> getLiveVariables() {
-        return liveVariables;
+        return liveVariables.get(getAllInstructionCount() - 1);
     }
 
     public boolean isLiveVariable (Variable variable) {
-        return liveVariables.contains(variable);
+        if (getLiveVariables().contains(variable)) {
+            return true;
+        }
+        return false;
     }
 
     public void addLiveVariable (Variable variable) {
-        liveVariables.add (variable);
+        getLiveVariables().add (variable);
     }
 
     public boolean isEndBlock() {
@@ -223,22 +298,52 @@ public class BasicBlock {
             return jumpInst.getOutputs();
     }
 
+    public void resetInputs () {
+        inputs = new HashSet<>();
+    }
+
+    public void resetOutputs () {
+        outputs = new HashSet<>();
+    }
+
     public Set<Variable> backPropagate () {
-        Set<Variable> result = new HashSet<>(liveVariables);
-        RegisterAllocator.solveRivalry(result);
+        // System.out.println ("sd");
+        Set<Variable> result = new HashSet<>(getLiveVariables());
+        // RegisterAllocator.solveRivalry(result);
+        int countDown = getAllInstructionCount() - 1;
+        countDown --;
         if (jumpInst != null) {
             result = jumpInst.backPropagate(result);
-            RegisterAllocator.solveRivalry(result);
+            liveVariables.set(countDown --, new HashSet<>(result));
+            // RegisterAllocator.solveRivalry(result);
         }
         for (Instruction instruction: ListUtils.reverse(instructions)) {
+            instruction.setLiveVariables(new HashSet<>(result));
             result = instruction.backPropagate (result);
+            /*for (Variable variable: result)
+                System.out.println (variable.getName());*/
+            liveVariables.set(countDown --, new HashSet<>(result));
         }
+        assert (countDown == -1);
         ListUtils.reverse(instructions);
-        this.endLiveVariables = result;
         return result;
     }
 
+    public void solveRivalry () {
+        for (Set<Variable> live: liveVariables) {
+            RegisterAllocator.solveRivalry(live);
+        }
+    }
+
+    public void solveUsedCount () {
+        for (Instruction instruction: instructions) {
+            instruction.updateUsedCount();
+        }
+        if (jumpInst != null)
+            jumpInst.updateUsedCount();
+    }
+
     public Set<Variable> getEndLiveVariables() {
-        return endLiveVariables;
+        return liveVariables.get(0);
     }
 }

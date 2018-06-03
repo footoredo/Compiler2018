@@ -727,6 +727,20 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         }
     }
 
+    private Set<Register> collectUsedRegisters(Instruction instruction) {
+        Set<Register> registers = new HashSet<>();
+        for (Variable variable: instruction.getLiveVariables()) {
+            if (variable.isRegister()) {
+                Register register = variable.getRegister();
+                if (DefinedFunction.allRegisters.contains(register) &&
+                        !DefinedFunction.calleeSaveRegisters.contains(register)) {
+                    registers.add(register);
+                }
+            }
+        }
+        return registers;
+    }
+
     @Override
     public void visit(CallInst s) {
         /*if (s.getFunction().getName().equals("toString")) {
@@ -734,7 +748,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             as.leave ();
             as.ret ();
         }*/
-        Set<Register> toSaveA = currentFunction.getUsedRegisters();
+        Set<Register> toSaveA = collectUsedRegisters(s);
         Set<Register> toSaveB;
         if (s.getFunction() instanceof DefinedFunction) {
             toSaveB = ((DefinedFunction) s.getFunction()).getUsedRegisters();
@@ -804,7 +818,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(MallocInst s) {
-        Set<Register> toSave = currentFunction.getUsedRegisters();
+        Set<Register> toSave = collectUsedRegisters(s);
         List<Register> saving = new ArrayList<>(toSave);
         // System.out.println (saving.size() + " " + s);
         for (Register register: saving) {
