@@ -4,6 +4,7 @@ import cat.footoredo.mx.asm.*;
 import cat.footoredo.mx.cfg.*;
 import cat.footoredo.mx.cfg.Instruction;
 import cat.footoredo.mx.cfg.Operand;
+import cat.footoredo.mx.entity.BuiltinFunction;
 import cat.footoredo.mx.entity.DefinedFunction;
 import cat.footoredo.mx.entity.Parameter;
 import cat.footoredo.mx.ir.*;
@@ -120,9 +121,16 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private void dfsAndCollectUsedRegisters (BasicBlock currentBasicBlock) {
         visitedBasicBlocks.add(currentBasicBlock);
         for (Instruction instruction: currentBasicBlock.getInstructions()) {
-            for (Operand operand: instruction.getOperands()) {
-                if (operand.isRegister()) {
-                    currentFunction.addUsedRegisters(operand.getRegister());
+            if (((instruction instanceof CallInst) && ((CallInst) instruction).getFunction() instanceof BuiltinFunction) ||
+                    (instruction instanceof MallocInst)) {
+                // System.out.println("ere");
+                currentFunction.setAllUsedRegisters();
+            }
+            else {
+                for (Operand operand : instruction.getOperands()) {
+                    if (operand.isRegister()) {
+                        currentFunction.addUsedRegisters(operand.getRegister());
+                    }
                 }
             }
         }

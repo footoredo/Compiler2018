@@ -346,7 +346,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     private Set<BasicBlock> visitedBasicBlock;
 
 
-    static final long[] CALLEE_SAVE_REGISTERS = {
+    public static final long[] CALLEE_SAVE_REGISTERS = {
             RegisterClass.BP.getValue(), RegisterClass.BX.getValue(),
             12, 13, 14, 15/*,
             10, 11, 8, 9*/
@@ -740,7 +740,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             toSaveB = ((DefinedFunction) s.getFunction()).getUsedRegisters();
         }
         else {
-            toSaveB = builtinUsedRegisters;
+            toSaveB = toSaveA;
         }
         Set<Register> toSave = SetUtils.solveIntersection(toSaveA, toSaveB);
         List<Register> saving = new ArrayList<>(toSave);

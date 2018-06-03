@@ -8,6 +8,7 @@ import cat.footoredo.mx.cfg.BasicBlock;
 import cat.footoredo.mx.cfg.CallInst;
 import cat.footoredo.mx.cfg.RegisterAllocator;
 import cat.footoredo.mx.ir.Statement;
+import cat.footoredo.mx.sysdep.x86_64.CodeGenerator;
 import cat.footoredo.mx.sysdep.x86_64.Register;
 import cat.footoredo.mx.sysdep.x86_64.RegisterClass;
 
@@ -25,6 +26,7 @@ public class DefinedFunction extends Function {
     private Set<DefinedFunction> calls;
 
     private static final Set<Register> allRegisters = new HashSet<>();
+    private static final Set<Register> calleeSaveRegisters = new HashSet<>();
 
     private Set <Register> usedRegisters;
 
@@ -33,6 +35,9 @@ public class DefinedFunction extends Function {
     static {
         for (long index: RegisterAllocator.AVAILABLE_REGISTERS) {
             allRegisters.add(new Register(index));
+        }
+        for (long index: CodeGenerator.CALLEE_SAVE_REGISTERS) {
+            calleeSaveRegisters.add(new Register(index));
         }
     }
 
@@ -49,12 +54,20 @@ public class DefinedFunction extends Function {
     }
 
     public void addUsedRegisters (Register register) {
-        if (allRegisters.contains(register))
+        if (allRegisters.contains(register) && !calleeSaveRegisters.contains(register))
             usedRegisters.add(register);
     }
 
     public Set<Register> getUsedRegisters () {
         return usedRegisters;
+    }
+
+    public void setAllUsedRegisters () {
+        for (Register register: allRegisters) {
+            if (!calleeSaveRegisters.contains(register)) {
+                usedRegisters.add(register);
+            }
+        }
     }
 
     public void addCall (CallInst callInst) {
