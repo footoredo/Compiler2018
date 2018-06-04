@@ -66,6 +66,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             // System.out.println (definedFunction.getName() + " " + definedFunction.isMemorable());
             if (definedFunction.isFibLike()) {
+                System.err.println (definedFunction.getName() + ": i am fibbed!");
+
                 definedFunction.setSolved((cat.footoredo.mx.entity.Variable) ir.getScope().get(definedFunction.getSolvedName()));
                 definedFunction.setAnswer((cat.footoredo.mx.entity.Variable) ir.getScope().get(definedFunction.getAnswerName()));
 

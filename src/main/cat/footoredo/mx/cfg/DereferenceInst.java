@@ -27,6 +27,11 @@ public class DereferenceInst extends Instruction {
     }
 
     @Override
+    public boolean isMemorable() {
+        return false;
+    }
+
+    @Override
     public boolean isCallLike() {
         return true;
     }
