@@ -44,6 +44,11 @@ public class ReturnInst extends Instruction {
     }
 
     @Override
+    public boolean isCallLike() {
+        return true;
+    }
+
+    @Override
     public void resetLive() {
         super.setLive(true);
     }

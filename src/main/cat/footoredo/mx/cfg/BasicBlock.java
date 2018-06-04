@@ -91,7 +91,7 @@ public class BasicBlock {
 
         hasCall = false;
         for (Instruction instruction: instructions)
-            if (instruction instanceof CallInst || instruction instanceof DereferenceInst)
+            if (instruction.isCallLike())
                 hasCall = true;
 
         if (verbose) {
@@ -336,7 +336,7 @@ public class BasicBlock {
             // System.out.println (this + " is end block " + "with label " + label);
             isEndBlock = true;
         }
-        else if (instruction instanceof CallInst || instruction instanceof DereferenceInst) {
+        else if (instruction.isCallLike()) {
             // System.out.println ("sss");
             hasCall = true;
         }

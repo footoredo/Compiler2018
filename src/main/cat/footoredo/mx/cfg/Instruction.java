@@ -65,6 +65,10 @@ abstract public class Instruction {
         return result != null && result.isVariable() && (liveVariables.contains(result.getVariable()) || result.getVariable().isGlobal());
     }
 
+    public boolean isCallLike () {
+        return false;
+    }
+
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
         /*System.err.println (getClass() + " : before");

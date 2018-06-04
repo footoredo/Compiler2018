@@ -32,6 +32,11 @@ public class CallInst extends Instruction {
     }
 
     @Override
+    public boolean isCallLike() {
+        return true;
+    }
+
+    @Override
     public Instruction copy() {
         List<Operand> copiedOperands = new ArrayList<>();
         for (Operand operand: getOperands())

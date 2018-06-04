@@ -26,7 +26,11 @@ public class DereferenceInst extends Instruction {
         visitor.visit(this);
     }
 
-    /*@Override
+    @Override
+    public boolean isCallLike() {
+        return true;
+    }
+/*@Override
     public Set<Variable> getAffectedVariables() {
         Set<Variable> result = new HashSet<>();
         result.add (this.getResult().getVariable());
