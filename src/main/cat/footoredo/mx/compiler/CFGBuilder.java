@@ -40,6 +40,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
 
             visitedBasicBlocks = new HashSet<>();
+            stack = new HashSet<>();
             dfsAndLink(definedFunction.getStartBasicBlock());
         }
 
@@ -192,6 +193,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
+                stack = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -227,6 +229,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
+                stack = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -274,6 +277,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
+                stack = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -309,6 +313,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
+                stack = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -344,6 +349,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private Set<BasicBlock> visitedBasicBlocks;
     private Set<BasicBlock> visitedInlineBasicBlocks;
     private Map<Label, Label> labelReplacement;
+    private Set<BasicBlock> stack;
     private boolean loopRemoved;
     private boolean removed;
     private boolean merged;
@@ -374,6 +380,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private void dfsAndRemoveLoops (BasicBlock currentBasicBlock) {
         visitedBasicBlocks.add(currentBasicBlock);
         if (currentBasicBlock.isLoopHeader()) {
+            // System.out.println (currentFunction.getName());
             if (currentBasicBlock.removeLoop()) {
                 loopRemoved = true;
                 return;
@@ -656,6 +663,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     private void dfsAndLink (BasicBlock currentBasicBlock) {
         visitedBasicBlocks.add (currentBasicBlock);
+        stack.add (currentBasicBlock);
         // System.out.println (currentBasicBlock + " " + currentBasicBlock.isEndBlock() + " @ " + currentFunction.getName());
         if (currentBasicBlock.isEndBlock()) {
             // System.out.println (currentFunction.getName());
@@ -664,14 +672,18 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (Label outputLabel: currentBasicBlock.getOutputLabels()) {
             BasicBlock nextBasicBlock = cfg.get (outputLabel);
             nextBasicBlock.addInput(currentBasicBlock);
-            currentBasicBlock.addOutput(nextBasicBlock);
             if (!visitedBasicBlocks.contains(nextBasicBlock)) {
+                currentBasicBlock.addOutput(nextBasicBlock);
                 dfsAndLink(nextBasicBlock);
             }
+            else if (stack.contains (nextBasicBlock)){
+                currentBasicBlock.setBackOutput(nextBasicBlock);
+            }
             else {
-                // currentBasicBlock.setBackOutput(nextBasicBlock);
+                currentBasicBlock.addOutput(nextBasicBlock);
             }
         }
+        stack.remove (currentBasicBlock);
     }
 
     private void dfsAndResetInputOutput (BasicBlock currentBasicBlock) {
