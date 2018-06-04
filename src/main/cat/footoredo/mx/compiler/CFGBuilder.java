@@ -130,7 +130,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndMerge(definedFunction.getStartBasicBlock());
             }
-            // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
+            System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
             if (!loopRemoved && !removed && !cleaned && !merged) break;
         }
 
@@ -464,20 +464,20 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     private void dfsAndMerge (BasicBlock currentBasicBlock) {
         if (currentBasicBlock.getAllOutputs().size() == 0) return;
-        while (currentBasicBlock.getOutputs().size() == 1 && !currentBasicBlock.hasBackOutput()) {
+        if (currentBasicBlock.getOutputs().size() == 1 && !currentBasicBlock.hasBackOutput()) {
             BasicBlock output = currentBasicBlock.getOutputs().iterator().next();
             if (output.getInputs().size() == 1) {
                 merged = true;
                 // System.out.println ("ss");
+                // System.out.println (output + " "  + currentBasicBlock);
                 currentBasicBlock.merge(output);
-                return;
-            }
-            else {
-                break;
+                // return;
             }
         }
-        for (BasicBlock output: currentBasicBlock.getOutputs())
+        for (BasicBlock output: currentBasicBlock.getOutputs()) {
             dfsAndMerge(output);
+            // if (merged) return;
+        }
     }
 
     private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {

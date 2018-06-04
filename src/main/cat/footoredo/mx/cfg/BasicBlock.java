@@ -288,6 +288,7 @@ public class BasicBlock {
         this.isEndBlock = basicBlock.isEndBlock;
         this.hasCall |= basicBlock.hasCall;
         this.liveVariables = null;
+        this.backOutput = basicBlock.backOutput;
         this.jumpInst = basicBlock.jumpInst;
     }
 
