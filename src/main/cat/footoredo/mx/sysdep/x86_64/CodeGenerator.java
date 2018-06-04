@@ -562,14 +562,14 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     @Override
     public void visit(ULTIMATERETURNINST inst) {
         if (currentFunction.isFibLike()) {
-            cat.footoredo.mx.asm.Operand n = new VariableOperand((cat.footoredo.mx.entity.Variable) globalScope.get("_fvck__n")).toASMOperand();
+            cat.footoredo.mx.asm.Operand n = new VariableOperand(currentFunction.getParameter(0)).toASMOperand();
             as.mov(cx(), n);
             cat.footoredo.mx.asm.Operand answer = new VariableOperand(currentFunction.getAnswer()).toASMOperand();
             as.mov(dx(), answer);
             as.instruction("mov QWORD [rdx + rcx * 8], rax", "");
             cat.footoredo.mx.asm.Operand solved = new VariableOperand(currentFunction.getSolved()).toASMOperand();
             as.mov(dx(), solved);
-            as.instruction("mov QWORD [rdx + rcx], 1", "");
+            as.instruction("mov BYTE [rdx + rcx], 1", "");
         }
         as.jmp(epilogueLabel);
     }

@@ -122,11 +122,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 Operand address = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
                 check3.addInstruction(new BinaryInst(address, solved, Op.ADD, n));
                 Operand c3 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
+                // System.out.println (c3.getVariable().size());
                 check3.addInstruction(new DereferenceInst(c3, address));
                 check3.setJumpInst(new ConditionalJumpInst(c3, yeahLabel, failLabel));
 
                 // System.out.println ("failBlock: " + failBlock);
-                failBlock.addInstruction(new AssignInst(
+                /*failBlock.addInstruction(new AssignInst(
                         new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
                         n, false));
 
@@ -134,6 +135,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                         new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
                         new ConstantIntegerOperand(Type.INT64, -1), false));
 
+                yeah.addInstruction(new AssignInst(
+                        new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
+                        n, false));*/
                 Operand offset = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
                 yeah.addInstruction(new BinaryInst(offset, n, Op.MUL, new ConstantIntegerOperand(Type.INT64, 8)));
                 Operand address2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
@@ -195,7 +199,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndRemove (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-                backPropagate(definedFunction.getEndBasicBlock(), new HashSet<>());
+                Set<cat.footoredo.mx.entity.Variable> startLiveVariables = new HashSet<>();
+                if (definedFunction.isFibLike()) {
+                    startLiveVariables.add (definedFunction.getParameter(0));
+                }
+                backPropagate(definedFunction.getEndBasicBlock(), startLiveVariables);
 
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLoop (definedFunction.getStartBasicBlock());
@@ -273,7 +281,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 //dfsAndRemove (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-                backPropagate(definedFunction.getEndBasicBlock(), new HashSet<>());
+                Set<cat.footoredo.mx.entity.Variable> startLiveVariables = new HashSet<>();
+                if (definedFunction.isFibLike()) {
+                    startLiveVariables.add (definedFunction.getParameter(0));
+                }
+                backPropagate(definedFunction.getEndBasicBlock(), startLiveVariables);
 
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLoop (definedFunction.getStartBasicBlock());
