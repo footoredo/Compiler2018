@@ -125,7 +125,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 check3.addInstruction(new DereferenceInst(c3, address));
                 check3.setJumpInst(new ConditionalJumpInst(c3, yeahLabel, failLabel));
 
-                System.out.println ("failBlock: " + failBlock);
+                // System.out.println ("failBlock: " + failBlock);
                 failBlock.addInstruction(new AssignInst(
                         new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
                         n, false));
