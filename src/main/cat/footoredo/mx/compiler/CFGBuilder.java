@@ -35,7 +35,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             dfsAndCSE (definedFunction.getStartBasicBlock());
         }
 
-        while (true) {
+        /*while (true) {
             inlined = false;
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
@@ -52,28 +52,6 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 currentFunction = definedFunction;
                 dfsAndInline(definedFunction.getStartBasicBlock(), false);
-            }
-
-            if (!inlined) break;
-        }
-
-        /* for (int i = 0; i < 5; ++ i) {
-            inlined = false;
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                definedFunction.resetCalls ();
-            }
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                currentFunction = definedFunction;
-                visitedBasicBlocks = new HashSet<>();
-                dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
-            }
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                visitedBasicBlocks = new HashSet<>();
-                currentFunction = definedFunction;
-                dfsAndInline(definedFunction.getStartBasicBlock(), true);
             }
 
             if (!inlined) break;
@@ -128,7 +106,106 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndClean(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-                dfsAndMerge(definedFunction.getStartBasicBlock());
+                //dfsAndMerge(definedFunction.getStartBasicBlock());
+            }
+            // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
+            if (!loopRemoved && !removed && !cleaned && !merged) break;
+        }
+
+        /*for (int i = 0; i < 5; ++ i) {
+            inlined = false;
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                definedFunction.resetCalls ();
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                currentFunction = definedFunction;
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                visitedBasicBlocks = new HashSet<>();
+                currentFunction = definedFunction;
+                dfsAndInline(definedFunction.getStartBasicBlock(), true);
+            }
+
+            if (!inlined) break;
+        }*/
+
+        while (true) {
+            inlined = false;
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                definedFunction.resetCalls ();
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                currentFunction = definedFunction;
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                visitedBasicBlocks = new HashSet<>();
+                currentFunction = definedFunction;
+                dfsAndInline(definedFunction.getStartBasicBlock(), false);
+            }
+
+            if (!inlined) break;
+        }
+
+        while (true) {
+            loopRemoved = false;
+            cleaned = false;
+            merged = false;
+            removed = false;
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                currentFunction = definedFunction;
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndLink(definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndResetLive(definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+
+                //dfsAndRemove (definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                backPropagate(definedFunction.getEndBasicBlock(), new HashSet<>());
+
+                /*visitedBasicBlocks = new HashSet<>();
+                dfsAndResetLoop (definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndFindLoopHeader (definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndBuildLoop (definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndFindLoopVariants (definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndRemoveLoops (definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndLink(definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndClean(definedFunction.getStartBasicBlock());
+
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndMerge(definedFunction.getStartBasicBlock());*/
             }
             // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
             if (!loopRemoved && !removed && !cleaned && !merged) break;
@@ -361,6 +438,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                     currentInlineFunction = inlineFunction;
                     labelReplacement = new HashMap<>();
                     JumpInst originalJumpInst = currentBasicBlock.getJumpInst();
+                    /*if (originalJumpInst == null) {
+                        currentBasicBlock.displayInstructions();
+                    }*/
                     boolean originalIsEndBlock = currentBasicBlock.isEndBlock();
                     BasicBlock startBasicBlock = inlineFunction.getStartBasicBlock();
                     Label inlineStartLabel = new Label(new UnnamedSymbol());
@@ -375,7 +455,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                     dfsAndInlineCopy (startBasicBlock, inlineStartLabel);
                     currentBasicBlock = new BasicBlock(inlineEndLabel);
                     cfg.put (inlineEndLabel, currentBasicBlock);
-                    currentBasicBlock.setJumpInst(originalJumpInst.copy());
+                    currentBasicBlock.setJumpInst(originalJumpInst == null ? null : originalJumpInst.copy());
                     currentBasicBlock.setEndBlock(originalIsEndBlock);
                     // System.out.println ("asdasd\t" + currentBasicBlock + " " + originalIsEndBlock + " " + inlineEndLabel);
                 }

@@ -28,9 +28,9 @@ int main() {
 
 	foo(7, 5, 3);
 
-	int[] aa;
+	/*int[] aa;
         int[] bb = new int[10];
-        int[][] cc = new int [2][];
+        int[][] cc = new int [2][];*/
 
 	return 0;
 }
