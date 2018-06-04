@@ -1,62 +1,40 @@
-void cost_a_lot_of_time()
+int func(int x)
 {
-	int a = 3100;
-	int b = 0;
-	int c = 1;
-	for (b = 0; b < 100000000; ++b)
-		c = c * 2 - c;
-	println(toString(a));
+	int r = x & 3;
+	if(r == 0)
+		return x;
+	return (func(x - r) + func(x + r)) & 65535;
 }
 
-void foo(int d, int x, int y) {
-    println(toString(d * 1000 + x * 10 + y));
-    if (d == 1) return;
-    int t = x; x = y; y = t;
-    foo(1, x, y);
-    println(toString(d * 1000 + x * 10 + y));
-}
-
-int main() {
-	int a = 3100;
-	int b = 0;
-	int c = 1;
-	for (b = 0; b < 100000000; ++b)
-		c = c * 2 - c;
-        println(toString(a));
-
-	cost_a_lot_of_time();
-
-	foo(7, 5, 3);
-
-	int[] aa;
-        int[] bb = new int[10];
-        int[][] cc = new int [2][];
-
+int main()
+{
+	int N = getInt();
+	int i;
+	int sum = 0;
+	for(i=0; i<N; i++)
+		sum = (sum + func(i)) & 65535;
+	println(toString(sum));
 	return 0;
 }
 
-
-
 /*!! metadata:
 === comment ===
-code_elimination_recursion-515030910639-yingsihao.txt
+ Testcase for Inlining of Recursive Function
 === is_public ===
 True
 === assert ===
 output
 === timeout ===
-2.0
+5.0
 === input ===
+300000000
 
 === phase ===
 optim extended
 === output ===
-3100
-3100
-7053
-1035
-7035
-=== exitcode ===
+61824
 
+=== exitcode ===
+0
 
 !!*/
