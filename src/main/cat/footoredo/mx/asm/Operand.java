@@ -8,6 +8,10 @@ abstract public class Operand implements OperandPattern {
     public boolean isConstant () { return false; }
     public boolean isConstantInteger () { return false; }
 
+    public Symbol getSymbol () {
+        throw new Error ("its not symbol!");
+    }
+
     @Override
     public boolean match(Operand operand) {
         return equals(operand);

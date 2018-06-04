@@ -77,6 +77,19 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
                     continue;
                 }
             }
+            else if (assemblies.get(i) instanceof Instruction && assemblies.get(i + 1) instanceof Label) {
+                Instruction I = (Instruction) assemblies.get(i);
+                Label L = (Label) assemblies.get(i + 1);
+                if (I.getInst().equals("jmp")) {
+                    Symbol symbol = I.operand1().getSymbol ();
+                    if (symbol == L.getSymbol()) {
+                        newAssemblies.add (L);
+                        i ++;
+                        optimized = true;
+                        continue;
+                    }
+                }
+            }
             newAssemblies.add (assemblies.get(i));
         }
 

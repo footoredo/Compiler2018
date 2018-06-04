@@ -180,7 +180,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 backPropagate(definedFunction.getEndBasicBlock(), new HashSet<>());
 
-                /*visitedBasicBlocks = new HashSet<>();
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLoop (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -205,7 +205,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndClean(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-                dfsAndMerge(definedFunction.getStartBasicBlock());*/
+                dfsAndMerge(definedFunction.getStartBasicBlock());
             }
             // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
             if (!loopRemoved && !removed && !cleaned && !merged) break;

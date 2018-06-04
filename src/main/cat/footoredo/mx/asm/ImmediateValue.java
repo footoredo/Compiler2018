@@ -18,6 +18,15 @@ public class ImmediateValue extends Operand {
         return value.equals(((ImmediateValue) other).value);
     }
 
+    public Symbol getSymbol() {
+        if (value instanceof Symbol) {
+            return (Symbol) value;
+        }
+        else {
+            throw new Error ("I am not a symbol!");
+        }
+    }
+
     @Override
     public int hashCode() {
         return ("IV" + value.hashCode()).hashCode();
