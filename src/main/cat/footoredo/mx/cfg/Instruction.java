@@ -28,6 +28,14 @@ abstract public class Instruction {
         return liveVariables;
     }
 
+    public Set<Variable> getAffectedVariables () {
+        Set <Variable> results = new HashSet<>();
+        if (result != null && result.isVariable()) {
+            results.add (result.getVariable());
+        }
+        return results;
+    }
+
     public void setLiveVariables(Set<Variable> liveVariables) {
         this.liveVariables = liveVariables;
     }

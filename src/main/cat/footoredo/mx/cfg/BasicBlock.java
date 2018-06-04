@@ -4,6 +4,7 @@ import cat.footoredo.mx.asm.Label;
 import cat.footoredo.mx.entity.Variable;
 import cat.footoredo.mx.ir.Binary;
 import cat.footoredo.mx.utils.ListUtils;
+import cat.footoredo.mx.utils.SetUtils;
 
 import javax.swing.plaf.synth.SynthTextAreaUI;
 import java.util.*;
@@ -13,9 +14,15 @@ public class BasicBlock {
     private List<Instruction> instructions;
     private Set<BasicBlock> inputs;
     private Set<BasicBlock> outputs;
+    private BasicBlock backOutput;
     private JumpInst jumpInst;
     private boolean isEndBlock;
+    private boolean hasCall;
     private List<Set<Variable>> liveVariables;
+    private List<BasicBlock> belongedLoopHeaders;
+    private BasicBlock loopEnd;
+    private Set<Variable> loopVariants;
+    private boolean loopHasCall;
 
     public BasicBlock(Label label) {
         this.label = label;
@@ -24,6 +31,22 @@ public class BasicBlock {
         this.outputs = new HashSet<>();
         this.isEndBlock = false;
         this.liveVariables = null;
+        this.belongedLoopHeaders = new ArrayList<>();
+        this.loopEnd = null;
+        this.loopVariants = null;
+        this.backOutput = null;
+    }
+
+    public boolean hasBackOutput () {
+        return backOutput != null;
+    }
+
+    public BasicBlock getBackOutput() {
+        return backOutput;
+    }
+
+    public void setBackOutput(BasicBlock backOutput) {
+        this.backOutput = backOutput;
     }
 
     public int getAllInstructionCount () {
@@ -66,6 +89,11 @@ public class BasicBlock {
 
         instructions = newInstructions;
 
+        hasCall = false;
+        for (Instruction instruction: instructions)
+            if (instruction instanceof CallInst)
+                hasCall = true;
+
         if (verbose) {
             System.err.println("\nafter clean: ");
             for (Instruction instruction : instructions) {
@@ -82,6 +110,63 @@ public class BasicBlock {
         for (Instruction instruction: instructions) {
             instruction.resetLive ();
         }
+    }
+
+    public BasicBlock getLoopEnd() {
+        return loopEnd;
+    }
+
+    public void setLoopEnd(BasicBlock loopEnd) {
+        this.loopEnd = loopEnd;
+    }
+
+    public boolean isLoopHeader () {
+        return loopEnd != null;
+    }
+
+    public void resetLoop () {
+        belongedLoopHeaders = new ArrayList<>();
+        loopEnd = null;
+        loopHasCall = false;
+        loopVariants = new HashSet<>();
+    }
+
+    public void addLoopVariants (Set<Variable> loopVariants) {
+        this.loopVariants.addAll(loopVariants);
+    }
+
+    public void setLoopHasCall (boolean loopHasCall) {
+        this.loopHasCall |= loopHasCall;
+    }
+
+    public boolean removeLoop () {
+        assert (isLoopHeader());
+        //System.out.println ("loop removed");
+        if (!loopHasCall) {
+            /*for (Variable variable: loopVariants) {
+                System.out.println (variable.getName());
+            }
+            System.out.println();
+            for (Variable variable: loopEnd.getEndLiveVariables()) {
+                System.out.println (variable.getName());
+            }
+            System.out.println();
+            System.out.println();*/
+            if (SetUtils.solveIntersection(loopVariants, loopEnd.getEndLiveVariables()).isEmpty()) {
+                instructions = new ArrayList<>();
+                jumpInst = new UnconditionalJumpInst(loopEnd.getLabel());
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addBelongedLoopHeader (BasicBlock loopHeader) {
+        belongedLoopHeaders.add(loopHeader);
+    }
+
+    public List<BasicBlock> getBelongedLoopHeaders() {
+        return belongedLoopHeaders;
     }
 
     public boolean remove () {
@@ -196,7 +281,8 @@ public class BasicBlock {
         this.instructions.addAll (basicBlock.getInstructions());
         this.outputs = basicBlock.outputs;
         this.isEndBlock = basicBlock.isEndBlock;
-        this.liveVariables = basicBlock.liveVariables;
+        this.hasCall |= basicBlock.hasCall;
+        this.liveVariables = null;
         this.jumpInst = basicBlock.jumpInst;
     }
 
@@ -244,6 +330,9 @@ public class BasicBlock {
             // System.out.println (this + " is end block " + "with label " + label);
             isEndBlock = true;
         }
+        else if (instruction instanceof CallInst) {
+            hasCall = true;
+        }
         instructions.add(instruction);
     }
 
@@ -275,6 +364,14 @@ public class BasicBlock {
         return outputs;
     }
 
+    public Set<BasicBlock> getAllOutputs() {
+        Set<BasicBlock> result = new HashSet<>(outputs);
+        if (backOutput != null) {
+            result.add(backOutput);
+        }
+        return result;
+    }
+
     public JumpInst getJumpInst() {
         return jumpInst;
     }
@@ -304,6 +401,11 @@ public class BasicBlock {
 
     public void resetOutputs () {
         outputs = new HashSet<>();
+        backOutput = null;
+    }
+
+    public Label getEndLabel () {
+        return label.getPairedEndLabel();
     }
 
     public Set<Variable> backPropagate () {
@@ -327,6 +429,18 @@ public class BasicBlock {
         assert (countDown == -1);
         ListUtils.reverse(instructions);
         return result;
+    }
+
+    public Set<Variable> getAffectedVariables () {
+        Set<Variable> results = new HashSet<>();
+        for (Instruction instruction: instructions) {
+            results.addAll(instruction.getAffectedVariables());
+        }
+        return results;
+    }
+
+    public boolean hasCall () {
+        return hasCall;
     }
 
     public void solveRivalry () {

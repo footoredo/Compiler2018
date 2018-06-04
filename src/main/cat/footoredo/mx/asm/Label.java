@@ -2,12 +2,14 @@ package cat.footoredo.mx.asm;
 
 public class Label extends Assembly {
     private Symbol symbol;
+    private Label pairedEndLabel;
 
     public Label(Symbol symbol) {
         if (symbol == null) {
             throw new Error("fuck");
         }
         this.symbol = symbol;
+        this.pairedEndLabel = null;
     }
 
     public Label() {
@@ -16,6 +18,14 @@ public class Label extends Assembly {
 
     public Symbol getSymbol() {
         return symbol;
+    }
+
+    public Label getPairedEndLabel() {
+        return pairedEndLabel;
+    }
+
+    public void setPairedEndLabel(Label pairedEndLabel) {
+        this.pairedEndLabel = pairedEndLabel;
     }
 
     @Override

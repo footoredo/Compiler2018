@@ -234,6 +234,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Label bodyLabel = new Label();
         Label endLabel = new Label();
 
+        beginLabel.setPairedEndLabel(endLabel);
+
         label (beginLabel);
         cjump (node.getLocation(), transformExpression(node.getJudge()), bodyLabel, endLabel);
 
@@ -257,6 +259,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Label beginLabel = new Label();
         Label bodyLabel = new Label();
         Label endLabel = new Label();
+
+        beginLabel.setPairedEndLabel(endLabel);
 
         if (node.hasInit())
             transformStatement(node.getInit());
