@@ -80,6 +80,10 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         }*/
 
         while (true) {
+            loopRemoved = false;
+            cleaned = false;
+            merged = false;
+            removed = false;
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
                 currentFunction = definedFunction;
 
@@ -93,7 +97,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndResetLive(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-                removed = false;
+
                 dfsAndRemove (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -111,7 +115,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndFindLoopVariants (definedFunction.getStartBasicBlock());
 
-                loopRemoved = false;
+
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndRemoveLoops (definedFunction.getStartBasicBlock());
 
@@ -121,14 +125,15 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
-                cleaned = false;
+
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndClean(definedFunction.getStartBasicBlock());
 
-                merged = false;
+
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndMerge(definedFunction.getStartBasicBlock());
             }
+            // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
             if (!loopRemoved && !removed && !cleaned && !merged) break;
         }
 
@@ -466,6 +471,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             BasicBlock output = currentBasicBlock.getOutputs().iterator().next();
             if (output.getInputs().size() == 1) {
                 merged = true;
+                // System.out.println ("ss");
                 currentBasicBlock.merge(output);
             }
             else {
