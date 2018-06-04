@@ -1,62 +1,90 @@
-//考察点：section 10 字符串，包括字符串定义，运算符语义，字符串的内建方法
-//算法：递归模拟
-//样例输入：
-//DCBAE
-//4ssfsdf
-//样例输出：
-//ABCD
-
-string A;
-string B;
-string C;
 int N;
+int head;
+int startx;
+int starty;
+int targetx;
+int targety;
+int x;
+int y;
+int[] xlist = new int[12000];
+int[] ylist = new int[12000];
+int tail;
+int ok;
+int now;
+int[] dx = new int[8];
+int[] dy = new int[9];
+int[][] step;
+int i;
+int j;
 
-string calc(string A)
+void origin(int N)
 {
-	int len = A.length();
-	if (1 == len) return A;
-	int mid = len/2;
-	string L = calc(A.substring(0,mid-1));
-	string R = calc(A.substring(mid,len-1));
-	if (L < R) return L + R;
-	else if (L == R) {
-		int l = L.ord(0);
-		int r = R.ord(0);
-		if (l < r) return L + R;
-		return R + L;
-	}
-	else if (L > R) return R + L;
-	println("Never Ever!");
+    head = 0;
+    tail = 0;
+	step = new int[N][];
+    for (i = 0; i < N; i ++ ) {
+		step[i] = new int[N];
+        for (j = 0; j < N; j ++ )
+        step[i][j] = 0;
+    }
 }
 
-int main()
-{
-	A = getString();
-	B = getString();
-	N = B.parseInt();
-	if (A.length() < N) {
-		println("length error!");
-		return 0;
-	}
-	C = calc(A.substring(0,N-1));
-	println(C);
-	return 0;
+bool check(int a) {
+    return ((a < N) && (a >= 0));
+}
+
+void addList(int x, int y) {
+    if (check(x) && check(y) && step[x][y] == -1) {
+        tail ++;
+        xlist[tail] = x;
+        ylist[tail] = y;
+        step[x][y] = now + 1;
+        if ((x == targetx) && (y == targety)) ok = 1;
+    }
+}
+int main() {
+	origin(106);
+    N = getInt();
+    targety  = N - 1;
+    targetx = targety;
+    for (i = 0; i < N; i ++)
+        for (j = 0; j < N; j ++)
+        step[i][j] = -1;
+    dx[0] = -2; dy[0] = -1;
+    dx[1] = -2; dy[1] = 1;
+    dx[2] = 2; dy[2] = -1;
+    dx[3] = 2; dy[3] = 1;
+    dx[4] = -1; dy[4] = -2;
+    dx[5] = -1; dy[5] = 2;
+    dx[6] = 1; dy[6] = -2;
+    dx[7] = 1; dy[7] = 2;
+    while (head <= tail) {
+        x = xlist[head];
+        y = ylist[head];
+        now = step[x][y];
+        for (j = 0;j < 8;j ++)
+            addList(x + dx[j], y + dy[j]);
+        if (ok == 1) break;
+        head ++;
+    }
+    if (ok == 1) println(toString(step[targetx][targety]));
+    else print("no solution!\n");
+    return 0;
 }
 
 
 
 /*!! metadata:
 === comment ===
-string_test-huyuncong.mx
+horse3-5100309153-yanghuan.mx
 === input ===
-DCBAE
-4ssfsdf
+103
 === assert ===
 output
 === timeout ===
-0.1
+0.4
 === output ===
-ABCD
+67
 === phase ===
 codegen pretest
 === is_public ===
