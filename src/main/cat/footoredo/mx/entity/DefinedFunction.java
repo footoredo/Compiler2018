@@ -39,8 +39,18 @@ public class DefinedFunction extends Function {
 
     private boolean isMemorable;
 
+    private Variable toSave;
+
     public boolean isMemorable () {
         return isMemorable;
+    }
+
+    public Variable getToSave() {
+        return toSave;
+    }
+
+    public void setToSave(Variable toSave) {
+        this.toSave = toSave;
     }
 
     public boolean isFibLike () {

@@ -562,7 +562,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     @Override
     public void visit(ULTIMATERETURNINST inst) {
         if (currentFunction.isFibLike()) {
-            cat.footoredo.mx.asm.Operand n = new VariableOperand(currentFunction.getParameter(0)).toASMOperand();
+            cat.footoredo.mx.asm.Operand n = new VariableOperand(currentFunction.getToSave()).toASMOperand();
             as.mov(cx(), n);
             cat.footoredo.mx.asm.Operand answer = new VariableOperand(currentFunction.getAnswer()).toASMOperand();
             as.mov(dx(), answer);
