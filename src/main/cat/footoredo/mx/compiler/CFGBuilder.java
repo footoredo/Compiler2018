@@ -11,6 +11,7 @@ import cat.footoredo.mx.ir.*;
 import cat.footoredo.mx.ir.Integer;
 import cat.footoredo.mx.ir.String;
 import cat.footoredo.mx.type.BooleanType;
+import cat.footoredo.mx.type.IntegerType;
 import cat.footoredo.mx.type.PointerType;
 import cat.footoredo.mx.type.VoidType;
 
@@ -18,15 +19,117 @@ import java.util.*;
 
 public class CFGBuilder implements IRVisitor<Void, Operand> {
     private CFG cfg;
+    private IR ir;
 
     private boolean inlined;
+    private boolean notMemorableSet;
 
     public CFG generateCFG (IR ir) {
+        this.ir = ir;
         cfg = new CFG();
 
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
             processDefinedFunction (definedFunction);
+        }
+
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
+
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndResetInputOutput(definedFunction.getStartBasicBlock());
+
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndLink(definedFunction.getStartBasicBlock());
+        }
+
+        for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
+            definedFunction.resetCalls ();
+        }
+
+        for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
+            dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
+        }
+
+        while (true) {
+            notMemorableSet = false;
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                currentFunction = definedFunction;
+                dfsAndSetNotMemorable(definedFunction.getStartBasicBlock());
+            }
+            if (notMemorableSet)
+                break;
+        }
+
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            // System.out.println (definedFunction.getName() + " " + definedFunction.isMemorable());
+            if (definedFunction.isFibLike()) {
+                definedFunction.setSolved((cat.footoredo.mx.entity.Variable) ir.getScope().get(definedFunction.getSolvedName()));
+                definedFunction.setAnswer((cat.footoredo.mx.entity.Variable) ir.getScope().get(definedFunction.getAnswerName()));
+
+                Operand solved = new VariableOperand(definedFunction.getSolved());
+                Operand answer = new VariableOperand(definedFunction.getAnswer());
+
+                BasicBlock originalStartBlock = definedFunction.getStartBasicBlock();
+
+                BasicBlock check1 = new BasicBlock(originalStartBlock.getLabel());
+                definedFunction.setStartBasicBlock(check1);
+                cfg.put (check1.getLabel(), check1);
+
+                Label functionStartLabel = new Label();
+                originalStartBlock.setLabel (functionStartLabel);
+                cfg.put (functionStartLabel, originalStartBlock);
+
+                Label failLabel = new Label();
+                BasicBlock failBlock = new BasicBlock(failLabel);
+                cfg.put (failLabel, failBlock);
+                failBlock.setJumpInst(new UnconditionalJumpInst(functionStartLabel));
+
+                Label check2Label = new Label();
+                BasicBlock check2 = new BasicBlock(check2Label);
+                cfg.put (check2Label, check2);
+
+                Label check3Label = new Label();
+                BasicBlock check3 = new BasicBlock(check3Label);
+                cfg.put (check3Label, check3);
+
+                Label yeahLabel = new Label();
+                BasicBlock yeah = new BasicBlock(yeahLabel);
+                cfg.put (yeahLabel, yeah);
+
+                Operand n = new VariableOperand(definedFunction.getParameter(0));
+
+                Operand c1 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
+                check1.addInstruction(new BinaryInst(c1, n, Op.S_GTEQ, new ConstantIntegerOperand(Type.INT64, 0)));
+                check1.setJumpInst(new ConditionalJumpInst(c1, check2Label, failLabel));
+
+                Operand c2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
+                check2.addInstruction(new BinaryInst(c2, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 128)));
+                check2.setJumpInst(new ConditionalJumpInst(c2, check3Label, failLabel));
+
+                Operand address = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
+                check3.addInstruction(new BinaryInst(address, solved, Op.ADD, n));
+                Operand c3 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
+                check3.addInstruction(new DereferenceInst(c3, address));
+                check3.setJumpInst(new ConditionalJumpInst(c3, yeahLabel, failLabel));
+
+                failBlock.addInstruction(new AssignInst(
+                        new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
+                        new ConstantIntegerOperand(Type.INT64, -1), false));
+
+                Operand offset = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
+                yeah.addInstruction(new BinaryInst(offset, n, Op.MUL, new ConstantIntegerOperand(Type.INT64, 8)));
+                Operand address2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
+                yeah.addInstruction(new BinaryInst(address2, answer, Op.ADD, offset));
+                Operand answerN = new VariableOperand(definedFunction.getScope().allocateTmpVariable(definedFunction.getReturnType()));
+                yeah.addInstruction(new DereferenceInst(answerN, address2));
+                yeah.addInstruction(new ReturnInst(answerN));
+                yeah.addInstruction(new AssignInst(
+                        new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")), n, false));
+                yeah.setJumpInst(new UnconditionalJumpInst(definedFunction.getFunctionEndLabel()));
+            }
         }
 
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
@@ -242,6 +345,22 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private Operand returnValue;
 
     private Map<cat.footoredo.mx.entity.Variable, cat.footoredo.mx.entity.Variable> replacement;
+
+    private void dfsAndSetNotMemorable (BasicBlock currentBasicBlock) {
+        for (Instruction instruction: currentBasicBlock.getInstructions()) {
+            if (!instruction.isMemorable ()) {
+                if (currentFunction.getName().equals("fuck")) {
+                    System.out.println (instruction);
+                }
+                if (currentFunction.setNotMemorable()) {
+                    notMemorableSet = true;
+                }
+                return;
+            }
+        }
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            dfsAndSetNotMemorable(output);
+    }
 
     private void dfsAndRemoveLoops (BasicBlock currentBasicBlock) {
         if (currentBasicBlock.isLoopHeader()) {

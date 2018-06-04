@@ -9,7 +9,7 @@ builtinDeclarations
   ;
 
 builtinDeclaration
-  : methodDescription ';'
+  : BoolLiteral ':' methodDescription ';'
   ;
 
 expression

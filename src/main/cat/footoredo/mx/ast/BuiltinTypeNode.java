@@ -17,6 +17,11 @@ public class BuiltinTypeNode extends TypeDefinition {
     }
 
     @Override
+    public boolean isMemorable() {
+        throw new Error ("querying BuiltinTypeNode#isMemorable");
+    }
+
+    @Override
     public <T> T accept(TypeDefinitionVisitor<T> visitor) {
         return visitor.visit(this);
     }

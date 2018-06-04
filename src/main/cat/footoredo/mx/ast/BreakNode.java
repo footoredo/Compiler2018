@@ -10,6 +10,11 @@ public class BreakNode extends StatementNode {
     }
 
     @Override
+    public boolean isMemorable() {
+        return true;
+    }
+
+    @Override
     public Location getLocation() {
         return location;
     }

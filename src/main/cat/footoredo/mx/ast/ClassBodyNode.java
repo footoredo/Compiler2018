@@ -14,6 +14,11 @@ public class ClassBodyNode extends Node {
         this.memberDeclarationNodes.add (memberDeclarationNode);
     }
 
+    @Override
+    public boolean isMemorable() {
+        throw new Error ("querying ClassBodyNode#isMemorable");
+    }
+
     public List<MemberDeclarationNode> getMemberDeclarationNodes() {
         return memberDeclarationNodes;
     }

@@ -164,7 +164,7 @@ _strcat:
 __array#size:
         push    rbp
         mov     rbp, rsp
-        mov     rax, qword [rel @_@thisPointer]
+        mov     rax, qword [rel @_@_fvck__thisPointer]
         mov     rax, qword [rax-8H]
         pop     rbp
         ret
@@ -172,7 +172,7 @@ __array#size:
 string#length:
         push    rbp
         mov     rbp, rsp
-        mov     rax, qword [rel @_@thisPointer]
+        mov     rax, qword [rel @_@_fvck__thisPointer]
         ;mov     rax, qword [rax]
         mov     rdi, rax
         call    strlen
@@ -197,7 +197,7 @@ string#substring:
         sub     rax, qword [rbp-18H]
         add     rax, 1
         mov     rsi, rax
-        mov     rdx, qword [rel @_@thisPointer]
+        mov     rdx, qword [rel @_@_fvck__thisPointer]
         ;mov     rdx, qword [rax]
         mov     rax, qword [rbp-18H]
         lea     rcx, [rdx+rax]
@@ -220,7 +220,7 @@ string#parseInt:
         push    rbp
         mov     rbp, rsp
         mov     qword [rbp-10H], 0
-        mov     rax, qword [rel @_@thisPointer]
+        mov     rax, qword [rel @_@_fvck__thisPointer]
         ;mov     rax, qword [rax]
         mov     qword [rbp-8H], rax
 string#parseInt#L_002:  mov     rax, qword [rbp-8H]
@@ -255,7 +255,7 @@ string#ord:
         mov     rbp, rsp
         mov     eax, edi
         mov     dword [rbp-4H], eax
-        mov     rdx, qword [rel @_@thisPointer]
+        mov     rdx, qword [rel @_@_fvck__thisPointer]
         ;mov     rdx, qword [rax]
         mov     eax, dword [rbp-4H]
         cdqe

@@ -57,4 +57,9 @@ public class MethodNode extends Node {
     public MethodDescriptionNode getMethodDescription() {
         return methodDescription;
     }
+
+    @Override
+    public boolean isMemorable() {
+        throw new Error ("querying MethodNode#isMemorable");
+    }
 }

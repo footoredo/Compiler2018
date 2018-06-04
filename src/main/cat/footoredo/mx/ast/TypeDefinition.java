@@ -17,6 +17,11 @@ abstract public class TypeDefinition extends Node {
         return scope;
     }
 
+    @Override
+    public boolean isMemorable() {
+        throw new Error ("querying TypeDefinition#isMemorable");
+    }
+
     public void setScope(LocalScope scope) {
         this.scope = scope;
     }

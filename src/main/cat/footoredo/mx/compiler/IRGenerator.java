@@ -29,9 +29,10 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         scopeStack = new LinkedList<>();
         scopeStack.add(ast.getScope());
         this.ast = ast;
-        ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "thisPointer"));
-        thisPointer = ref(ast.getScope().get("thisPointer"));
-        ((cat.footoredo.mx.entity.Variable)(ast.getScope().get("thisPointer"))).setGlobal (true);
+        ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "_fvck__thisPointer"));
+        ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "_fvck__n"));
+        thisPointer = ref(ast.getScope().get("_fvck__thisPointer"));
+        ((cat.footoredo.mx.entity.Variable)(ast.getScope().get("_fvck__thisPointer"))).setGlobal (true);
         currentClass = null;
         for (TypeDefinition t: ast.getTypeDefinitions()) {
             if (t instanceof ClassNode) {
@@ -99,6 +100,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         function.setFunctionEndLabel(functionEndLabel);
 
         scopeStack.add(function.getScope());
+
         transformStatement(function.getBlock());
         label(functionEndLabel);
         scopeStack.removeLast();
@@ -530,7 +532,8 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         }
     }
 
-    private Expression allocateArray(Location location, ArrayType arrayType, List<ExpressionNode> lengths) {
+    private Expression allocateArray(Location location, ArrayType arrayType, List<ExpressionNode> _lengths) {
+        List<ExpressionNode> lengths = new ArrayList<>(_lengths);
         // System.out.println (lengths.size());
         if (lengths.size() == 0) {
             throw new Error("array size not specified.");

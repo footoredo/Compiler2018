@@ -14,6 +14,11 @@ abstract public class LiteralNode extends ExpressionNode {
         this.typeNode = new TypeNode(typeRef);
     }
 
+    @Override
+    public boolean isMemorable() {
+        return true;
+    }
+
     public Location getLocation() {
         return location;
     }

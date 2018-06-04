@@ -17,6 +17,14 @@ public class BlockNode extends StatementNode {
         this.statements = new ArrayList<>();
     }
 
+    @Override
+    public boolean isMemorable() {
+        for (StatementNode statementNode: statements)
+            if (!statementNode.isMemorable())
+                return false;
+        return true;
+    }
+
     public void addStatement (StatementNode statement) {
         statements.add (statement);
     }

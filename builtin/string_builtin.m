@@ -1,4 +1,4 @@
-int length();
-string substring(int left, int right);
-int parseInt();
-int ord(int pos);
+true : int length();
+true : string substring(int left, int right);
+true : int parseInt();
+true : int ord(int pos);

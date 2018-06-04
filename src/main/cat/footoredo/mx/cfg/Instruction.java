@@ -20,6 +20,13 @@ abstract public class Instruction {
         this.isLive = false;
     }
 
+    public boolean isMemorable () {
+        if (result != null && !result.isMemorable())
+            return false;
+        else
+            return true;
+    }
+
     public void resetLive () {
         isLive = false;
     }

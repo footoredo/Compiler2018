@@ -19,7 +19,6 @@ public class ClassNode extends TypeDefinition {
     private DefinedFunction constructor;
     private List<Slot> members;
     private String name;
-
     ClassNode(Location location, String name, ClassBodyNode classBodyNode) throws SemanticException {
         super (new TypeNode(new ClassTypeRef(location, name)));
         this.location = location;

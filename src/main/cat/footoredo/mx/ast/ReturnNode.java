@@ -6,7 +6,7 @@ public class ReturnNode extends StatementNode {
     private Location location;
     private ExpressionNode expression;
 
-    ReturnNode(Location location, ExpressionNode expression) {
+    public ReturnNode(Location location, ExpressionNode expression) {
         super ();
         this.location = location;
         this.expression = expression;

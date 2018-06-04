@@ -7,6 +7,11 @@ import cat.footoredo.mx.type.Type;
 public class ArefNode extends LHSNode {
     private ExpressionNode expression, index;
 
+    @Override
+    public boolean isMemorable() {
+        return expression.isMemorable() && index.isMemorable();
+    }
+
     public ArefNode(ExpressionNode expression, ExpressionNode index) {
         this.expression = expression;
         this.index = index;

@@ -7,6 +7,11 @@ abstract public class BinaryOpNode extends ExpressionNode {
     protected ExpressionNode lhs, rhs;
     protected String operator;
 
+    @Override
+    public boolean isMemorable() {
+        return lhs.isMemorable() && rhs.isMemorable();
+    }
+
     public BinaryOpNode (ExpressionNode lhs, String operator, ExpressionNode rhs) {
         super ();
         this.lhs = lhs;

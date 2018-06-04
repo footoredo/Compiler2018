@@ -152,19 +152,19 @@ public class AssemblyCode implements cat.footoredo.mx.sysdep.AssemblyCode {
         assemblies.add(new Directive(directive));
     }
 
-    private void instruction (String op, String suffix) {
+    public void instruction (String op, String suffix) {
         assemblies.add (new Instruction(op, suffix));
     }
 
-    private void instruction (String op, Operand a) {
+    public void instruction (String op, Operand a) {
         instruction(op,"", a);
     }
 
-    private void instruction (String op, String suffix, Operand a) {
+    public void instruction (String op, String suffix, Operand a) {
         assemblies.add (new Instruction(op, suffix, a));
     }
 
-    private void instruction (String op, Operand a1, Operand a2) {
+    public void instruction (String op, Operand a1, Operand a2) {
         assemblies.add (new Instruction(op, "", a1, a2));
     }
 

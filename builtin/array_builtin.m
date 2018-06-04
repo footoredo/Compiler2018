@@ -1,1 +1,1 @@
-int size();
+true : int size();

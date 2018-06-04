@@ -4,6 +4,7 @@ import cat.footoredo.mx.cst.MxParser;
 import cat.footoredo.mx.cst.MxVisitor;
 import cat.footoredo.mx.entity.*;
 import cat.footoredo.mx.exception.SemanticException;
+import cat.footoredo.mx.ir.Expression;
 import cat.footoredo.mx.type.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -13,6 +14,7 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ASTBuilderVisitor implements MxVisitor <Node> {
@@ -38,7 +40,31 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
             }
             else if (context instanceof MxParser.MethodDeclarationContext) {
                 MethodNode methodNode = visitMethodDeclaration((MxParser.MethodDeclarationContext) context);
-                declarations.addFun (new DefinedFunction(methodNode));
+                DefinedFunction function = new DefinedFunction(methodNode);
+                declarations.addFun (function);
+                Location location = function.getLocation();
+                TypeNode solvedTypeNode = new TypeNode(new ArrayTypeRef(new BooleanTypeRef(), 128));
+                declarations.addVar(new Variable(new VariableDeclarationNode(
+                        solvedTypeNode,
+                        function.getSolvedName(),
+                        new NewNode(location,
+                                new CreatorNode(location,
+                                        (ArrayTypeRef) solvedTypeNode.getTypeRef(),
+                                        Arrays.asList(new IntegerLiteralNode(location,128))
+                                )
+                        )
+                )));
+                TypeNode answerTypeNode = new TypeNode(new ArrayTypeRef(new IntegerTypeRef(), 128));
+                declarations.addVar(new Variable(new VariableDeclarationNode(
+                        answerTypeNode,
+                        function.getAnswerName(),
+                        new NewNode(location,
+                                new CreatorNode(location,
+                                        (ArrayTypeRef) answerTypeNode.getTypeRef(),
+                                        Arrays.asList(new IntegerLiteralNode(location,128))
+                                )
+                        )
+                )));
             }
             else if (context instanceof MxParser.VariableDeclarationContext) {
                 VariableDeclarationNode variableDeclarationNode = visitVariableDeclaration((MxParser.VariableDeclarationContext) context );
@@ -68,17 +94,18 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
     public BuiltinDeclarationsNode visitBuiltinDeclarations(MxParser.BuiltinDeclarationsContext ctx) {
         Declarations declarations = new Declarations();
         for (MxParser.BuiltinDeclarationContext builtinDeclarationContext: ctx.builtinDeclaration()) {
-            MethodDescriptionNode methodDescriptionNode = visitBuiltinDeclaration(builtinDeclarationContext);
-            MethodNode methodNode = new MethodNode(methodDescriptionNode, null);
-            declarations.addFun(new BuiltinFunction(methodNode));
+            BuiltinDescriptionNode builtinDescriptionNode = visitBuiltinDeclaration(builtinDeclarationContext);
+            MethodNode methodNode = new MethodNode(builtinDescriptionNode.getDescriptionNode(), null);
+            declarations.addFun(new BuiltinFunction(methodNode, builtinDescriptionNode.isMemorable()));
         }
 
         return new BuiltinDeclarationsNode(declarations);
     }
 
     @Override
-    public MethodDescriptionNode visitBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx) {
-        return visitMethodDescription(ctx.methodDescription());
+    public BuiltinDescriptionNode visitBuiltinDeclaration(MxParser.BuiltinDeclarationContext ctx) {
+        boolean isMemorable = ctx.BoolLiteral().getText().equals("true");
+        return new BuiltinDescriptionNode(isMemorable, visitMethodDescription(ctx.methodDescription()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cat.footoredo.mx.cfg;
 
+import cat.footoredo.mx.entity.BuiltinFunction;
 import cat.footoredo.mx.entity.DefinedFunction;
 import cat.footoredo.mx.entity.Function;
 import cat.footoredo.mx.entity.Variable;
@@ -29,6 +30,23 @@ public class CallInst extends Instruction {
         }
         buffer.append (")");
         return buffer.toString();
+    }
+
+    @Override
+    public boolean isMemorable() {
+        if (!super.isMemorable())
+            return false;
+        if (function instanceof DefinedFunction) {
+            if (!((DefinedFunction) function).isMemorable()) {
+                return false;
+            }
+        }
+        else {
+            BuiltinFunction builtinFunction = (BuiltinFunction) function;
+            if (!builtinFunction.isMemorable())
+                return false;
+        }
+        return true;
     }
 
     @Override
@@ -67,23 +85,28 @@ public class CallInst extends Instruction {
 
     @Override
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
-        Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
-        for (Operand arg: getOperands()) {
-            if (arg.isVariable()) {
-                // arg.getVariable().setUsed(true);
-                resultLiveVariables.add(arg.getVariable());
+        if (!isMemorable()) {
+            Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);
+            for (Operand arg : getOperands()) {
+                if (arg.isVariable()) {
+                    // arg.getVariable().setUsed(true);
+                    resultLiveVariables.add(arg.getVariable());
+                }
             }
+            if (getResult() != null) {
+                resultLiveVariables.add(getResult().getVariable());
+            }
+            RegisterAllocator.solveRivalry(resultLiveVariables);
+            if (getResult() != null && getResult().isVariable()) {
+                Variable result = getResult().getVariable();
+                if (resultLiveVariables.contains(result))
+                    resultLiveVariables.remove(result);
+            }
+            return resultLiveVariables;
         }
-        if (getResult() != null) {
-            resultLiveVariables.add(getResult().getVariable());
+        else {
+            return super.backPropagate(liveVariables);
         }
-        RegisterAllocator.solveRivalry(resultLiveVariables);
-        if (getResult() != null && getResult().isVariable()) {
-            Variable result = getResult().getVariable();
-            if (resultLiveVariables.contains(result))
-                resultLiveVariables.remove(result);
-        }
-        return resultLiveVariables;
     }
 
     @Override

@@ -25,10 +25,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private Set<Label> compiledLabels;
     private CFG cfg;
+    private ToplevelScope globalScope;
     public AssemblyCode generate (IR ir, CFG cfg) {
         this.cfg = cfg;
         compiledLabels = new HashSet<>();
         locateSymbols(ir);
+        this.globalScope = ir.getScope();
         AssemblyCode assemblyCode = generateAssemblyCode(ir);
         while (assemblyCode.peepholeOptimize());
         return assemblyCode;
@@ -559,6 +561,16 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     @Override
     public void visit(ULTIMATERETURNINST inst) {
+        if (currentFunction.isFibLike()) {
+            cat.footoredo.mx.asm.Operand n = new VariableOperand((cat.footoredo.mx.entity.Variable) globalScope.get("_fvck__n")).toASMOperand();
+            as.mov(cx(), n);
+            cat.footoredo.mx.asm.Operand answer = new VariableOperand(currentFunction.getAnswer()).toASMOperand();
+            as.mov(dx(), answer);
+            as.instruction("mov QWORD [rdx + rcx * 8], rax", "");
+            cat.footoredo.mx.asm.Operand solved = new VariableOperand(currentFunction.getSolved()).toASMOperand();
+            as.mov(dx(), solved);
+            as.instruction("mov QWORD [rdx + rcx], 1", "");
+        }
         as.jmp(epilogueLabel);
     }
 

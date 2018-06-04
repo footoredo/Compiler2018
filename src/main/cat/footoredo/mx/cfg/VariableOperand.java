@@ -43,6 +43,11 @@ public class VariableOperand extends Operand {
     }
 
     @Override
+    public boolean isMemorable() {
+        return !variable.isGlobal();
+    }
+
+    @Override
     boolean isSame(Operand operand) {
         if (!(operand instanceof VariableOperand)) return false;
         else return variable == operand.getVariable();

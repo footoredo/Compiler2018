@@ -13,6 +13,11 @@ public class BuiltinDeclarationsNode extends Node {
         this.declarations = declarations;
     }
 
+    @Override
+    public boolean isMemorable() {
+        throw new Error ("querying BuiltinDeclarationsNode#isMemorable");
+    }
+
     public void addFun(BuiltinFunction fun) {
         declarations.addFun(fun);
     }

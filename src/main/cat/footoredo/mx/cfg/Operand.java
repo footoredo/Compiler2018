@@ -62,4 +62,8 @@ abstract public class Operand {
     public Type getType() {
         return type;
     }
+
+    public boolean isMemorable () {
+        return true;
+    }
 }

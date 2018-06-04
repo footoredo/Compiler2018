@@ -23,7 +23,9 @@ public class DefinedFunction extends Function {
     private BasicBlock startBasicBlock;
     private BasicBlock endBasicBlock;
 
-    private Set<DefinedFunction> calls;
+    private boolean isStatic;
+
+    private Set<DefinedFunction> calls, called;
 
     public static final Set<Register> allRegisters = new HashSet<>();
     public static final Set<Register> calleeSaveRegisters = new HashSet<>();
@@ -31,6 +33,59 @@ public class DefinedFunction extends Function {
     private Set <Register> usedRegisters;
 
     private Label functionEndLabel;
+
+    private Variable solved;
+    private Variable answer;
+
+    private boolean isMemorable;
+
+    public boolean isMemorable () {
+        return isMemorable;
+    }
+
+    public boolean isFibLike () {
+        if (!isMemorable) return false;
+        if (getParameters().size() != 1) return false;
+        if (!getParameter(0).getType().isInteger()) return false;
+        return true;
+    }
+
+    public boolean setNotMemorable () {
+        if (isMemorable) {
+            isMemorable = false;
+            for (DefinedFunction caller: called) {
+                caller.setNotMemorable();
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public String getSolvedName () {
+        return "__TAT_solved__" + getName();
+    }
+
+    public String getAnswerName () {
+        return "__TAT_answer__" + getName();
+    }
+
+    public Variable getSolved() {
+        return solved;
+    }
+
+    public void setSolved(Variable solved) {
+        this.solved = solved;
+    }
+
+    public Variable getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(Variable answer) {
+        this.answer = answer;
+    }
 
     static {
         for (long index: RegisterAllocator.AVAILABLE_REGISTERS) {
@@ -46,7 +101,9 @@ public class DefinedFunction extends Function {
         // System.out.println (parentClass + "#" + methodNode.getName());
         this.block = methodNode.getBlock();
         this.calls = new HashSet<>();
+        this.called = new HashSet<>();
         this.functionEndLabel = null;
+        this.isMemorable = true;
     }
 
     public void resetUsedRegisters () {
@@ -71,8 +128,14 @@ public class DefinedFunction extends Function {
     }
 
     public void addCall (CallInst callInst) {
-        if (callInst.getFunction() instanceof DefinedFunction)
-            calls.add ((DefinedFunction) callInst.getFunction());
+        if (callInst.getFunction() instanceof DefinedFunction) {
+            calls.add((DefinedFunction) callInst.getFunction());
+            ((DefinedFunction) callInst.getFunction()).addCalled(this);
+        }
+    }
+
+    private void addCalled (DefinedFunction caller) {
+        called.add (caller);
     }
 
     public void resetCalls () {

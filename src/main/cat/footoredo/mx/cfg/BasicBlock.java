@@ -37,6 +37,10 @@ public class BasicBlock {
         this.backOutput = null;
     }
 
+    public void setLabel(Label label) {
+        this.label = label;
+    }
+
     public boolean hasBackOutput () {
         return backOutput != null;
     }

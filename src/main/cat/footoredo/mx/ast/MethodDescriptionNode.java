@@ -58,4 +58,9 @@ public class MethodDescriptionNode extends Node {
     public Location getLocation () {
         return location;
     }
+
+    @Override
+    public boolean isMemorable() {
+        throw new Error ("querying MethodDescriptionNode#isMemorable");
+    }
 }
