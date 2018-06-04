@@ -25,7 +25,16 @@ public class DereferenceInst extends Instruction {
     public void accept(CFGVisitor visitor) {
         visitor.visit(this);
     }
-/*
+
+    /*@Override
+    public Set<Variable> getAffectedVariables() {
+        Set<Variable> result = new HashSet<>();
+        result.add (this.getResult().getVariable());
+        if (getAddress().isVariable()) result.add (getAddress().getVariable());
+        return result;
+    }*/
+
+    /*
     @Override
     public Set<Variable> backPropagate(Set<Variable> liveVariables) {
         Set<Variable> resultLiveVariables = new HashSet<>(liveVariables);

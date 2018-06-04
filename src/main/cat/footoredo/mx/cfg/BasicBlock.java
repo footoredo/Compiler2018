@@ -91,7 +91,7 @@ public class BasicBlock {
 
         hasCall = false;
         for (Instruction instruction: instructions)
-            if (instruction instanceof CallInst)
+            if (instruction instanceof CallInst || instruction instanceof DereferenceInst)
                 hasCall = true;
 
         if (verbose) {
@@ -142,17 +142,22 @@ public class BasicBlock {
     public boolean removeLoop () {
         assert (isLoopHeader());
         //System.out.println ("loop removed");
+        // System.err.println (loopHasCall);
         if (!loopHasCall) {
-            /*for (Variable variable: loopVariants) {
-                System.out.println (variable.getName());
+            /*System.err.println ("==== loop variants ====");
+            for (Variable variable: loopVariants) {
+                System.err.println (variable.getName());
             }
-            System.out.println();
+            System.err.println();
+            System.err.println ("==== loop end live variables ====");
             for (Variable variable: loopEnd.getEndLiveVariables()) {
-                System.out.println (variable.getName());
+                System.err.println (variable.getName());
             }
-            System.out.println();
-            System.out.println();*/
+            System.err.println();
+            System.err.println();*/
             if (SetUtils.solveIntersection(loopVariants, loopEnd.getEndLiveVariables()).isEmpty()) {
+                System.err.println ("** loop removed **");
+                // displayInstructions();
                 instructions = new ArrayList<>();
                 jumpInst = new UnconditionalJumpInst(loopEnd.getLabel());
                 return true;
@@ -330,7 +335,8 @@ public class BasicBlock {
             // System.out.println (this + " is end block " + "with label " + label);
             isEndBlock = true;
         }
-        else if (instruction instanceof CallInst) {
+        else if (instruction instanceof CallInst || instruction instanceof DereferenceInst) {
+            // System.out.println ("sss");
             hasCall = true;
         }
         instructions.add(instruction);

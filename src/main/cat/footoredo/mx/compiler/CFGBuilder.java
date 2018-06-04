@@ -89,23 +89,30 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLive(definedFunction.getStartBasicBlock());
 
+                visitedBasicBlocks = new HashSet<>();
                 removed = false;
                 dfsAndRemove (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
                 backPropagate(definedFunction.getEndBasicBlock(), new HashSet<>());
 
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLoop (definedFunction.getStartBasicBlock());
 
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndFindLoopHeader (definedFunction.getStartBasicBlock());
 
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndBuildLoop (definedFunction.getStartBasicBlock());
 
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndFindLoopVariants (definedFunction.getStartBasicBlock());
 
                 loopRemoved = false;
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndRemoveLoops (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -115,9 +122,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
                 cleaned = false;
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndClean(definedFunction.getStartBasicBlock());
 
                 merged = false;
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndMerge(definedFunction.getStartBasicBlock());
             }
             if (!loopRemoved && !removed && !cleaned && !merged) break;
@@ -168,6 +177,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     private void dfsAndFindLoopVariants (BasicBlock currentBasicBlock) {
         for (BasicBlock loopHeader: currentBasicBlock.getBelongedLoopHeaders()) {
+            /*currentBasicBlock.displayInstructions();
+            System.out.println (currentBasicBlock.hasCall());
+            System.out.println (loopHeader);*/
             loopHeader.setLoopHasCall(currentBasicBlock.hasCall());
             loopHeader.addLoopVariants(currentBasicBlock.getAffectedVariables());
         }
