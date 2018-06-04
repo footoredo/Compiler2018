@@ -473,7 +473,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
     public Expression visit(ArefNode node) {
         Expression expression = transformExpression(node.getExpression());
         Expression offset = new Binary(ptrdiff_t(), Op.MUL, size (node.elementSize()), transformIndex(node));
-        Binary address = new Binary(ptr_t(), Op.ADD, expression, new Binary(ptr_t(), Op.ADD, offset, size(8)));
+        Binary address = new Binary(ptr_t(), Op.ADD, expression, offset);
         return memory(address, node.getType());
     }
 
@@ -548,10 +548,12 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         Expression address = ref(tmpVariable(new PointerType()));
         assign (location, address, malloc);
         assign (location, memory(address, new IntegerType(false)), length);
+        Expression startAddress = ref(tmpVariable(new PointerType()));
+        assign(location, startAddress, binary(Op.ADD, address, size(8)));
         lengths.remove(0);
         if (lengths.size() > 0) {
             Expression currentAddress = ref(tmpVariable(new PointerType()));
-            assign(location, currentAddress, binary(Op.ADD, address, size(8)));
+            assign(location, currentAddress, startAddress);
             Expression countDown = ref (tmpVariable(new IntegerType(false)));
             assign (location, countDown, length);
             Expression cond = binary(Op.NEQ, countDown, size(0));
@@ -569,7 +571,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
             jump (begLabel);
             label (endLabel);
         }
-        return address;
+        return startAddress;
     }
 
     @Override

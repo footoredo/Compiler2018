@@ -165,8 +165,7 @@ __array#size:
         push    rbp
         mov     rbp, rsp
         mov     rax, qword [rel @_@thisPointer]
-        ;mov     rax, qword [rax]
-        mov     rax, qword [rax]
+        mov     rax, qword [rax-8H]
         pop     rbp
         ret
 
