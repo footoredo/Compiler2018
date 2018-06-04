@@ -45,11 +45,13 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
         for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
+            visitedBasicBlocks = new HashSet<>();
             definedFunction.resetCalls ();
         }
 
         for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
+            visitedBasicBlocks = new HashSet<>();
             dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
         }
 
@@ -57,6 +59,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             notMemorableSet = false;
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
                 currentFunction = definedFunction;
+                visitedBasicBlocks = new HashSet<>();
                 dfsAndSetNotMemorable(definedFunction.getStartBasicBlock());
             }
             if (notMemorableSet)
@@ -89,6 +92,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 cfg.put (failLabel, failBlock);
                 failBlock.setJumpInst(new UnconditionalJumpInst(functionStartLabel));
 
+                Label rangeFailLabel = new Label();
+                BasicBlock rangeFailBlock = new BasicBlock(rangeFailLabel);
+                cfg.put (rangeFailLabel, rangeFailBlock);
+                rangeFailBlock.setJumpInst(new UnconditionalJumpInst(functionStartLabel));
+
                 Label check2Label = new Label();
                 BasicBlock check2 = new BasicBlock(check2Label);
                 cfg.put (check2Label, check2);
@@ -105,11 +113,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
                 Operand c1 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
                 check1.addInstruction(new BinaryInst(c1, n, Op.S_GTEQ, new ConstantIntegerOperand(Type.INT64, 0)));
-                check1.setJumpInst(new ConditionalJumpInst(c1, check2Label, failLabel));
+                check1.setJumpInst(new ConditionalJumpInst(c1, check2Label, rangeFailLabel));
 
                 Operand c2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
                 check2.addInstruction(new BinaryInst(c2, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 128)));
-                check2.setJumpInst(new ConditionalJumpInst(c2, check3Label, failLabel));
+                check2.setJumpInst(new ConditionalJumpInst(c2, check3Label, rangeFailLabel));
 
                 Operand address = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new PointerType()));
                 check3.addInstruction(new BinaryInst(address, solved, Op.ADD, n));
@@ -117,7 +125,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 check3.addInstruction(new DereferenceInst(c3, address));
                 check3.setJumpInst(new ConditionalJumpInst(c3, yeahLabel, failLabel));
 
+                System.out.println ("failBlock: " + failBlock);
                 failBlock.addInstruction(new AssignInst(
+                        new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
+                        n, false));
+
+                rangeFailBlock.addInstruction(new AssignInst(
                         new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")),
                         new ConstantIntegerOperand(Type.INT64, -1), false));
 
@@ -128,8 +141,6 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 Operand answerN = new VariableOperand(definedFunction.getScope().allocateTmpVariable(definedFunction.getReturnType()));
                 yeah.addInstruction(new DereferenceInst(answerN, address2));
                 yeah.addInstruction(new ReturnInst(answerN));
-                yeah.addInstruction(new AssignInst(
-                        new VariableOperand((cat.footoredo.mx.entity.Variable) ir.getScope().get("_fvck__n")), n, false));
                 yeah.setJumpInst(new UnconditionalJumpInst(definedFunction.getFunctionEndLabel()));
             }
         }
@@ -217,27 +228,6 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (!loopRemoved && !removed && !cleaned && !merged) break;
         }
 
-        /*for (int i = 0; i < 5; ++ i) {
-            inlined = false;
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                definedFunction.resetCalls ();
-            }
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                currentFunction = definedFunction;
-                visitedBasicBlocks = new HashSet<>();
-                dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
-            }
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                visitedBasicBlocks = new HashSet<>();
-                currentFunction = definedFunction;
-                dfsAndInline(definedFunction.getStartBasicBlock(), true);
-            }
-
-            if (!inlined) break;
-        }*/
 
         while (true) {
             inlined = false;
@@ -349,6 +339,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private Map<cat.footoredo.mx.entity.Variable, cat.footoredo.mx.entity.Variable> replacement;
 
     private void dfsAndSetNotMemorable (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         for (Instruction instruction: currentBasicBlock.getInstructions()) {
             if (!instruction.isMemorable ()) {
                 if (currentFunction.getName().equals("fuck")) {
@@ -361,10 +352,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndSetNotMemorable(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndSetNotMemorable(output);
     }
 
     private void dfsAndRemoveLoops (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         if (currentBasicBlock.isLoopHeader()) {
             if (currentBasicBlock.removeLoop()) {
                 loopRemoved = true;
@@ -372,10 +365,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndRemoveLoops(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndRemoveLoops(output);
     }
 
     private void dfsAndFindLoopVariants (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         for (BasicBlock loopHeader: currentBasicBlock.getBelongedLoopHeaders()) {
             /*currentBasicBlock.displayInstructions();
             System.out.println (currentBasicBlock.hasCall());
@@ -384,30 +379,37 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             loopHeader.addLoopVariants(currentBasicBlock.getAffectedVariables());
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndFindLoopVariants(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndFindLoopVariants(output);
     }
 
     private Set<BasicBlock> loopVisitedBasicBlocks;
     private BasicBlock currentLoopHeader;
 
     private void loopDFS (BasicBlock currentBasicBlock) {
+        loopVisitedBasicBlocks.add(currentBasicBlock);
         if (currentBasicBlock == currentLoopHeader.getLoopEnd())
             return;
         currentBasicBlock.addBelongedLoopHeader(currentLoopHeader);
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            loopDFS(output);
+            if (!loopVisitedBasicBlocks.contains(output))
+                loopDFS(output);
     }
 
     private void dfsAndBuildLoop (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         if (currentBasicBlock.isLoopHeader()) {
             currentLoopHeader = currentBasicBlock;
+            loopVisitedBasicBlocks = new HashSet<>();
             loopDFS (currentBasicBlock);
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndBuildLoop(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndBuildLoop(output);
     }
 
     private void dfsAndFindLoopHeader (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         if (currentBasicBlock.hasBackOutput()) {
             // System.out.println (currentBasicBlock.getOutputs().size());
             // currentBasicBlock.displayInstructions();
@@ -415,36 +417,46 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             loopHeader.setLoopEnd(cfg.get(loopHeader.getEndLabel()));
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndFindLoopHeader(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndFindLoopHeader(output);
     }
 
     private void dfsAndResetLoop (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         currentBasicBlock.resetLoop();
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndResetLoop(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndResetLoop(output);
     }
 
     private void dfsAndRemove (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         removed |= currentBasicBlock.remove();
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndRemove(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndRemove(output);
     }
 
     private void dfsAndResetLive (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         currentBasicBlock.resetLiveVariables();
         currentBasicBlock.resetLive();
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndResetLive(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndResetLive(output);
     }
 
     private void dfsAndSolveRivalry (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         currentBasicBlock.solveRivalry();
         currentBasicBlock.solveUsedCount ();
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndSolveRivalry(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndSolveRivalry(output);
     }
 
     private void dfsAndCollectUsedRegisters (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         for (Instruction instruction: currentBasicBlock.getInstructions()) {
             if (((instruction instanceof CallInst) && ((CallInst) instruction).getFunction() instanceof BuiltinFunction) ||
                     (instruction instanceof MallocInst)) {
@@ -460,7 +472,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
         }
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndCollectUsedRegisters(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndCollectUsedRegisters(output);
     }
 
     private void dfsAndInlineCopy (BasicBlock currentBasicBlock, Label startLabel) {
@@ -636,12 +649,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (Label outputLabel: currentBasicBlock.getOutputLabels()) {
             BasicBlock nextBasicBlock = cfg.get (outputLabel);
             nextBasicBlock.addInput(currentBasicBlock);
+            currentBasicBlock.addOutput(nextBasicBlock);
             if (!visitedBasicBlocks.contains(nextBasicBlock)) {
-                currentBasicBlock.addOutput(nextBasicBlock);
                 dfsAndLink(nextBasicBlock);
             }
             else {
-                currentBasicBlock.setBackOutput(nextBasicBlock);
+                // currentBasicBlock.setBackOutput(nextBasicBlock);
             }
         }
     }
@@ -658,12 +671,15 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     }
 
     private void dfsAndClean (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         cleaned |= currentBasicBlock.cleanInstructions();
         for (BasicBlock output: currentBasicBlock.getOutputs())
-            dfsAndClean(output);
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndClean(output);
     }
 
     private void dfsAndMerge (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
         if (currentBasicBlock.getAllOutputs().size() == 0) return;
         if (currentBasicBlock.getOutputs().size() == 1 && !currentBasicBlock.hasBackOutput()) {
             BasicBlock output = currentBasicBlock.getOutputs().iterator().next();
@@ -675,10 +691,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 // return;
             }
         }
-        for (BasicBlock output: currentBasicBlock.getOutputs()) {
-            dfsAndMerge(output);
-            // if (merged) return;
-        }
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndMerge(output);
     }
 
     private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {

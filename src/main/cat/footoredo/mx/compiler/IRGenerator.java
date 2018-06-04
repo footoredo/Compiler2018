@@ -33,6 +33,7 @@ public class IRGenerator implements ASTVisitor<Void, Expression> {
         ast.getScope().declareEntity(new cat.footoredo.mx.entity.Variable(new TypeNode(new PointerType()), "_fvck__n"));
         thisPointer = ref(ast.getScope().get("_fvck__thisPointer"));
         ((cat.footoredo.mx.entity.Variable)(ast.getScope().get("_fvck__thisPointer"))).setGlobal (true);
+        ((cat.footoredo.mx.entity.Variable)(ast.getScope().get("_fvck__n"))).setGlobal (true);
         currentClass = null;
         for (TypeDefinition t: ast.getTypeDefinitions()) {
             if (t instanceof ClassNode) {
