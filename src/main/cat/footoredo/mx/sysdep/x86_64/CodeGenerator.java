@@ -564,6 +564,8 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         if (currentFunction.isFibLike()) {
             cat.footoredo.mx.asm.Operand n = new VariableOperand(currentFunction.getToSave()).toASMOperand();
             as.mov(cx(), n);
+            as.cmp(cx(), new ImmediateValue(0));
+            as.j("l", epilogueLabel);
             cat.footoredo.mx.asm.Operand answer = new VariableOperand(currentFunction.getAnswer()).toASMOperand();
             as.mov(dx(), answer);
             as.instruction("mov QWORD [rdx + rcx * 8], rax", "");
