@@ -59,10 +59,10 @@ public class AssignInst extends Instruction {
                     // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
-            RegisterAllocator.solveRivalry(resultLiveVariables);
             if (!isDeref) {
                 resultLiveVariables.remove (getResult().getVariable());
             }
+            RegisterAllocator.solveRivalry(resultLiveVariables);
         }
         /*System.err.println (getClass() + " : after");
         for (Variable variable: resultLiveVariables)

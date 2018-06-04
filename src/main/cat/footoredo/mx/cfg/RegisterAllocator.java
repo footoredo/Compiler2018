@@ -2,6 +2,7 @@ package cat.footoredo.mx.cfg;
 
 import cat.footoredo.mx.entity.ToplevelScope;
 import cat.footoredo.mx.entity.Variable;
+import cat.footoredo.mx.sysdep.x86_64.Register;
 import cat.footoredo.mx.sysdep.x86_64.RegisterClass;
 
 import java.util.*;
@@ -64,15 +65,32 @@ public class RegisterAllocator {
             Variable variable = coloringStack.getLast();
             coloringStack.removeLast();
 
-            Set<Long> remainingRegister = fillRegisters ();
+            boolean [] registerUsed = new boolean[NUMBER_REGISTERS];
+            for (int i = 0; i < NUMBER_REGISTERS; ++ i)
+                registerUsed[i] = false;
             for (Variable rivalry: variable.getRivalries()) {
                 if (rivalry.isRegister()) {
-                    remainingRegister.remove (rivalry.getRegister().getNumber());
+                    int index = getIndex(rivalry.getRegister().getNumber());
+                    if (index != -1)
+                        registerUsed[index] = true;
                 }
             }
 
-            variable.setRegister(remainingRegister.iterator().next());
+            for (int i = 0; i < NUMBER_REGISTERS; ++ i) {
+                if (!registerUsed[i]) {
+                    variable.setRegister(AVAILABLE_REGISTERS[i]);
+                    break;
+                }
+            }
+
         }
+    }
+
+    private int getIndex (long number) {
+        for (int i = 0; i < NUMBER_REGISTERS; ++ i)
+            if (AVAILABLE_REGISTERS[i] == number)
+                return i;
+        return -1;
     }
 
     private Set<Long>  fillRegisters () {
