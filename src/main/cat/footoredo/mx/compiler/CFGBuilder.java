@@ -130,7 +130,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndMerge(definedFunction.getStartBasicBlock());
             }
-            System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
+            // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
             if (!loopRemoved && !removed && !cleaned && !merged) break;
         }
 
