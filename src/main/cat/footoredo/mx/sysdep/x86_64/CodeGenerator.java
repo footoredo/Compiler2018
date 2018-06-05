@@ -805,7 +805,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         // System.out.println (saving.size() + " " + s);
         // System.out.println (s.getFunction().getName());
         for (Register register: saving) {
-            System.out.println (register.toSource(SymbolTable.dummy()));
+            // System.out.println (register.toSource(SymbolTable.dummy()));
             as.virtualPush(register);
         }
         int cnt = s.getArgc() - PARAMETER_REGISTERS.length;
