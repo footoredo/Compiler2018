@@ -44,36 +44,13 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             dfsAndLink(definedFunction.getStartBasicBlock());
         }
 
-        for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-            currentFunction = definedFunction;
-            visitedBasicBlocks = new HashSet<>();
-            definedFunction.resetCalls ();
-        }
-
-        for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-            currentFunction = definedFunction;
-            visitedBasicBlocks = new HashSet<>();
-            dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
-        }
-
-        while (true) {
-            notMemorableSet = false;
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                currentFunction = definedFunction;
-                visitedBasicBlocks = new HashSet<>();
-                dfsAndSetNotMemorable(definedFunction.getStartBasicBlock());
-            }
-            if (notMemorableSet)
-                break;
-        }
-
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
             currentFunction = definedFunction;
             visitedBasicBlocks = new HashSet<>();
             dfsAndCSE (definedFunction.getStartBasicBlock());
         }
 
-        /*while (true) {
+        while (true) {
             loopRemoved = false;
             cleaned = false;
             merged = false;
@@ -88,11 +65,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 stack = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
+                // System.out.println (cfg.size ());
+
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLive(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-
                 dfsAndRemove (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
@@ -100,6 +78,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 if (definedFunction.isFibLike()) {
                     startLiveVariables.add (definedFunction.getToSave());
                 }
+                // System.err.println ("ss");
+                depth = 0;
                 backPropagate(definedFunction.getEndBasicBlock(), startLiveVariables);
 
                 visitedBasicBlocks = new HashSet<>();
@@ -128,14 +108,13 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndClean(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-                //dfsAndMerge(definedFunction.getStartBasicBlock());
+                // dfsAndMerge(definedFunction.getStartBasicBlock());
             }
             // System.out.println (loopRemoved + " " + removed + " " + cleaned + " " + merged);
             if (!loopRemoved && !removed && !cleaned && !merged) break;
-        }*/
+        }
 
-
-        for (int i = 0; i < 3; ++ i) {
+        for (int i = 0; i < 1; ++ i) {
             inlined = false;
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
@@ -156,6 +135,29 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             }
 
             if (!inlined) break;
+        }
+
+        for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
+            visitedBasicBlocks = new HashSet<>();
+            definedFunction.resetCalls ();
+        }
+
+        for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+            currentFunction = definedFunction;
+            visitedBasicBlocks = new HashSet<>();
+            dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
+        }
+
+        while (true) {
+            notMemorableSet = false;
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                currentFunction = definedFunction;
+                visitedBasicBlocks = new HashSet<>();
+                dfsAndSetNotMemorable(definedFunction.getStartBasicBlock());
+            }
+            if (notMemorableSet)
+                break;
         }
 
         for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
@@ -259,18 +261,21 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 stack = new HashSet<>();
                 dfsAndLink(definedFunction.getStartBasicBlock());
 
+                // System.out.println (cfg.size ());
+
                 visitedBasicBlocks = new HashSet<>();
                 dfsAndResetLive(definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
-
-                //dfsAndRemove (definedFunction.getStartBasicBlock());
+                dfsAndRemove (definedFunction.getStartBasicBlock());
 
                 visitedBasicBlocks = new HashSet<>();
                 Set<cat.footoredo.mx.entity.Variable> startLiveVariables = new HashSet<>();
                 if (definedFunction.isFibLike()) {
                     startLiveVariables.add (definedFunction.getToSave());
                 }
+                // System.err.println ("ss");
+                depth = 0;
                 backPropagate(definedFunction.getEndBasicBlock(), startLiveVariables);
 
                 visitedBasicBlocks = new HashSet<>();
@@ -333,6 +338,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
     private boolean removed;
     private boolean merged;
     private boolean cleaned;
+    private int depth;
 
     private Operand returnValue;
 
@@ -342,9 +348,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         visitedBasicBlocks.add(currentBasicBlock);
         for (Instruction instruction: currentBasicBlock.getInstructions()) {
             if (!instruction.isMemorable ()) {
-                if (currentFunction.getName().equals("fuck")) {
+                /*if (currentFunction.getName().equals("fuck")) {
                     System.out.println (instruction);
-                }
+                }*/
                 if (currentFunction.setNotMemorable()) {
                     notMemorableSet = true;
                 }
@@ -706,6 +712,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
     private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {
         boolean isUpdated = false;
+        ++ depth;
+        // System.err.println ("depth: " + depth);
         if (!currentBasicBlock.backPropagated()) {
             isUpdated = true;
             currentBasicBlock.prepareForFirstBackPropagate();
@@ -715,10 +723,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             // System.out.println (variable.getName());
             if (!currentBasicBlock.isLiveVariable(variable)) {
                 // System.err.println ("ere");
-                isUpdated = true;
                 if (variable == null) {
                     throw new Error("ss");
                 }
+                // System.out.println (variable.getName() + " " + currentBasicBlock + " " + currentFunction.getName());
+                isUpdated = true;
                 currentBasicBlock.addLiveVariable(variable);
             }
         }
@@ -728,10 +737,12 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 System.out.println ("current live: " + variable.getName());*/
             // currentBasicBlock.displayInstructions();
             Set <cat.footoredo.mx.entity.Variable> newLiveVariables = currentBasicBlock.backPropagate ();
+            //Set <cat.footoredo.mx.entity.Variable> newLiveVariables = new HashSet<>(liveVariables);
             for (BasicBlock input: currentBasicBlock.getInputs()) {
                 backPropagate(input, new HashSet<>(newLiveVariables));
             }
         }
+        -- depth;
     }
 
     private BasicBlock currentBasicBlock;

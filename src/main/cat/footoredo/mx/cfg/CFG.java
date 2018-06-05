@@ -20,6 +20,10 @@ public class CFG {
         labelTable.put (label, basicBlock);
     }
 
+    public int size () {
+        return labelTable.size();
+    }
+
     public BasicBlock get (Label label) {
         return labelTable.get (label);
     }
