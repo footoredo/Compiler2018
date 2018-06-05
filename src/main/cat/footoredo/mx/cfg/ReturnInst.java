@@ -61,6 +61,9 @@ public class ReturnInst extends Instruction {
             // System.out.println ("ss");
             // getValue().getVariable().setUsed(true);
             resultLiveVariables.add(getValue().getVariable());
+
+            if (getValue().getVariable() == null)
+                throw new Error ("ss");
         }
         // System.out.println("asfas");
         // System.out.println (resultLiveVariables.size());

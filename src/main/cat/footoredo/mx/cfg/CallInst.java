@@ -91,9 +91,13 @@ public class CallInst extends Instruction {
                 if (arg.isVariable()) {
                     // arg.getVariable().setUsed(true);
                     resultLiveVariables.add(arg.getVariable());
+                    if (arg.getVariable() == null)
+                        throw new Error ("ss");
                 }
             }
             if (getResult() != null) {
+                if (getResult().getVariable() == null)
+                    throw new Error ("ss");
                 resultLiveVariables.add(getResult().getVariable());
             }
             RegisterAllocator.solveRivalry(resultLiveVariables);

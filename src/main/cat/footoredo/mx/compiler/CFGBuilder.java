@@ -159,28 +159,6 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             dfsAndCSE (definedFunction.getStartBasicBlock());
         }
 
-        /*while (true) {
-            inlined = false;
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                definedFunction.resetCalls ();
-            }
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                currentFunction = definedFunction;
-                visitedBasicBlocks = new HashSet<>();
-                dfsAndBuildCallGraph(definedFunction.getStartBasicBlock());
-            }
-
-            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
-                visitedBasicBlocks = new HashSet<>();
-                currentFunction = definedFunction;
-                dfsAndInline(definedFunction.getStartBasicBlock(), false);
-            }
-
-            if (!inlined) break;
-        }*/
-
         while (true) {
             loopRemoved = false;
             cleaned = false;
@@ -243,10 +221,11 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         }
 
 
-        for (int i = 0; i < 5; ++ i) {
+        for (int i = 0; i < 3; ++ i) {
             inlined = false;
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                visitedBasicBlocks = new HashSet<>();
                 definedFunction.resetCalls ();
             }
 
@@ -530,7 +509,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                     // System.out.println ("replaced to: " + unconditionalJumpInst.getTarget());
                 }
                 else {
-                    Label newLabel = new Label (new UnnamedSymbol());
+                    Label newLabel = new Label ();
                     labelReplacement.put (originalLabel, newLabel);
                     unconditionalJumpInst.setTarget(newLabel);
                     BasicBlock nextBasicBlock = cfg.get(originalLabel);
@@ -545,7 +524,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 if (labelReplacement.containsKey(originalLabel))
                     conditionalJumpInst.setTrueTarget(labelReplacement.get(originalLabel));
                 else {
-                    Label newLabel = new Label (new UnnamedSymbol());
+                    Label newLabel = new Label ();
                     labelReplacement.put (originalLabel, newLabel);
                     conditionalJumpInst.setTrueTarget(newLabel);
                     BasicBlock nextBasicBlock = cfg.get(originalLabel);
@@ -557,7 +536,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 if (labelReplacement.containsKey(originalLabel))
                     conditionalJumpInst.setFalseTarget(labelReplacement.get(originalLabel));
                 else {
-                    Label newLabel = new Label (new UnnamedSymbol());
+                    Label newLabel = new Label ();
                     labelReplacement.put (originalLabel, newLabel);
                     conditionalJumpInst.setFalseTarget(newLabel);
                     BasicBlock nextBasicBlock = cfg.get(originalLabel);
@@ -582,7 +561,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                         (callInst.getFunction() != currentFunction || inlineRecursion)) {
                     inlined = true;
                     DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
-                    // System.out.println ("Inlining " + inlineFunction.getName());
+                    // System.out.println ("Inlining " + inlineFunction.getName() + " in " + currentFunction.getName());
                     replacement = new HashMap<>();
                     for (int i = 0; i < inlineFunction.getParameters().size(); ++ i) {
                         Parameter parameter = inlineFunction.getParameter(i);
@@ -599,8 +578,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                     }*/
                     boolean originalIsEndBlock = currentBasicBlock.isEndBlock();
                     BasicBlock startBasicBlock = inlineFunction.getStartBasicBlock();
-                    Label inlineStartLabel = new Label(new UnnamedSymbol());
-                    Label inlineEndLabel = new Label (new UnnamedSymbol());
+                    Label inlineStartLabel = new Label();
+                    Label inlineEndLabel = new Label ();
                     // System.out.println ("function end label: " + inlineFunction.getFunctionEndLabel());
                     labelReplacement.put (inlineFunction.getFunctionEndLabel(), inlineEndLabel);
                     currentBasicBlock.setJumpInst(new UnconditionalJumpInst(inlineStartLabel));
@@ -623,6 +602,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 newInstructions.add (instruction.copy());
             }
         }
+
+        // if (inlined) return;
 
         currentBasicBlock.setInstructions(newInstructions);
 
@@ -735,13 +716,20 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (!currentBasicBlock.isLiveVariable(variable)) {
                 // System.err.println ("ere");
                 isUpdated = true;
+                if (variable == null) {
+                    throw new Error("ss");
+                }
                 currentBasicBlock.addLiveVariable(variable);
             }
         }
         if (isUpdated) {
+            /*System.out.println ("in function " + currentFunction.getName());
+            for (cat.footoredo.mx.entity.Variable variable: liveVariables)
+                System.out.println ("current live: " + variable.getName());*/
+            // currentBasicBlock.displayInstructions();
             Set <cat.footoredo.mx.entity.Variable> newLiveVariables = currentBasicBlock.backPropagate ();
             for (BasicBlock input: currentBasicBlock.getInputs()) {
-                backPropagate(input, newLiveVariables);
+                backPropagate(input, new HashSet<>(newLiveVariables));
             }
         }
     }

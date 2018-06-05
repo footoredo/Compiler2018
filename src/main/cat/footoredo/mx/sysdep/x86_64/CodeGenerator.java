@@ -26,7 +26,14 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
     private Set<Label> compiledLabels;
     private CFG cfg;
     private ToplevelScope globalScope;
+    private Set<BasicBlock> visitedBasicBlocks;
     public AssemblyCode generate (IR ir, CFG cfg) {
+        for (DefinedFunction definedFunction: ir.getAllDefinedFunctions()) {
+            visitedBasicBlocks = new HashSet<>();
+            currentFunction = definedFunction;
+            dfsAndCollectUsedRegisters(definedFunction.getStartBasicBlock());
+        }
+
         this.cfg = cfg;
         compiledLabels = new HashSet<>();
         locateSymbols(ir);
@@ -34,6 +41,27 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
         AssemblyCode assemblyCode = generateAssemblyCode(ir);
         while (assemblyCode.peepholeOptimize());
         return assemblyCode;
+    }
+
+    private void dfsAndCollectUsedRegisters (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
+        for (Instruction instruction: currentBasicBlock.getInstructions()) {
+            if (((instruction instanceof CallInst) && ((CallInst) instruction).getFunction() instanceof BuiltinFunction) ||
+                    (instruction instanceof MallocInst)) {
+                // System.out.println("ere");
+                currentFunction.setAllUsedRegisters();
+            }
+            else {
+                for (Operand operand : instruction.getOperands()) {
+                    if (operand.isRegister()) {
+                        currentFunction.addUsedRegisters(operand.getRegister());
+                    }
+                }
+            }
+        }
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndCollectUsedRegisters(output);
     }
 
     private static final java.lang.String LABEL_SYMBOL_BASE = "_QAQ_L";
@@ -743,6 +771,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private Set<Register> collectUsedRegisters(Instruction instruction) {
         Set<Register> registers = new HashSet<>();
+        registers.add(new Register(RegisterClass.DI));
         for (Variable variable: instruction.getLiveVariables()) {
             if (variable.isRegister()) {
                 Register register = variable.getRegister();
@@ -771,9 +800,12 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             toSaveB = toSaveA;
         }
         Set<Register> toSave = SetUtils.solveIntersection(toSaveA, toSaveB);
+        toSave.add (new Register(RegisterClass.DI));
         List<Register> saving = new ArrayList<>(toSave);
         // System.out.println (saving.size() + " " + s);
+        // System.out.println (s.getFunction().getName());
         for (Register register: saving) {
+            System.out.println (register.toSource(SymbolTable.dummy()));
             as.virtualPush(register);
         }
         int cnt = s.getArgc() - PARAMETER_REGISTERS.length;

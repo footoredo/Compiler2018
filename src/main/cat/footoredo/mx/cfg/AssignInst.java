@@ -52,12 +52,16 @@ public class AssignInst extends Instruction {
             setLive(true);
             if (isDeref) {
                 resultLiveVariables.add (getResult().getVariable());
+                if (getResult().getVariable() == null)
+                    throw new Error ("ss");
             }
             for (Operand operand: getOperands())
                 if (operand.isVariable()) {
                     Variable variable = operand.getVariable();
                     // variable.setUsed(true);
                     resultLiveVariables.add(variable);
+                    if (variable == null)
+                        throw new Error ("ss");
                 }
             if (!isDeref) {
                 resultLiveVariables.remove (getResult().getVariable());

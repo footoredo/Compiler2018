@@ -105,7 +105,7 @@ public class Variable extends Entity {
     }
 
     public double getScore () {
-        return (double) getRivalryCount() / getUsedCount() + (isTmp() ? -50 : 0);
+        return (double) getRivalryCount() / getUsedCount() + (isTmp() ? -100 : 0);
     }
 
     public void setIR(Expression ir) {

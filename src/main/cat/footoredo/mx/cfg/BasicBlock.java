@@ -297,7 +297,11 @@ public class BasicBlock {
     }
 
     public void setInstructions(List<Instruction> instructions) {
-        this.instructions = instructions;
+        this.instructions = new ArrayList<>();
+        this.isEndBlock = false;
+        this.hasCall = false;
+        for (Instruction instruction: instructions)
+            addInstruction(instruction);
     }
 
     public void resetLiveVariables() {

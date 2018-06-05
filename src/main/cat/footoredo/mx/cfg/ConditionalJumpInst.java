@@ -62,6 +62,8 @@ public class ConditionalJumpInst extends JumpInst {
         if (condition.isVariable()) {
             // condition.getVariable().setUsed(true);
             resultLiveVariables.add (condition.getVariable());
+            if (condition.getVariable() == null)
+                throw new Error ("ss");
         }
         return resultLiveVariables;
     }

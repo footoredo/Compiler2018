@@ -87,6 +87,8 @@ abstract public class Instruction {
             for (Operand operand: operands)
                 if (operand.isVariable()) {
                     Variable variable = operand.getVariable();
+                    if (variable == null)
+                        throw new Error ("ss");
                     // variable.setUsed(true);
                     resultLiveVariables.add(variable);
                 }
