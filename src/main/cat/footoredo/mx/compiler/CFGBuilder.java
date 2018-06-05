@@ -75,9 +75,9 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
                 visitedBasicBlocks = new HashSet<>();
                 Set<cat.footoredo.mx.entity.Variable> startLiveVariables = new HashSet<>();
-                if (definedFunction.isFibLike()) {
+                /*if (definedFunction.isFibLike()) {
                     startLiveVariables.add (definedFunction.getToSave());
-                }
+                }*/
                 // System.err.println ("ss");
                 depth = 0;
                 backPropagate(definedFunction.getEndBasicBlock(), startLiveVariables);
