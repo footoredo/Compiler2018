@@ -57,6 +57,7 @@ public class DefinedFunction extends Function {
         if (!isMemorable) return false;
         if (getParameters().size() != 1) return false;
         if (!getParameter(0).getType().isInteger()) return false;
+        // if (getName().equals("func")) return false;
         return true;
     }
 
