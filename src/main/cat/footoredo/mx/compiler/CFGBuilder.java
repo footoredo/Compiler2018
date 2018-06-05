@@ -710,9 +710,59 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 dfsAndMerge(output);
     }
 
-    private void backPropagate (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {
+    private Set<BasicBlock> inQueue;
+    private LinkedList<BasicBlock> queue;
+
+    private void push (BasicBlock currentBasicBlock, Set<cat.footoredo.mx.entity.Variable> liveVariables) {
+        boolean isUpdated = false;
+        if (!currentBasicBlock.backPropagated()) {
+            isUpdated = true;
+            currentBasicBlock.prepareForFirstBackPropagate();
+        }
+        for (cat.footoredo.mx.entity.Variable variable: liveVariables) {
+            // System.out.println (variable.getName());
+            if (!currentBasicBlock.isLiveVariable(variable)) {
+                // System.err.println ("ere");
+                if (variable == null) {
+                    throw new Error("ss");
+                }
+                // System.out.println (variable.getName() + " " + currentBasicBlock + " " + currentFunction.getName());
+                isUpdated = true;
+                currentBasicBlock.addLiveVariable(variable);
+            }
+        }
+        if (isUpdated) {
+            if (!inQueue.contains(currentBasicBlock)) {
+                inQueue.add (currentBasicBlock);
+                queue.addLast (currentBasicBlock);
+            }
+        }
+    }
+
+    private void backPropagate (BasicBlock currentBasicBlock, Set<cat.footoredo.mx.entity.Variable> liveVariables) {
+        inQueue = new HashSet<>();
+        queue = new LinkedList<>();
+
+        push(currentBasicBlock, liveVariables);
+
+        while (!queue.isEmpty()) {
+            BasicBlock front = queue.getFirst();
+            queue.removeFirst();
+            inQueue.remove(front);
+
+            Set<cat.footoredo.mx.entity.Variable> newLiveVariables = new HashSet<>(front.backPropagate());
+            for (BasicBlock input: front.getInputs()) {
+                push (input, newLiveVariables);
+            }
+        }
+    }
+
+    private void backPropagate_ (BasicBlock currentBasicBlock, Set <cat.footoredo.mx.entity.Variable> liveVariables) {
         boolean isUpdated = false;
         ++ depth;
+        /*if (depth > 3000) {
+            currentBasicBlock.displayInstructions();
+        }*/
         // System.err.println ("depth: " + depth);
         if (!currentBasicBlock.backPropagated()) {
             isUpdated = true;
