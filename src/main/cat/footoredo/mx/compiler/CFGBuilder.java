@@ -243,7 +243,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         }
 
 
-        while (true) {
+        for (int i = 0; i < 5; ++ i) {
             inlined = false;
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
@@ -579,7 +579,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (instruction instanceof CallInst) {
                 CallInst callInst = (CallInst) instruction;
                 if (callInst.getFunction() instanceof DefinedFunction &&
-                        ((!((DefinedFunction) callInst.getFunction()).callItself()) || inlineRecursion)) {
+                        (callInst.getFunction() != currentFunction || inlineRecursion)) {
                     inlined = true;
                     DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
                     // System.out.println ("Inlining " + inlineFunction.getName());

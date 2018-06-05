@@ -1,40 +1,9 @@
-int func(int x)
-{
-	int r = x & 3;
-	if(r == 0)
-		return x;
-	return (func(x - r) + func(x + r)) & 65535;
+int f(int x, int y) {
+if (x == 0) return 1;
+return x * f(x - 1, y);
 }
 
-int main()
-{
-	int N = getInt();
-	int i;
-	int sum = 0;
-	for(i=0; i<N; i++)
-		sum = (sum + func(i)) & 65535;
-	println(toString(sum));
-	return 0;
+int main () {
+    println(toString( f(10, 9)));
+    return 0;
 }
-
-/*!! metadata:
-=== comment ===
- Testcase for Inlining of Recursive Function
-=== is_public ===
-True
-=== assert ===
-output
-=== timeout ===
-5.0
-=== input ===
-300000000
-
-=== phase ===
-optim extended
-=== output ===
-61824
-
-=== exitcode ===
-0
-
-!!*/
