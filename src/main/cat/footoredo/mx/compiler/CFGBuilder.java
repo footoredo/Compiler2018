@@ -114,7 +114,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (!loopRemoved && !removed && !cleaned && !merged) break;
         }
 
-        for (int i = 0; i < 1; ++ i) {
+        for (int i = 0; i < 2; ++ i) {
             inlined = false;
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
