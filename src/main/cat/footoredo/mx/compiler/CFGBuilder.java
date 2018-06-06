@@ -209,7 +209,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 Operand n = new VariableOperand(definedFunction.getParameter(0));
 
                 Operand c1 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
-                check1.addInstruction(new BinaryInst(c1, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 128)));
+                check1.addInstruction(new BinaryInst(c1, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 64)));
                 check1.setJumpInst(new ConditionalJumpInst(c1, check2Label, rangeFailLabel));
 
                 Operand c2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));

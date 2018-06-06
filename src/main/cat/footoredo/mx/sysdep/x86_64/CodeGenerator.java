@@ -771,7 +771,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
 
     private Set<Register> collectUsedRegisters(Instruction instruction) {
         Set<Register> registers = new HashSet<>();
-        registers.add(new Register(RegisterClass.DI));
+        // registers.add(new Register(RegisterClass.DI));
         for (Variable variable: instruction.getLiveVariables()) {
             if (variable.isRegister()) {
                 Register register = variable.getRegister();
@@ -800,7 +800,7 @@ public class CodeGenerator implements cat.footoredo.mx.sysdep.CodeGenerator, CFG
             toSaveB = toSaveA;
         }
         Set<Register> toSave = SetUtils.solveIntersection(toSaveA, toSaveB);
-        toSave.add (new Register(RegisterClass.DI));
+        // toSave.add (new Register(RegisterClass.DI));
         List<Register> saving = new ArrayList<>(toSave);
         // System.out.println (saving.size() + " " + s);
         // System.out.println (s.getFunction().getName());
