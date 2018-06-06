@@ -43,25 +43,25 @@ public class ASTBuilderVisitor implements MxVisitor <Node> {
                 DefinedFunction function = new DefinedFunction(methodNode);
                 declarations.addFun (function);
                 Location location = function.getLocation();
-                TypeNode solvedTypeNode = new TypeNode(new ArrayTypeRef(new BooleanTypeRef(), 64));
+                TypeNode solvedTypeNode = new TypeNode(new ArrayTypeRef(new BooleanTypeRef(), 128));
                 declarations.addVar(new Variable(new VariableDeclarationNode(
                         solvedTypeNode,
                         function.getSolvedName(),
                         new NewNode(location,
                                 new CreatorNode(location,
                                         (ArrayTypeRef) solvedTypeNode.getTypeRef(),
-                                        Arrays.asList(new IntegerLiteralNode(location,64))
+                                        Arrays.asList(new IntegerLiteralNode(location,128))
                                 )
                         )
                 )));
-                TypeNode answerTypeNode = new TypeNode(new ArrayTypeRef(new IntegerTypeRef(), 64));
+                TypeNode answerTypeNode = new TypeNode(new ArrayTypeRef(new IntegerTypeRef(), 128));
                 declarations.addVar(new Variable(new VariableDeclarationNode(
                         answerTypeNode,
                         function.getAnswerName(),
                         new NewNode(location,
                                 new CreatorNode(location,
                                         (ArrayTypeRef) answerTypeNode.getTypeRef(),
-                                        Arrays.asList(new IntegerLiteralNode(location,64))
+                                        Arrays.asList(new IntegerLiteralNode(location,128))
                                 )
                         )
                 )));

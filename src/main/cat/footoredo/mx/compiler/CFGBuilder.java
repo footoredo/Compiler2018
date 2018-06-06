@@ -119,6 +119,13 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
 
             for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
                 visitedBasicBlocks = new HashSet<>();
+                length = 0;
+                dfsAndCollectLength(definedFunction.getStartBasicBlock());
+                definedFunction.setLength(length);
+            }
+
+            for (DefinedFunction definedFunction : ir.getAllDefinedFunctions()) {
+                visitedBasicBlocks = new HashSet<>();
                 definedFunction.resetCalls ();
             }
 
@@ -209,7 +216,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 Operand n = new VariableOperand(definedFunction.getParameter(0));
 
                 Operand c1 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
-                check1.addInstruction(new BinaryInst(c1, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 64)));
+                check1.addInstruction(new BinaryInst(c1, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 128)));
                 check1.setJumpInst(new ConditionalJumpInst(c1, check2Label, rangeFailLabel));
 
                 Operand c2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
@@ -360,6 +367,15 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
         for (BasicBlock output: currentBasicBlock.getOutputs())
             if (!visitedBasicBlocks.contains(output))
                 dfsAndSetNotMemorable(output);
+    }
+
+    private int length;
+    private void dfsAndCollectLength (BasicBlock currentBasicBlock) {
+        visitedBasicBlocks.add(currentBasicBlock);
+        length += currentBasicBlock.getAllInstructionCount();
+        for (BasicBlock output: currentBasicBlock.getOutputs())
+            if (!visitedBasicBlocks.contains(output))
+                dfsAndCollectLength(output);
     }
 
     private void dfsAndRemoveLoops (BasicBlock currentBasicBlock) {
@@ -564,7 +580,8 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
             if (instruction instanceof CallInst) {
                 CallInst callInst = (CallInst) instruction;
                 if (callInst.getFunction() instanceof DefinedFunction &&
-                        (callInst.getFunction() != currentFunction || inlineRecursion)) {
+                        (callInst.getFunction() != currentFunction || inlineRecursion) &&
+                        ((DefinedFunction) callInst.getFunction()).getLength() < 50000) {
                     inlined = true;
                     DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
                     // System.out.println ("Inlining " + inlineFunction.getName() + " in " + currentFunction.getName());

@@ -37,6 +37,8 @@ public class DefinedFunction extends Function {
     private Variable solved;
     private Variable answer;
 
+    private int length;
+
     private boolean isMemorable;
 
     private Variable toSave;
@@ -51,6 +53,14 @@ public class DefinedFunction extends Function {
 
     public void setToSave(Variable toSave) {
         this.toSave = toSave;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 
     public boolean isFibLike () {
