@@ -216,7 +216,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 Operand n = new VariableOperand(definedFunction.getParameter(0));
 
                 Operand c1 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
-                check1.addInstruction(new BinaryInst(c1, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 128)));
+                check1.addInstruction(new BinaryInst(c1, n, Op.S_LT, new ConstantIntegerOperand(Type.INT64, 1280)));
                 check1.setJumpInst(new ConditionalJumpInst(c1, check2Label, rangeFailLabel));
 
                 Operand c2 = new VariableOperand(definedFunction.getScope().allocateTmpVariable(new BooleanType()));
@@ -581,7 +581,7 @@ public class CFGBuilder implements IRVisitor<Void, Operand> {
                 CallInst callInst = (CallInst) instruction;
                 if (callInst.getFunction() instanceof DefinedFunction &&
                         (callInst.getFunction() != currentFunction || inlineRecursion) &&
-                        ((DefinedFunction) callInst.getFunction()).getLength() < 50000) {
+                        ((DefinedFunction) callInst.getFunction()).getLength() < 50) {
                     inlined = true;
                     DefinedFunction inlineFunction = (DefinedFunction) (callInst.getFunction());
                     // System.out.println ("Inlining " + inlineFunction.getName() + " in " + currentFunction.getName());
